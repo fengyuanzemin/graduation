@@ -9,10 +9,10 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 
 // global middlewares
-app.use(views('views', {
-  root: __dirname + '/views',
-  default: 'jade'
-}));
+// app.use(views('views', {
+//   root: __dirname + '/views',
+//   default: 'jade'
+// }));
 app.use(require('koa-bodyparser')());
 app.use(json());
 app.use(logger());

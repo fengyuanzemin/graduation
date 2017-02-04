@@ -1,4 +1,4 @@
-# graduation_frontend
+# 毕设前端
 
 > A Vue.js project
 

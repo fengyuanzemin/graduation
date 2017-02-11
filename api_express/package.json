@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "curl": "node ./crawlers/weibo.js"
+    "curl": "node ./spiders/weibo.js"
   },
   "dependencies": {
     "body-parser": "~1.15.2",
@@ -14,7 +14,9 @@
     "express": "~4.14.0",
     "mongoose": "^4.8.1",
     "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "superagent": "^3.4.1",
+    "superagent-charset": "^1.1.1"
   },
   "devDependencies": {
     "babel-preset-env": "^1.1.8",

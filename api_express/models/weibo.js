@@ -10,6 +10,10 @@ const Schema = mongoose.Schema({
         default: '',
         trim: true
     },
+    author_id: {
+        type: Number,
+        default: 0
+    },
     attitudes_count: {
         type: Number,
         default: 0
@@ -37,6 +41,10 @@ const Schema = mongoose.Schema({
     retweeted_author: {
         type: String,
         default: ''
+    },
+    retweeted_author_id: {
+        type: Number,
+        default: 0
     },
     retweeted_attitudes_count: {
         type: Number,

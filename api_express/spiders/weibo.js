@@ -35,26 +35,28 @@ const timer = setInterval(() => {
             text.cards.forEach((v) => {
                 const blog = v.mblog;
                 const weiboText = new Spider({
-                        id: blog.id,
-                        author: blog.user ? blog.user.screen_name : '',
-                        created_at: blog.created_at,
-                        text: blog.text,
-                        attitudes_count: blog.attitudes_count,
-                        comments_count: blog.comments_count,
-                        reposts_count: blog.reposts_count,
-                        retweeted_id: blog.retweeted_status ? blog.retweeted_status.id : '',
-                        retweeted_author: blog.retweeted_status ? blog.retweeted_status.user ? blog.retweeted_status.user.screen_name : '' : '',
-                        retweeted_attitudes_count: blog.retweeted_status ? blog.retweeted_status.attitudes_count : 0,
-                        retweeted_created_at: blog.retweeted_status ? blog.retweeted_status.created_at : '',
-                        retweeted_reposts_count: blog.retweeted_status ? blog.retweeted_status.reposts_count : 0,
-                        retweeted_comments_count: blog.retweeted_status ? blog.retweeted_status.comments_count : 0,
-                        retweeted_text: blog.retweeted_status ? blog.retweeted_status.text : ''
-                    })
-                    ;
+                    id: blog.id,
+                    author: blog.user ? blog.user.screen_name : '',
+                    author_id: blog.user ? blog.user.id : 0,
+                    created_at: blog.created_at,
+                    text: blog.text,
+                    attitudes_count: blog.attitudes_count,
+                    comments_count: blog.comments_count,
+                    reposts_count: blog.reposts_count,
+                    retweeted_id: blog.retweeted_status ? blog.retweeted_status.id : '',
+                    retweeted_author: blog.retweeted_status ? blog.retweeted_status.user ? blog.retweeted_status.user.screen_name : '' : '',
+                    retweeted_author_id: blog.retweeted_status ? blog.retweeted_status.user ? blog.retweeted_status.user.id : 0 : 0,
+                    retweeted_attitudes_count: blog.retweeted_status ? blog.retweeted_status.attitudes_count : 0,
+                    retweeted_created_at: blog.retweeted_status ? blog.retweeted_status.created_at : '',
+                    retweeted_reposts_count: blog.retweeted_status ? blog.retweeted_status.reposts_count : 0,
+                    retweeted_comments_count: blog.retweeted_status ? blog.retweeted_status.comments_count : 0,
+                    retweeted_text: blog.retweeted_status ? blog.retweeted_status.text : ''
+                });
                 weiboText.save();
                 console.log(`页数：${page}`);
-                console.log(`id：${blog.id}`);
+                console.log(`ID：${blog.id}`);
                 console.log(`作者：${blog.user ? blog.user.screen_name : ''}`);
+                console.log(`作者ID：${blog.user ? blog.user.id : 0}`);
                 console.log(`创建时间：${blog.created_at}`);
                 console.log(`微博内容：${blog.text}`);
                 console.log(`点赞数：${blog.attitudes_count}`);
@@ -62,8 +64,9 @@ const timer = setInterval(() => {
                 console.log(`转发数：${blog.reposts_count}`);
                 // 转发的
                 if (blog.retweeted_status) {
-                    console.log(`原po id：${blog.retweeted_status.id}`);
+                    console.log(`原po ID：${blog.retweeted_status.id}`);
                     console.log(`原po作者：${blog.retweeted_status ? blog.retweeted_status.user ? blog.retweeted_status.user.screen_name : '' : ''}`);
+                    console.log(`原po作者ID：${blog.retweeted_status ? blog.retweeted_status.user ? blog.retweeted_status.user.id : 0 : 0}`);
                     console.log(`原po创建时间：${blog.retweeted_status.created_at}`);
                     console.log(`原po微博内容：${blog.retweeted_status.text}`);
                     console.log(`原po点赞数：${blog.retweeted_status.attitudes_count}`);

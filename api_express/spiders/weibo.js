@@ -4,11 +4,6 @@ const mongoose = require('mongoose');
 const Spider = require('../models/weibo');
 const uaArr = require('./ua');
 
-// 数据库连接
-mongoose.connect('mongodb://localhost/weibo');
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, '连接错误:'));
 
 const baseUrl = 'http://m.weibo.cn/container/getIndex?type=uid';
 let page = 1;
@@ -29,7 +24,7 @@ function curl(value, containerid, page, callback) {
 // 爬
 const timer = setInterval(() => {
     // 前面一个是微博的id，后面的是containerid，不知道啥
-    curl(2616609787, 1076032616609787, page, (res) => {
+    curl(5597518371, 1076035597518371, page, (res) => {
         if (res) {
             const text = JSON.parse(res.text);
             text.cards.forEach((v) => {

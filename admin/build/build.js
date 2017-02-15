@@ -8,6 +8,7 @@ var config = require('../config')
 var ora = require('ora')
 var webpack = require('webpack')
 var webpackConfig = require('./webpack.prod.conf')
+var server = require('pushstate-server');
 
 console.log(
   '  Tip:\n' +
@@ -34,3 +35,9 @@ webpack(webpackConfig, function (err, stats) {
     chunkModules: false
   }) + '\n')
 })
+
+server.start({
+  port: 9527,
+  directory: './dist',
+  file: '/index.html'
+});

@@ -1,6 +1,6 @@
 <template>
-  <div class="">
-
+  <div class="search">
+	<h2>search</h2>
   </div>
 </template>
 <script>
@@ -13,6 +13,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
+.search {
+	margin-top: 45px;
+}
 </style>
 

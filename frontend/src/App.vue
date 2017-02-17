@@ -5,7 +5,10 @@
 </template>
 
 <script>
-export default {
-  name: 'app'
-};
+  import 'assets/css/reset.css';
+  import 'assets/css/global.scss';
+  import 'assets/fonts/iconfont.css';
+  export default {
+    name: 'app'
+  };
 </script>

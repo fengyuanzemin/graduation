@@ -15,8 +15,9 @@ export default new Router({
   },
   routes: [
     {path: '/', component: resolve => require(['../views/Index/Layout'], resolve)},
-    {path: '/login', component: resolve => require(['../views/Login'], resolve)},
-    {path: '/sign-up', component: resolve => require(['../views/SignUp'], resolve)},
-    {path: '*', component: resolve => require(['../views/404'], resolve)},
+    {path: '/un-login', component: resolve => require(['../views/UnLogin/Layout'], resolve)},
+    {path: '/post', component: resolve => require(['../views/Post'], resolve)},
+    {path: '/login', component: resolve => require(['../views/Login/Layout'], resolve)},
+    {path: '*', component: resolve => require(['../views/404'], resolve)}
   ]
 })

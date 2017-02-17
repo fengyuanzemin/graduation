@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <header>
-      <div class="header-title">{{name}}</div>
+      <div class="header-title">{{title}}</div>
+      <span class="header-right">登录</span>
+      <span class="clickBoard clickBoard-right" @click="toLogin"></span>
     </header>
     <keep-alive>
       <component :is="currentView"></component>
@@ -17,14 +19,12 @@
 </template>
 <script>
   import Index from './Index';
-  import Home from './Home';
   import Movie from './Movie';
-  import Search from './Search';
   export default {
     data() {
       return {
         currentView: 'f-index',
-        name: '风从哪里来',
+        title: '首页',
         footerItem: [
           {
             icon: 'icon-homepage-red',
@@ -41,37 +41,12 @@
             showItem: 'f-movie',
             id: 1,
             isActive: false
-          },
-          {
-            icon: 'icon-jia',
-            hasText: false,
-            id: 2
-          },
-          {
-            icon: 'icon-sousuo-sousuo',
-            hasText: true,
-            text: '搜索',
-            showItem: 'f-search',
-            id: 3,
-            isActive: false
-          },
-          {
-            icon: 'icon-yonghu',
-            hasText: true,
-            text: '用户',
-            showItem: 'f-home',
-            id: 4,
-            isActive: false
           }
         ]
       };
     },
     methods: {
       checkout(item) {
-        if (item.id === 2) {
-          this.toPost();
-          return;
-        }
         this.currentView = item.showItem;
         this.footerItem = this.footerItem.map((v) => {
           if (item.id === v.id) {
@@ -80,37 +55,20 @@
             v.isActive = false;
           }
           return v;
-        })
-        
+        });
       },
-      toPost() {
-        this.$router.push('/post');
+      toLogin() {
+      	this.$router.push('/login');
       }
     },
     components: {
       'f-index': Index,
-      'f-home': Home,
-      'f-movie': Movie,
-      'f-search': Search
+      'f-movie': Movie
     }
   };
 </script>
 <style lang="scss" scoped>
   .container {
-    // header {
-    //   text-align: center;
-    //   background-color: #ffffff;
-    //   position: fixed;
-    //   top: 0;
-    //   width: 100%;
-    //   .header-title {
-    //     font-size: 18px;
-    //     line-height: 18px;
-    //     color: #333;
-    //     padding: 13px 0 13px 0;
-    //     border-bottom: 1px solid #dcdcdc;
-    //   }
-    // }
     footer {
       display: flex;
       text-align: center;

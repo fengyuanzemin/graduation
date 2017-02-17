@@ -1,0 +1,117 @@
+#app {
+  font-family: PingFang SC, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Microsoft Yahei, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  // background-color: #f2f2f2;
+  .container {
+    header {
+      text-align: center;
+      background-color: #ffffff;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      .header-title {
+        font-size: 18px;
+        line-height: 18px;
+        color: #333;
+        padding: 13px 0 13px 0;
+        border-bottom: 1px solid #dcdcdc;
+      }
+      .header-right {
+        position: absolute;
+        top: 14px;
+        right: 15px;
+        font-size: 15px;
+        color: #666;
+      }
+      .header-left {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        color: #666;
+        font-size: 23px;
+      }
+    }
+  }
+  .clickBoard {
+    position: absolute;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    top: 0;
+  }
+  .clickBoard-left {
+    left: 0;
+  }
+  .clickBoard-right {
+    right: 0;
+  }
+}
+
+
+.fade-left-right-enter-active {
+  animation: fadeInRight .7s;
+}
+.fade-left-right-leave-active {
+  animation: fadeOutLeft .7s;
+}
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeOutLeft {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+.rotate-left-right-enter-active {
+  animation: rotateRight 1s;
+}
+.rotate-left-right-leave-active {
+  animation: rotateLeft 1s;
+}
+@keyframes rotateLeft {
+  0% {
+    opacity: 1;
+    transform-origin: 0 0;
+    transform: perspective(800px) rotateY(0deg) translateZ(0px);
+  }
+
+  100% {
+    opacity: 0;
+    transform-origin: 50% 0;
+    transform: perspective(800px) rotateY(180deg) translateZ(300px);
+  }
+}
+@keyframes rotateRight {
+  0% {
+    
+    opacity: 0;
+    transform-origin: 50% 0;
+    transform: perspective(800px) rotateY(-180deg) translateZ(150px);
+  }
+
+  100% {
+    opacity: 1;
+    transform-origin: 0 0;
+    transform: perspective(800px) rotateY(0deg) translateZ(0px);
+  }
+}

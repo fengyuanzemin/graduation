@@ -1,18 +1,76 @@
 <template>
-  <div class="">
-
+  <div class="container">
+    <header>
+      <span class="header-left iconfont icon-houtui"/>
+      <span class="clickBoard clickBoard-left" @click="back"/>
+      <div class="header-title">发微博</div>
+      <span class="iconfont icon-fasong1" :class="{active: text}"/>
+      <span class="clickBoard clickBoard-right" @click="post"/>
+    </header>
+    <textarea placeholder="请输入您的内容" class="post-textarea" v-model="text"/>
   </div>
 </template>
 <script>
+import {getCookie} from 'src/utils/';
+import {post} from 'src/api/';
+
 export default {
   data() {
     return {
-
+      text: ''
     };
+  },
+  methods: {
+    back() {
+      this.$router.back();
+    },
+    post() {
+      const token = getCookie('f-token');
+      post(this.text, token).then((res) => {
+        console.log(res);
+        switch (res.data.code) {
+          case 200:
+          // 发送成功
+            this.$router.push('/');
+          break;
+          case 5002:
+          // token过期
+            this.$router.push('/login');
+          break;
+        }
+      }).catch((err) => {
+        console.log(err);
+        // 发送失败
+      })
+    }
   }
 };
+
 </script>
 <style lang="scss" scoped>
-
+  .container {
+    .icon-fasong1 {
+      position: absolute;
+      top: 13px;
+      right: 15px;;
+      font-size: 23px;
+      color: #666;
+      &.active {
+        color: #1478f0;
+      }
+    }
+    .post-textarea {
+      margin-top: 45px;
+      width: 100%;
+      outline: none;
+      border: none;
+      resize: none;
+      padding: 15px;
+      box-sizing: border-box;
+      font-size: 20px;
+      color: #333;
+      height: 40vh;
+    }
+  }
 </style>
 

@@ -68,10 +68,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-// 数据库连接
-mongoose.connect('mongodb://localhost/weibo');
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, '连接错误:'));
-
 module.exports = mongoose.model('WeiboSpider', Schema);

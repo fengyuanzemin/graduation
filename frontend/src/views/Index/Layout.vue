@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <header>
-      <div class="header-title">{{name}}</div>
+      <div class="header-title">{{title}}</div>
     </header>
     <keep-alive>
-      <component :is="currentView"></component>
+      <component :is="currentView"/>
     </keep-alive>
     <footer>
       <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
-        <span class="iconfont" :class="item.icon" v-if="item.hasText" ></span>
-        <span class="iconfont footer-plus" :class="item.icon" v-else></span>
+        <span class="iconfont" :class="item.icon" v-if="item.hasText" />
+        <span class="iconfont footer-plus" :class="item.icon" v-else />
         <span class="footer-text">{{item.text}}</span>
       </div>
     </footer>
@@ -24,7 +24,7 @@
     data() {
       return {
         currentView: 'f-index',
-        name: '风从哪里来',
+        title: '首页',
         footerItem: [
           {
             icon: 'icon-homepage-red',
@@ -58,7 +58,7 @@
           {
             icon: 'icon-yonghu',
             hasText: true,
-            text: '用户',
+            text: '我',
             showItem: 'f-home',
             id: 4,
             isActive: false
@@ -76,12 +76,13 @@
         this.footerItem = this.footerItem.map((v) => {
           if (item.id === v.id) {
             v.isActive = true;
+            this.title = v.text;
           } else {
             v.isActive = false;
           }
           return v;
         })
-        
+
       },
       toPost() {
         this.$router.push('/post');

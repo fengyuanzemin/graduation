@@ -2,11 +2,11 @@
   <div class="login">
 		<div class="input">
       <div class="input-group">
-        <span class="iconfont icon-yonghu left-icon"></span><input type="text" placeholder="请输入用户名" maxlength="20" v-model="name" v-focus-parent autofocus="on">
+        <span class="iconfont icon-yonghu left-icon" /><input type="text" placeholder="请输入用户名" maxlength="20" v-model="name" v-focus-parent autofocus="on">
         <!-- <span class="warning">{{phoneMsg}}</span> -->
       </div>
       <div class="input-group bottom">
-        <span class="iconfont icon-mima left-icon"></span><input type="password" placeholder="请输入密码" v-model="password" v-focus-parent>
+        <span class="iconfont icon-mima left-icon" /><input type="password" placeholder="请输入密码" v-model="password" v-focus-parent>
         <!-- <span class="warning">{{verifyErrorMsg}}</span> -->
       </div>
     </div>
@@ -20,6 +20,7 @@
 </template>
 <script>
 import FadeSpinner from 'components/FadeSpinner';
+import {login} from 'src/api/index';
 export default {
   data() {
     return {
@@ -31,7 +32,15 @@ export default {
   },
   methods: {
   	login() {
-
+      login(this.name,this.password).then((res) => {
+        console.log(res);
+        if(res.data.code === 200) {
+          document.cookie = `f-token=${res.data.data.token}`;
+          this.$router.push('/');
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
   	},
   	toSignUp() {
   		this.$emit('checkout', 'f-sign-up');
@@ -42,7 +51,7 @@ export default {
   },
   watch: {
   	name() {
-  		this.buttonDisabled = !this.checkNameAndPassword(this.name, this.passwrod);
+  		this.buttonDisabled = !this.checkNameAndPassword(this.name, this.password);
   	},
   	password() {
   		this.buttonDisabled = !this.checkNameAndPassword(this.name, this.password);

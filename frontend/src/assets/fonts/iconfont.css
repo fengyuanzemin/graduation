@@ -1,10 +1,10 @@
 
 @font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1487240201278'); /* IE9*/
-  src: url('iconfont.eot?t=1487240201278#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('iconfont.woff?t=1487240201278') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1487240201278') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('iconfont.svg?t=1487240201278#iconfont') format('svg'); /* iOS 4.1- */
+  src: url('iconfont.eot?t=1487413918505'); /* IE9*/
+  src: url('iconfont.eot?t=1487413918505#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('iconfont.woff?t=1487413918505') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1487413918505') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('iconfont.svg?t=1487413918505#iconfont') format('svg'); /* iOS 4.1- */
 }
 
 .iconfont {
@@ -28,6 +28,8 @@
 .icon-xiajiantou:before { content: "\e61c"; }
 
 .icon-tuichu:before { content: "\e603"; }
+
+.icon-fasong1:before { content: "\e68c"; }
 
 .icon-mima:before { content: "\e736"; }
 

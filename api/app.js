@@ -1,11 +1,13 @@
 import express from 'express';
+import cors from 'cors';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 
 import index from './routes/index';
 import admin from './routes/admin';
-import weibo from './routes/weibo';
+// import weibo from './routes/weibo';
 
 const app = express();
 
@@ -13,10 +15,17 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(cors());
+
+mongoose.connect('mongodb://localhost/graduation');
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, '连接错误:'));
 
 app.use('/', index);
 app.use('/admin', admin);
-app.use('/weibo', weibo);
+// app.use('/weibo', weibo);
+
+
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

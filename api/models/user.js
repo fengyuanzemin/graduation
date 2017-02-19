@@ -1,13 +1,20 @@
 /**
  * Created by fengyuanzemin on 17/2/15.
  */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+mongoose.Promise = global.Promise;
 
 const Schema = mongoose.Schema({
     name: {
         type: String,
-        default: '',
-        trim: true
+        trim: true,
+        unique: true,
+        require: true
+    },
+    token: {
+        type: String,
+        require: true,
+        unique: true
     },
     posts_count: {
         type: Number,
@@ -23,8 +30,7 @@ const Schema = mongoose.Schema({
     },
     password: {
         type: String,
-        default: ''
+        require: true
     }
 });
-
-module.exports = mongoose.model('User', Schema);
+export default mongoose.model('User', Schema);

@@ -4,6 +4,8 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
+import {getCookie} from 'src/utils';
+import {checkToken} from 'src/api';
 
 Vue.use(Router);
 
@@ -14,10 +16,62 @@ export default new Router({
     return {x: 0, y: 0};
   },
   routes: [
-    {path: '/', component: resolve => require(['../views/Index/Layout'], resolve)},
-    {path: '/un-login', component: resolve => require(['../views/UnLogin/Layout'], resolve)},
-    {path: '/post', component: resolve => require(['../views/Post'], resolve)},
-    {path: '/login', component: resolve => require(['../views/Login/Layout'], resolve)},
+    {
+      path: '/',
+      component: resolve => require(['../views/Index/Layout'], resolve),
+      beforeEnter: (to, from, next) => {
+        const token = getCookie('f-token');
+        if (!token) {
+          next('/un-login');
+        }
+        checkToken(token).then((res) => {
+          if (res.data.code === 200) {
+            const loggedIn = res.data.data.loggedIn;
+            if (loggedIn) {
+              next();
+            } else {
+              next('/un-login');
+            }
+          } else {
+            next('/un-login');
+          }
+        }).catch(() => {
+          next('/un-login');
+        });
+      }
+    },
+    {
+      path: '/un-login',
+      component: resolve => require(['../views/UnLogin/Layout'], resolve)
+    },
+    {
+      path: '/post',
+      component: resolve => require(['../views/Post'], resolve),
+      beforeEnter: (to, from, next) => {
+        const token = getCookie('f-token');
+        if (!token) {
+          next('/un-login');
+        }
+        checkToken(token).then((res) => {
+          if (res.data.code === 200) {
+            const loggedIn = res.data.data.loggedIn;
+            if (loggedIn) {
+              next();
+            } else {
+              next('/un-login');
+            }
+          } else {
+            next('/un-login');
+          }
+        }).catch(() => {
+          next('/un-login');
+        });
+      }
+    },
+    {
+      path: '/login',
+      component: resolve => require(['../views/Login/Layout'], resolve)
+    },
     {path: '*', component: resolve => require(['../views/404'], resolve)}
   ]
 })

@@ -10,10 +10,11 @@ const Schema = mongoose.Schema({
     },
     content: {
         type: String,
-        default: ''
+        require: true
     },
     userId: {
-        type: Objectid
+        type: String,
+        require: true
     },
     reposts_count: {
         type: Number,

@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 
 const Spider = require('../models/weibo');
 const uaArr = require('./ua');
+// 数据库连接
+mongoose.connect('mongodb://localhost/weibo');
+const db = mongoose.connection;
 
-
+db.on('error', console.error.bind(console, '连接错误:'));
 const baseUrl = 'http://m.weibo.cn/container/getIndex?type=uid';
 let page = 1;
 

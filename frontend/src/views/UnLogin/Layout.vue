@@ -3,15 +3,15 @@
     <header>
       <div class="header-title">{{title}}</div>
       <span class="header-right">登录</span>
-      <span class="clickBoard clickBoard-right" @click="toLogin"></span>
+      <span class="clickBoard clickBoard-right" @click="toLogin" />
     </header>
     <keep-alive>
-      <component :is="currentView"></component>
+      <component :is="currentView" />
     </keep-alive>
     <footer>
       <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
-        <span class="iconfont" :class="item.icon" v-if="item.hasText" ></span>
-        <span class="iconfont footer-plus" :class="item.icon" v-else></span>
+        <span class="iconfont" :class="item.icon" v-if="item.hasText" />
+        <span class="iconfont footer-plus" :class="item.icon" v-else />
         <span class="footer-text">{{item.text}}</span>
       </div>
     </footer>

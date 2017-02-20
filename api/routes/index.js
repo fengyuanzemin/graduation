@@ -23,9 +23,7 @@ router.post('/login', (req, res) => {
         if (err) {
             console.log(err);
             res.json({
-                data: {
-                    message: errCode[5001]
-                },
+                message: errCode[5001],
                 code: 5000
             });
             return;
@@ -34,26 +32,20 @@ router.post('/login', (req, res) => {
             bcrypt.compare(req.body.password, data.password).then((response) => {
                 if (response) {
                     res.json({
-                        data: {
-                            message: '登录成功',
-                            token: data.token
-                        },
+                        message: '登录成功',
+                        token: data.token,
                         code: 200
                     })
                 } else {
                     res.json({
-                        data: {
-                            message: errCode[5000]
-                        },
+                        message: errCode[5000],
                         code: 5000
                     })
                 }
             });
         } else {
             res.json({
-                data: {
-                    message: errCode[5000]
-                },
+                message: errCode[5000],
                 code: 5000
             });
         }
@@ -71,17 +63,13 @@ router.post('/sign-up', (req, res) => {
         const promise = userInfo.save();
         promise.then(() => {
             res.json({
-                data: {
-                    message: '注册成功',
-                    token
-                },
+                message: '注册成功',
+                token,
                 code: 200
             });
         }).catch((err) => {
             res.json({
-                data: {
-                    message: errCode[err.code] || '注册失败'
-                },
+                message: errCode[err.code] || '注册失败',
                 code: err.code
             });
         });
@@ -92,30 +80,28 @@ router.post('/post', (req, res) => {
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
             const postInfo = new Post({
-                userId: doc._id + '',
+                userId: doc._id,
                 content: req.body.text
             });
             postInfo.save().then(() => {
-                res.json({
-                    data: {
-                        message: '发送成功'
-                    },
-                    code: 200
+                doc.posts_count += 1;
+                // 先不做事务回滚了
+                doc.save().then(() => {
+                    res.json({
+                        message: '发送成功',
+                        code: 200
+                    });
                 });
             }).catch((err) => {
                 res.json({
-                    data: {
-                        message: errCode[err.code] || '发送失败'
-                    },
+                    message: errCode[err.code] || '发送失败',
                     code: err.code
                 });
             });
 
         } else {
             res.json({
-                data: {
-                    message: errCode[5002]
-                },
+                message: errCode[5002],
                 code: 5002
             });
         }
@@ -127,16 +113,12 @@ router.get('/checkToken', (req, res) => {
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
             res.json({
-                data: {
-                    loggedIn: true
-                },
+                loggedIn: true,
                 code: 200
             })
         } else {
             res.json({
-                data: {
-                    loggedIn: false
-                },
+                loggedIn: false,
                 code: 200
             })
         }
@@ -146,28 +128,56 @@ router.get('/checkToken', (req, res) => {
 router.get('/getList', (req, res) => {
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
-            Post.find({userId: doc._id}).then((list) => {
-                res.json({
-                    data: {
-                        list,
+            Post.find({userId: doc._id}).sort({_id: -1}).then((list) => {
+                const cardList = list.map((item) => {
+                    return {
+                        attitudes_count: item.attitudes_count,
+                        comments_count: item.comments_count,
+                        content: item.content,
+                        createdAt: item.createdAt,
+                        reposts_count: item.reposts_count,
+                        id: item._id,
                         user: {
                             followers_count: doc.followers_count,
                             following_count: doc.following_count,
                             name: doc.name,
                             posts_count: doc.posts_count
                         }
-                    },
+                    }
+                });
+                res.json({
+                    cardList,
                     code: 200
                 });
             });
         } else {
             res.json({
-                data: {
-                    message: errCode[5002]
-                },
+                message: errCode[5002],
                 code: 5002
             })
         }
     });
 });
+
+router.get('/getUserInfo', (req, res) => {
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        if (doc) {
+            res.json({
+                userInfo: {
+                    followers_count: doc.followers_count,
+                    following_count: doc.following_count,
+                    name: doc.name,
+                    posts_count: doc.posts_count
+                },
+                code: 200
+            });
+        } else {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            })
+        }
+    });
+});
+
 export default router;

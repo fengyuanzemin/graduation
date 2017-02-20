@@ -98,27 +98,13 @@
 </script>
 <style lang="scss" scoped>
   .container {
-    // header {
-    //   text-align: center;
-    //   background-color: #ffffff;
-    //   position: fixed;
-    //   top: 0;
-    //   width: 100%;
-    //   .header-title {
-    //     font-size: 18px;
-    //     line-height: 18px;
-    //     color: #333;
-    //     padding: 13px 0 13px 0;
-    //     border-bottom: 1px solid #dcdcdc;
-    //   }
-    // }
     footer {
       display: flex;
       text-align: center;
       position: fixed;
       bottom: 0;
       width: 100%;
-      background-color: rgba(0,0,0,.04);
+      background-color: #f0f0f0;
       .footer-item {
         flex: 1;
         display: flex;
@@ -127,6 +113,7 @@
           color: #333;
           font-size: 14px;
           margin: 5px 0;
+          font-weight: 300;
         }
         .iconfont {
           color: #555;

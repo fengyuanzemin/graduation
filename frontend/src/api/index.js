@@ -49,3 +49,21 @@ export function checkToken(token) {
     }
   })
 }
+
+// 拉取用户信息
+export function getUserInfo(token) {
+  return axios.get('/getUserInfo', {
+    headers: {
+      'f-token': token
+    }
+  })
+}
+
+// // 用户退出登录
+// export function logout() {
+//   return axios.get('/logout', {
+//     headers: {
+//       'f-token': token
+//     }
+//   })
+// }

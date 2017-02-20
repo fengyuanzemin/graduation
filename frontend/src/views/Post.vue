@@ -7,7 +7,7 @@
       <span class="iconfont icon-fasong1" :class="{active: text}"/>
       <span class="clickBoard clickBoard-right" @click="post"/>
     </header>
-    <textarea placeholder="请输入您的内容" class="post-textarea" v-model="text"/>
+    <textarea placeholder="请输入您的内容" class="post-textarea" v-model="text" autofocus="on"/>
   </div>
 </template>
 <script>

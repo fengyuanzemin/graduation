@@ -13,8 +13,9 @@ const Schema = mongoose.Schema({
         require: true
     },
     userId: {
-        type: String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId,
+        require: true,
+        ref: 'User'
     },
     reposts_count: {
         type: Number,

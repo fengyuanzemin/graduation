@@ -26,7 +26,7 @@ export default new Router({
         }
         checkToken(token).then((res) => {
           if (res.data.code === 200) {
-            const loggedIn = res.data.data.loggedIn;
+            const loggedIn = res.data.loggedIn;
             if (loggedIn) {
               next();
             } else {
@@ -54,7 +54,7 @@ export default new Router({
         }
         checkToken(token).then((res) => {
           if (res.data.code === 200) {
-            const loggedIn = res.data.data.loggedIn;
+            const loggedIn = res.data.loggedIn;
             if (loggedIn) {
               next();
             } else {

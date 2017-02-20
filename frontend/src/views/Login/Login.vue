@@ -35,7 +35,7 @@ export default {
       login(this.name,this.password).then((res) => {
         console.log(res);
         if(res.data.code === 200) {
-          document.cookie = `f-token=${res.data.data.token}`;
+          document.cookie = `f-token=${res.data.token}`;
           this.$router.push('/');
         }
       }).catch((err) => {

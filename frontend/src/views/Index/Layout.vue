@@ -98,6 +98,9 @@
 </script>
 <style lang="scss" scoped>
   .container {
+    padding-top: 45px;
+    padding-bottom: 49px;
+    /*background-color: #f2f2f2;*/
     footer {
       display: flex;
       text-align: center;

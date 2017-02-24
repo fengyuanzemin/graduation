@@ -3,7 +3,7 @@
     <header>
       <span class="header-left iconfont icon-houtui"/>
       <span class="clickBoard clickBoard-left" @click="back"/>
-      <div class="header-title">发微博</div>
+      <div class="header-title">评论</div>
       <span class="iconfont icon-fasong1" :class="{active: text}"/>
       <span class="clickBoard clickBoard-right" @click="post"/>
     </header>
@@ -12,7 +12,7 @@
 </template>
 <script>
 import {getCookie} from 'src/utils/';
-import {post} from 'src/api/';
+import {action} from 'src/api/';
 
 export default {
   data() {
@@ -29,7 +29,7 @@ export default {
         return;
       }
       const token = getCookie('f-token');
-      post(this.text, token).then((res) => {
+      action(this.text, token).then((res) => {
         console.log(res);
         switch (res.data.code) {
           case 200:

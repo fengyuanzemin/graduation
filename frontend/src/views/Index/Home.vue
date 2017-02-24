@@ -72,7 +72,7 @@ export default {
   .name {
     text-align: center;
     font-size: 30px;
-    margin: 25px 0 40px 0;
+    margin: 15px 0 40px 0;
     color: #333;
   }
   .info {

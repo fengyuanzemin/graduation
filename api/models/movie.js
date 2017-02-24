@@ -6,17 +6,25 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema({
     name: {
         type: String,
-        default: '',
+        require: true,
         trim: true
+    },
+    img: {
+        type: String,
+        default: ''
     },
     ratings: {
         type: Number,
         default: 0
     },
-    content: {
+    brief: {
         type: String,
         default: ''
+    },
+    tags: {
+        type: Array,
+        default: []
     }
 });
 
-module.exports = mongoose.model('Relationship', Schema);
+module.exports = mongoose.model('Movie', Schema);

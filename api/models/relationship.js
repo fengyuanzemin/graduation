@@ -12,4 +12,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('User', Schema);
+module.exports = mongoose.model('Relationship', Schema);

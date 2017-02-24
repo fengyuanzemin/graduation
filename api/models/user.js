@@ -11,6 +11,10 @@ const Schema = mongoose.Schema({
         unique: true,
         require: true
     },
+    brief: {
+        type: String,
+        trim: true
+    },
     token: {
         type: String,
         require: true,

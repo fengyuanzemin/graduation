@@ -5,14 +5,14 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema({
     userId: {
-        type: ObjectId
+        type: mongoose.Schema.Types.ObjectId
     },
     ratings: {
         type: Number,
         default: 0
     },
     movieId: {
-        type: ObjectId
+        type: mongoose.Schema.Types.ObjectId
     }
 });
 

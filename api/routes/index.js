@@ -5,6 +5,7 @@ import {saltRounds} from '../config/salt';
 
 import User from '../models/user';
 import Post from '../models/post';
+import Action from '../models/action';
 
 import {errCode} from '../utils/codeTransfer';
 import {randomKey} from '../utils/index';
@@ -77,10 +78,20 @@ router.post('/sign-up', (req, res) => {
 });
 
 router.post('/post', (req, res) => {
+    if (!req.body.text) {
+        res.json({
+            code: 5004,
+            message: errCode[5004]
+        });
+        return;
+    }
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
+            const user = new User({
+                _id: doc._id
+            });
             const postInfo = new Post({
-                userId: doc._id,
+                user,
                 content: req.body.text
             });
             postInfo.save().then(() => {
@@ -93,12 +104,12 @@ router.post('/post', (req, res) => {
                     });
                 });
             }).catch((err) => {
+                console.log(err)
                 res.json({
                     message: errCode[err.code] || '发送失败',
                     code: err.code
                 });
             });
-
         } else {
             res.json({
                 message: errCode[5002],
@@ -128,28 +139,16 @@ router.get('/checkToken', (req, res) => {
 router.get('/getList', (req, res) => {
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
-            Post.find({userId: doc._id}).sort({_id: -1}).then((list) => {
-                const cardList = list.map((item) => {
-                    return {
-                        attitudes_count: item.attitudes_count,
-                        comments_count: item.comments_count,
-                        content: item.content,
-                        createdAt: item.createdAt,
-                        reposts_count: item.reposts_count,
-                        id: item._id,
-                        user: {
-                            followers_count: doc.followers_count,
-                            following_count: doc.following_count,
-                            name: doc.name,
-                            posts_count: doc.posts_count
-                        }
-                    }
+            Post.find({user: doc._id})
+                .select('attitudes_count comments_count content createdAt reposts_count user')
+                .sort({_id: -1})
+                .populate('user', ['name'])
+                .then((cardList) => {
+                    res.json({
+                        cardList,
+                        code: 200
+                    });
                 });
-                res.json({
-                    cardList,
-                    code: 200
-                });
-            });
         } else {
             res.json({
                 message: errCode[5002],
@@ -160,23 +159,146 @@ router.get('/getList', (req, res) => {
 });
 
 router.get('/getUserInfo', (req, res) => {
-    User.findOne({token: req.headers['f-token']}).then((doc) => {
-        if (doc) {
+    User.findOne({token: req.headers['f-token']}, 'followers_count following_count name posts_count')
+        .then((doc) => {
+            if (doc) {
+                res.json({
+                    userInfo: doc,
+                    code: 200
+                });
+            } else {
+                res.json({
+                    code: 5002,
+                    message: errCode[5002]
+                })
+            }
+        });
+});
+
+router.get('/getPostItem', (req, res) => {
+    Post.findOne({_id: req.query.pId})
+        .select('attitudes_count comments_count content createdAt reposts_count user')
+        .populate('user', ['name']).then((detail) => {
+        if (detail) {
             res.json({
-                userInfo: {
-                    followers_count: doc.followers_count,
-                    following_count: doc.following_count,
-                    name: doc.name,
-                    posts_count: doc.posts_count
-                },
-                code: 200
+                code: 200,
+                detail
             });
         } else {
             res.json({
-                code: 5002,
-                message: errCode[5002]
-            })
+                code: 5005,
+                message: errCode[5005]
+            });
         }
+    });
+});
+
+router.post('/action', (req, res, next) => {
+    // User.findOne({token: req.headers['f-token']}).then((doc) => {
+    //     // 判断是否已经点过赞
+    //     if (req.body.action === 'attitude') {
+    //         Action.findOne({post: req.body.pId, user: doc._id}).then((data) => {
+    //             if (data) {
+    //                 // 应该是取消赞
+    //                 data.remove();
+    //                 res.json({
+    //                     code: 5007,
+    //                     message: errCode[5007]
+    //                 });
+    //                 next();
+    //             }
+    //         });
+    //     }
+    //     const action = new Action({
+    //         post: new Post({
+    //             _id: req.body.pId
+    //         }),
+    //         user: new User({
+    //             _id: doc._id
+    //         }),
+    //         content: req.body.content,
+    //         action: req.body.action
+    //     });
+    //     action.save().then(() => {
+    //         switch (req.body.action) {
+    //             case 'attitude': {
+    //                 Post.update({_id: req.body.pId}, {$inc: {attitudes_count: 1}}).then(()=>{});
+    //                 break;
+    //             }
+    //             case 'repost': {
+    //                 Post.update({_id: req.body.pId}, {$inc: {reposts_count: 1}}).then(()=>{});
+    //                 break;
+    //             }
+    //             case 'comment': {
+    //                 Post.update({_id: req.body.pId}, {$inc: {comments_count: 1}}).then(()=>{});
+    //                 break;
+    //             }
+    //             default:
+    //                 break;
+    //         }
+    //         res.json({
+    //             code: 200,
+    //             message: '操作成功'
+    //         });
+    //     }).catch(() => {
+    //         res.json({
+    //             code: 5001,
+    //             message: errCode[5001]
+    //         });
+    //     });
+    // });
+    const action = new Action({
+        post: new Post({
+            _id: req.body.pId
+        }),
+        user: new User({
+            _id: doc._id
+        }),
+        content: req.body.content,
+        action: req.body.action
+    });
+});
+
+router.post('/actionAttitude', (req, res) => {
+    const result = {
+        attitudes_count: 1
+    };
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        result.user = doc;
+        return Action.findOne({post: req.body.pId, user: doc._id});
+    }).then((doc) => {
+        if (doc) {
+            // 取消赞
+            res.json({
+                code: 5007,
+                message: errCode[5007]
+            });
+            result.attitudes_count = -1;
+            return doc.remove();
+        } else {
+            const action = new Action({
+                post: new Post({
+                    _id: req.body.pId
+                }),
+                user: new User({
+                    _id: result.user._id
+                }),
+                action: 'attitude'
+            });
+            return action.save();
+        }
+    }).then(() => {
+        return Post.update({_id: req.body.pId}, {$inc: {attitudes_count: result.attitudes_count}});
+    }).then(() => {
+        res.json({
+            code: 200,
+            message: '操作成功'
+        });
+    }).catch(() => {
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        });
     });
 });
 

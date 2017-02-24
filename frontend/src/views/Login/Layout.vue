@@ -1,13 +1,13 @@
 <template>
   <div class="container">
   	<header>
-      <span class="header-left iconfont icon-houtui1"></span>
-      <span class="clickBoard clickBoard-left" @click="back"></span>
+      <span class="header-left iconfont icon-houtui"/>
+      <span class="clickBoard clickBoard-left" @click="back" />
   		<div class="header-title">{{title}}</div>
   	</header>
     <transition name="rotate-left-right">
       <keep-alive>
-        <component :is="currentView" @checkout="checkout"></component>
+        <component :is="currentView" @checkout="checkout" />
       </keep-alive>
     </transition>
   </div>

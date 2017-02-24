@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
 import index from './routes/index';
-import admin from './routes/admin';
+// import admin from './routes/admin';
 // import weibo from './routes/weibo';
 
 const app = express();
@@ -22,7 +22,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, '连接错误:'));
 
 app.use('/', index);
-app.use('/admin', admin);
+// app.use('/admin', admin);
 // app.use('/weibo', weibo);
 
 

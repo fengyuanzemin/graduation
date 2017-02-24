@@ -59,11 +59,34 @@ export function getUserInfo(token) {
   })
 }
 
-// // 用户退出登录
-// export function logout() {
-//   return axios.get('/logout', {
-//     headers: {
-//       'f-token': token
-//     }
-//   })
-// }
+// 拉取微博正文
+export function getPostItem(pId) {
+  return axios.get('/getPostItem', {
+    params: {
+      pId
+    }
+  })
+}
+
+// 转发，评论
+export function action(pId, action, content, token) {
+  return axios.post('/action', {
+    pId, content, action
+  }, {
+    headers: {
+      'f-token': token
+    }
+  });
+}
+
+// 点赞
+export function actionAttitude(pId, token) {
+  return axios.post('/actionAttitude',{
+    pId
+  },{
+    headers:{
+      'f-token': token
+    }
+  })
+}
+

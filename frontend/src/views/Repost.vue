@@ -12,7 +12,7 @@
 </template>
 <script>
 import {getCookie} from 'src/utils/';
-import {action} from 'src/api/';
+import {repost} from 'src/api/';
 
 export default {
   data() {
@@ -29,7 +29,7 @@ export default {
         return;
       }
       const token = getCookie('f-token');
-      action(this.text, token).then((res) => {
+      repost(this.$route.params.postId, this.text, token).then((res) => {
         console.log(res);
         switch (res.data.code) {
           case 200:

@@ -68,10 +68,10 @@ export function getPostItem(pId) {
   })
 }
 
-// 转发，评论
-export function action(pId, action, content, token) {
-  return axios.post('/action', {
-    pId, content, action
+// 转发
+export function repost(pId, content, token) {
+  return axios.post('/repost', {
+    pId, content
   }, {
     headers: {
       'f-token': token
@@ -79,12 +79,46 @@ export function action(pId, action, content, token) {
   });
 }
 
+// 评论
+export function comment(pId, content, token) {
+  return axios.post('/comment', {
+    pId, content
+  }, {
+    headers: {
+      'f-token': token
+    }
+  });
+}
 // 点赞
-export function actionAttitude(pId, token) {
-  return axios.post('/actionAttitude',{
+export function attitude(pId, token) {
+  return axios.post('/attitude', {
     pId
-  },{
-    headers:{
+  }, {
+    headers: {
+      'f-token': token
+    }
+  })
+}
+
+// 拉取转发、评论、点赞
+export function getActionInfo(pId, action, token) {
+  return axios.get('/getActionInfo', {
+    params: {
+      pId, action
+    },
+    headers: {
+      'f-token': token
+    }
+  });
+}
+
+// 检查是否点过赞
+export function checkAttitude(pId, token) {
+  return axios.get('/checkAttitude', {
+    params: {
+      pId
+    },
+    headers: {
       'f-token': token
     }
   })

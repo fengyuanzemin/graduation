@@ -12,7 +12,7 @@
 </template>
 <script>
 import {getCookie} from 'src/utils/';
-import {action} from 'src/api/';
+import {comment} from 'src/api/';
 
 export default {
   data() {
@@ -29,12 +29,12 @@ export default {
         return;
       }
       const token = getCookie('f-token');
-      action(this.text, token).then((res) => {
+      comment(this.$route.params.postId, this.text, token).then((res) => {
         console.log(res);
         switch (res.data.code) {
           case 200:
           // 发送成功
-            this.$router.push('/');
+            this.$router.push({name: 'status', params: { postId: this.$route.params.postId }});
           break;
           case 5002:
           // token过期

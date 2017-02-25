@@ -23,14 +23,9 @@
 </template>
 <script>
 import {dateFormat, getCookie} from 'src/utils';
-import {actionAttitude} from 'src/api';
+import {attitude} from 'src/api';
 export default {
   props: ['item'],
-  data() {
-    return {
-
-    };
-  },
   methods: {
     detail(data) {
       if(/^\/status/.test(this.$route.path)) {
@@ -39,7 +34,7 @@ export default {
       this.$router.push({name: 'status', params: { postId: data._id }});
     },
     repost(data) {
-      this.$router.push({name: 'repost', params:{ postId: data._id }});
+      this.$router.push({name: 'repost', params: { postId: data._id }});
     },
     comment(data) {
       if (data.comments_count) {
@@ -49,11 +44,10 @@ export default {
       }
     },
     attitude(data) {
-      actionAttitude(data._id, this.token).then((res) => {
-        console.log(res)
-        if(res.data.code === 200) {
+      attitude(data._id, this.token).then((res) => {
+        if (res.data.code === 200) {
           data.attitudes_count += 1;
-        } else if(res.data.code === 5007){
+        } else if (res.data.code === 5007) {
           data.attitudes_count -= 1;
         }
       }).catch((err) => {

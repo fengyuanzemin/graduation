@@ -71,7 +71,7 @@ export default new Router({
     {
       path: '/repost/:postId',
       name: 'repost',
-      component: resolve => require(['../views/Repost.vue'], resolve),
+      component: resolve => require(['../views/Repost'], resolve),
       beforeEnter: (to, from, next) => {
         const token = getCookie('f-token');
         if (!token) {
@@ -96,7 +96,7 @@ export default new Router({
     {
       path: '/comment/:postId',
       name: 'comment',
-      component: resolve => require(['../views/Repost.vue'], resolve),
+      component: resolve => require(['../views/Comment'], resolve),
       beforeEnter: (to, from, next) => {
         const token = getCookie('f-token');
         if (!token) {

@@ -193,86 +193,71 @@ router.get('/getPostItem', (req, res) => {
     });
 });
 
-router.post('/action', (req, res, next) => {
-    // User.findOne({token: req.headers['f-token']}).then((doc) => {
-    //     // 判断是否已经点过赞
-    //     if (req.body.action === 'attitude') {
-    //         Action.findOne({post: req.body.pId, user: doc._id}).then((data) => {
-    //             if (data) {
-    //                 // 应该是取消赞
-    //                 data.remove();
-    //                 res.json({
-    //                     code: 5007,
-    //                     message: errCode[5007]
-    //                 });
-    //                 next();
-    //             }
-    //         });
-    //     }
-    //     const action = new Action({
-    //         post: new Post({
-    //             _id: req.body.pId
-    //         }),
-    //         user: new User({
-    //             _id: doc._id
-    //         }),
-    //         content: req.body.content,
-    //         action: req.body.action
-    //     });
-    //     action.save().then(() => {
-    //         switch (req.body.action) {
-    //             case 'attitude': {
-    //                 Post.update({_id: req.body.pId}, {$inc: {attitudes_count: 1}}).then(()=>{});
-    //                 break;
-    //             }
-    //             case 'repost': {
-    //                 Post.update({_id: req.body.pId}, {$inc: {reposts_count: 1}}).then(()=>{});
-    //                 break;
-    //             }
-    //             case 'comment': {
-    //                 Post.update({_id: req.body.pId}, {$inc: {comments_count: 1}}).then(()=>{});
-    //                 break;
-    //             }
-    //             default:
-    //                 break;
-    //         }
-    //         res.json({
-    //             code: 200,
-    //             message: '操作成功'
-    //         });
-    //     }).catch(() => {
-    //         res.json({
-    //             code: 5001,
-    //             message: errCode[5001]
-    //         });
-    //     });
-    // });
-    const action = new Action({
-        post: new Post({
-            _id: req.body.pId
-        }),
-        user: new User({
-            _id: doc._id
-        }),
-        content: req.body.content,
-        action: req.body.action
+router.post('/repost', (req, res) => {
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        const action = new Action({
+            post: new Post({
+                _id: req.body.pId
+            }),
+            user: new User({
+                _id: doc._id
+            }),
+            content: req.body.content,
+            action: 'repost'
+        });
+        return action.save();
+    }).then(() => {
+        return Post.update({_id: req.body.pId}, {$inc: {reposts_count: 1}});
+    }).then(() => {
+        res.json({
+            code: 200,
+            message: '操作成功'
+        });
+    }).catch(() => {
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        });
     });
 });
 
-router.post('/actionAttitude', (req, res) => {
+router.post('/comment', (req, res) => {
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        const action = new Action({
+            post: new Post({
+                _id: req.body.pId
+            }),
+            user: new User({
+                _id: doc._id
+            }),
+            content: req.body.content,
+            action: 'comment'
+        });
+        return action.save();
+    }).then(() => {
+        return Post.update({_id: req.body.pId}, {$inc: {comments_count: 1}});
+    }).then(() => {
+        res.json({
+            code: 200,
+            message: '操作成功'
+        });
+    }).catch(() => {
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        });
+    });
+});
+
+router.post('/attitude', (req, res) => {
     const result = {
         attitudes_count: 1
     };
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         result.user = doc;
-        return Action.findOne({post: req.body.pId, user: doc._id});
+        return Action.findOne({post: req.body.pId, user: doc._id, action: 'attitude'});
     }).then((doc) => {
         if (doc) {
-            // 取消赞
-            res.json({
-                code: 5007,
-                message: errCode[5007]
-            });
             result.attitudes_count = -1;
             return doc.remove();
         } else {
@@ -290,11 +275,20 @@ router.post('/actionAttitude', (req, res) => {
     }).then(() => {
         return Post.update({_id: req.body.pId}, {$inc: {attitudes_count: result.attitudes_count}});
     }).then(() => {
-        res.json({
-            code: 200,
-            message: '操作成功'
-        });
-    }).catch(() => {
+        if (result.attitudes_count > 0) {
+            res.json({
+                code: 200,
+                message: '操作成功'
+            });
+        } else {
+            res.json({
+                code: 5007,
+                message: errCode[5007]
+            });
+        }
+
+    }).catch((err) => {
+        console.log(err);
         res.json({
             code: 5001,
             message: errCode[5001]
@@ -302,4 +296,37 @@ router.post('/actionAttitude', (req, res) => {
     });
 });
 
+router.get('/getActionInfo', (req, res) => {
+    Action.find({post: req.query.pId, action: req.query.action})
+        .populate('user', ['name']).then((docs) => {
+        res.json({
+            items: docs,
+            code: 200
+        })
+    }).catch(() => {
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        });
+    })
+});
+
+router.get('/checkAttitude', (req, res) => {
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        if (doc) {
+            return Action.find({post: req.query.pId, user: doc._id, action: 'attitude'});
+        }
+    }).then((docs) => {
+        const check = docs.length > 0;
+        res.json({
+            code: 200,
+            check
+        })
+    }).catch(() => {
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        });
+    })
+});
 export default router;

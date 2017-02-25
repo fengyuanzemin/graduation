@@ -28,6 +28,10 @@ const Schema = mongoose.Schema({
     comments_count: {
         type: Number,
         default: 0
+    },
+    retweeted_post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
     }
 });
 

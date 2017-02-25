@@ -124,6 +124,11 @@ export default new Router({
       component: resolve => require(['../views/Detail'], resolve)
     },
     {
+      path: '/user/:userId',
+      name: 'user',
+      component: resolve => require(['../views/User'], resolve)
+    },
+    {
       path: '/login',
       component: resolve => require(['../views/Login/Layout'], resolve)
     },

@@ -1,7 +1,7 @@
 <template>
   <div class="card" v-if="item" @click.stop.prevent="detail(item)">
     <div class="card-header">
-      <span class="card-name">{{item.user.name}}</span>
+      <span class="card-name" @click.stop.prevent="toUser(item)">{{item.user.name}}</span>
       <span class="card-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
     </div>
     <div class="card-content">{{item.content}}</div>
@@ -53,6 +53,12 @@ export default {
       }).catch((err) => {
         console.log(res)
       });
+    },
+    toUser(data) {
+      if(/^\/user/.test(this.$route.path)) {
+        return;
+      }
+      this.$router.push({name: 'user', params: {userId: data.user._id}});
     }
   },
   computed: {

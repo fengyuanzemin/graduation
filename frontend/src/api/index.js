@@ -41,6 +41,15 @@ export function getList(token, page) {
   });
 }
 
+// 拉取某一用户微博
+export function getUserList(uId, page) {
+  return axios.get('/getUserList', {
+    params: {
+      uId, page
+    }
+  })
+}
+
 // 检查Token
 export function checkToken(token) {
   return axios.get('/checkToken', {

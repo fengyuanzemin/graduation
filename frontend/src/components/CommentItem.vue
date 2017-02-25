@@ -3,7 +3,7 @@
     <div class="comment-container" v-for="item in items">
       <div class="comment-header">
         <span class="comment-name">{{item.user.name}}</span><!--
-        --><span class="comment-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
+        --><span class="comment-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}} 评论</span>
       </div>
       <div class="comment-content">{{item.content}}</div>
     </div>

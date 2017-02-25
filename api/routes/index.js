@@ -140,9 +140,17 @@ router.get('/getList', (req, res) => {
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
             Post.find({user: doc._id})
-                .select('attitudes_count comments_count content createdAt reposts_count user')
+                .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
                 .sort({_id: -1})
                 .populate('user', ['name'])
+                .populate('retweeted_post')
+                .populate({
+                    path: 'retweeted_post',
+                    populate: {
+                        path: 'user',
+                        select: 'name'
+                    }
+                })
                 .then((cardList) => {
                     res.json({
                         cardList,
@@ -156,6 +164,34 @@ router.get('/getList', (req, res) => {
             })
         }
     });
+});
+
+router.get('/getUserList', (req, res) => {
+    Post.find({user: req.query.uId})
+        .sort({_id: -1})
+        .populate('user', ['name'])
+        .populate('retweeted_post')
+        .populate({
+            path: 'retweeted_post',
+            populate: {
+                path: 'user',
+                select: 'name'
+            }
+        })
+        .then((docs) => {
+            if (docs) {
+                res.json({
+                    code: 200,
+                    items: docs
+                })
+            }
+        }).catch((err) => {
+        console.log(err);
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        })
+    })
 });
 
 router.get('/getUserInfo', (req, res) => {
@@ -194,7 +230,20 @@ router.get('/getPostItem', (req, res) => {
 });
 
 router.post('/repost', (req, res) => {
-    User.findOne({token: req.headers['f-token']}).then((doc) => {
+    const result = {};
+    Post.findOne({_id: req.body.pId}).populate('user', ['name']).then((doc) => {
+        if (doc) {
+            result.postContent = doc.content;
+            result.userName = doc.user.name;
+        }
+        // 不是原文章
+        if (doc && doc.retweeted_post) {
+            result.originalPostId = doc.retweeted_post;
+        } else {
+            result.originalPostId = req.body.pId;
+        }
+        return User.findOne({token: req.headers['f-token']});
+    }).then((doc) => {
         const action = new Action({
             post: new Post({
                 _id: req.body.pId
@@ -202,18 +251,33 @@ router.post('/repost', (req, res) => {
             user: new User({
                 _id: doc._id
             }),
-            content: req.body.content,
+            content: `${req.body.content} // @${result.userName}：${result.postContent}`,
             action: 'repost'
         });
+        result.user_id = doc._id;
         return action.save();
     }).then(() => {
         return Post.update({_id: req.body.pId}, {$inc: {reposts_count: 1}});
+    }).then(() => {
+        return User.update({token: req.headers['f-token']}, {$inc: {posts_count: 1}});
+    }).then(() => {
+        const postInfo = new Post({
+            user: new User({
+                _id: result.user_id
+            }),
+            content: `${req.body.content} //@${result.userName}：${result.postContent}`,
+            retweeted_post: new Post({
+                _id: result.originalPostId
+            })
+        });
+        return postInfo.save();
     }).then(() => {
         res.json({
             code: 200,
             message: '操作成功'
         });
-    }).catch(() => {
+    }).catch((err) => {
+        console.log(err)
         res.json({
             code: 5001,
             message: errCode[5001]

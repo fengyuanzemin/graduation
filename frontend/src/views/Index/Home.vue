@@ -1,6 +1,11 @@
 <template>
   <div class="home">
-    <div class="name">{{userInfo.name}}</div>
+    <div class="home-header">
+      <div class="name">{{userInfo.name}}</div>
+      <div class="brief">简介：{{userInfo.brief}}</div>
+    </div>
+    <span class="change-btn">更改</span>
+    <span class="clickBoard clickBoard-right" @click="update"/>
     <div class="info">
       <div class="info-container" @click="toList">
         <div class="info-number">{{userInfo.posts_count}}</div>
@@ -41,7 +46,8 @@ export default {
         name: '',
         posts_count: 0,
         following_count: 0,
-        followers_count: 0
+        followers_count: 0,
+        brief: ''
       }
     };
   },
@@ -59,45 +65,70 @@ export default {
     },
     toFollower() {
 
+    },
+    update() {
+      this.$router.push('/userUpdate');
     }
   }
 };
+
 </script>
 <style lang="scss" scoped>
-.home {
-	margin-top: 45px;
-  overflow: auto;
-  .name {
-    text-align: center;
-    font-size: 30px;
-    margin: 15px 0 40px 0;
-    color: #333;
-  }
-  .info {
-    display: flex;
-    .info-container {
-      text-align: center;
-      flex: 1;
-      font-size: 18px;
-      color: #666;
-      font-weight: 300;
-      .info-number {
-        margin: 5px;
+  .home {
+    overflow: auto;
+    .home-header {
+      margin-bottom: 40px;
+      padding: 15px 30px;
+      background-color: #f2f2f2;
+      position: relative;
+      .name {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 300;
+      }
+      .brief {
+        overflow: hidden;
+        font-size: 14px;
+        color: #666;
+        font-weight: 300;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
+    .change-btn {
+      color: #666;
+      font-weight: 300;
+      font-size: 15px;
+      position: absolute;
+      top: 13px;
+      right: 15px;
+    }
+    .info {
+      display: flex;
+      .info-container {
+        text-align: center;
+        flex: 1;
+        font-size: 18px;
+        color: #666;
+        font-weight: 300;
+        .info-number {
+          margin: 5px;
+        }
+      }
+    }
+    .logout {
+      background-color: #E8251E;
+      -webkit-appearance: none;
+      border: 1px solid #C7161C;
+      height: 35px;
+      width: 300px;
+      color: #fff;
+      display: block;
+      margin: 100px auto 0 auto;
+      font-size: 17px;
+      font-weight: 300;
+    }
   }
-  .logout {
-    background-color: #E8251E;
-    -webkit-appearance: none;
-    border: 1px solid #C7161C;
-    height: 35px;
-    width: 300px;
-    color: #fff;
-    display: block;
-    margin: 100px auto 0 auto;
-    font-size: 17px;
-    font-weight: 300;
-  }
-}
 </style>
 

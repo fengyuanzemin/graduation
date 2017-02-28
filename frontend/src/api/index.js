@@ -43,7 +43,7 @@ export function getList(token, page) {
 
 // 拉取某一用户微博
 export function getUserList(uId, page) {
-  return axios.get('/getUserList', {
+  return axios.get('/getUserPostList', {
     params: {
       uId, page
     }
@@ -133,3 +133,34 @@ export function checkAttitude(pId, token) {
   })
 }
 
+// 更改用户信息
+export function updateUserInfo(name, brief, token) {
+  return axios.post('/updateUserInfo', {
+    name, brief
+  }, {
+    headers: {
+      'f-token': token
+    }
+  });
+}
+
+// 搜索
+export function search(text) {
+  return axios.get('/search', {
+    params: {
+      text
+    }
+  })
+}
+
+// 关注和取消关注
+// follow 为true是关注，false是取关
+export function follow(uId, token, follow) {
+  return axios.post('/follow', {
+    uId, follow
+  }, {
+    headers: {
+      'f-token': token
+    }
+  });
+}

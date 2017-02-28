@@ -5,6 +5,14 @@
       <span class="card-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
     </div>
     <div class="card-content">{{item.content}}</div>
+    <!--若不是原创-->
+    <div class="card-retweeted" v-if="item.retweeted_post" @click.stop.prevent="detail(item.retweeted_post)">
+      <div class="card-retweeted-header">
+        <span class="card-retweeted-name" @click.stop.prevent="toUser(item.retweeted_post)">@{{item.retweeted_post.user.name}}</span>
+        <span class="card-retweeted-time">{{item.retweeted_post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
+      </div>
+      <div class="card-retweeted-content">{{item.retweeted_post.content}}</div>
+    </div>
     <div class="card-footer">
       <div class="card-footer-container" @click.stop.prevent="repost(item)">
         <span class="iconfont icon-zhuanfa1"/><span v-if="item.reposts_count" class="card-footer-text">{{item.reposts_count}}</span><span
@@ -99,6 +107,29 @@ export default {
       color: #333;
       margin: 0 15px 10px 15px;
       line-height: 24px;
+    }
+    .card-retweeted {
+      padding: 8px 15px;
+      background-color: #f2f2f2;
+      .card-retweeted-header {
+        margin-bottom: 10px;
+        .card-retweeted-name {
+          font-size: 17px;
+          color: #1478f0;
+          margin-right: 5px;
+        }
+        .card-retweeted-time {
+          font-size: 14px;
+          color: #666;
+          font-weight: 300;
+        }
+      }
+      .card-retweeted-content {
+        overflow: hidden;
+        font-size: 15px;
+        color: #333;
+        line-height: 24px;
+      }
     }
     .card-footer {
       border-top: 1px solid #dcdcdc;

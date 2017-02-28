@@ -42,7 +42,24 @@ export default new Router({
     },
     {
       path: '/un-login',
-      component: resolve => require(['../views/UnLogin/Layout'], resolve)
+      component: resolve => require(['../views/UnLogin/Layout'], resolve),
+      beforeEnter: (to, from, next) => {
+        const token = getCookie('f-token');
+        checkToken(token).then((res) => {
+          if (res.data.code === 200) {
+            const loggedIn = res.data.loggedIn;
+            if (loggedIn) {
+              next('/');
+            } else {
+              next();
+            }
+          } else {
+            next();
+          }
+        }).catch(() => {
+          next();
+        });
+      }
     },
     {
       path: '/post',
@@ -126,11 +143,52 @@ export default new Router({
     {
       path: '/user/:userId',
       name: 'user',
-      component: resolve => require(['../views/User'], resolve)
+      component: resolve => require(['../views/UserPostList'], resolve)
+    },
+    {
+      path: '/userUpdate',
+      component: resolve => require(['../views/UserUpdate'], resolve),
+      beforeEnter: (to, from, next) => {
+        const token = getCookie('f-token');
+        if (!token) {
+          next('/un-login');
+        }
+        checkToken(token).then((res) => {
+          if (res.data.code === 200) {
+            const loggedIn = res.data.loggedIn;
+            if (loggedIn) {
+              next();
+            } else {
+              next('/un-login');
+            }
+          } else {
+            next('/un-login');
+          }
+        }).catch(() => {
+          next('/un-login');
+        });
+      }
     },
     {
       path: '/login',
-      component: resolve => require(['../views/Login/Layout'], resolve)
+      component: resolve => require(['../views/Login/Layout'], resolve),
+      beforeEnter: (to, from, next) => {
+        const token = getCookie('f-token');
+        checkToken(token).then((res) => {
+          if (res.data.code === 200) {
+            const loggedIn = res.data.loggedIn;
+            if (loggedIn) {
+              next('/');
+            } else {
+              next();
+            }
+          } else {
+            next();
+          }
+        }).catch(() => {
+          next();
+        });
+      }
     },
 
     {path: '*', component: resolve => require(['../views/404'], resolve)}

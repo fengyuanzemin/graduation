@@ -69,13 +69,16 @@
 </script>
 <style lang="scss" scoped>
   .container {
+    margin-top: 45px;
+    padding-bottom: 45px;
+    overflow: auto;
     footer {
       display: flex;
       text-align: center;
       position: fixed;
       bottom: 0;
       width: 100%;
-      background-color: rgba(0,0,0,.04);
+      background-color: #f0f0f0;
       .footer-item {
         flex: 1;
         display: flex;

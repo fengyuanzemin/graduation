@@ -2,7 +2,8 @@
   <div class="home">
     <div class="home-header">
       <div class="name">{{userInfo.name}}</div>
-      <div class="brief">简介：{{userInfo.brief}}</div>
+      <div class="brief" v-if="userInfo.brief">简介：{{userInfo.brief}}</div>
+      <div class="brief" v-else>暂无简介</div>
     </div>
     <span class="change-btn">更改</span>
     <span class="clickBoard clickBoard-right" @click="update"/>
@@ -103,6 +104,7 @@ export default {
       position: absolute;
       top: 13px;
       right: 15px;
+      z-index: 11;
     }
     .info {
       display: flex;

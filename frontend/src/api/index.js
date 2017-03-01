@@ -29,6 +29,15 @@ export function post(text, token) {
   })
 }
 
+// 拉取热门微博
+export function getHotList(page) {
+  return axios.get('/getHotList', {
+    params: {
+      page
+    }
+  })
+}
+
 // 拉取用户微博
 export function getList(token, page) {
   return axios.get('/getList', {
@@ -145,10 +154,13 @@ export function updateUserInfo(name, brief, token) {
 }
 
 // 搜索
-export function search(text) {
+export function search(text, token) {
   return axios.get('/search', {
     params: {
       text
+    },
+    headers: {
+      'f-token': token
     }
   })
 }
@@ -163,4 +175,13 @@ export function follow(uId, token, follow) {
       'f-token': token
     }
   });
+}
+
+// 关注列表和粉丝列表
+export function getFollowList(token) {
+  return axios.get('/getFollowList', {
+    headers: {
+      'f-token': token
+    }
+  })
 }

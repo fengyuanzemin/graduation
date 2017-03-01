@@ -1,11 +1,13 @@
 import express from 'express';
 const router = express.Router();
 import bcrypt from 'bcrypt';
+import async from 'async';
 import {saltRounds} from '../config/salt';
 
 import User from '../models/user';
 import Post from '../models/post';
 import Action from '../models/action';
+import RelationShip from '../models/relationship';
 
 import {errCode} from '../utils/codeTransfer';
 import {randomKey} from '../utils/index';
@@ -127,9 +129,34 @@ router.get('/checkToken', (req, res) => {
     })
 });
 
+// 热门微博
+router.get('/getHotList', (req, res) => {
+    Post.find()
+        .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
+        .sort({_id: -1})
+        .populate('user', ['name'])
+        .populate('retweeted_post')
+        .populate({
+            path: 'retweeted_post',
+            populate: {
+                path: 'user',
+                select: 'name'
+            }
+        }).then((cardList) => {
+        res.json({
+            cardList,
+            code: 200
+        }).catch(()=>{
+            res.json({
+                message: errCode[5002],
+                code: 5002
+            })
+        });
+    });
+});
+
 // 已登录首页数据
 router.get('/getList', (req, res) => {
-    console.log(req.ip)
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
             Post.find({user: doc._id})
@@ -159,7 +186,7 @@ router.get('/getList', (req, res) => {
     });
 });
 
-// 用户列表
+// 用户的个人微博列表
 router.get('/getUserPostList', (req, res) => {
     Post.find({user: req.query.uId})
         .sort({_id: -1})
@@ -453,7 +480,7 @@ router.get('/checkAttitude', (req, res) => {
 
 // 搜索
 router.get('/search', (req, res) => {
-    const result = {};
+    let result = {};
     Post.find({content: {'$regex': req.query.text}})
         .sort({_id: -1})
         .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
@@ -466,18 +493,134 @@ router.get('/search', (req, res) => {
                 select: 'name'
             }
         })
+
         .then((doc) => {
             result.post = doc;
             return User.find({name: {'$regex': req.query.text}})
-                .select('name brief')
+                .limit(3)
+                .select('name brief');
         }).then((doc) => {
-        res.json({
-            user: doc,
-            post: result.post,
-            code: 200
-        });
+        result.user = doc;
+        return User.findOne({token: req.headers['f-token']});
+    }).then((doc) => {
+        if (doc) {
+            async.map(result.user, (item, callback) => {
+                // 简单的深拷贝，不支持数据格式里面有函数
+                const user = JSON.parse(JSON.stringify(item));
+                RelationShip.findOne({
+                    following: item._id,
+                    follower: doc._id
+                }, (err, doc) => {
+                    if (doc) {
+                        user.follow = !!doc;
+                        callback(null, user);
+                    }
+                });
+            }, (err, user) => {
+                res.json({
+                    user,
+                    post: result.post,
+                    code: 200
+                });
+            });
+
+        }
     }).catch((err) => {
         console.log(err);
     })
+});
+
+// 关注或者取关
+router.post('/follow', (req, res) => {
+    if (req.body.follow) {
+        // 关注
+        const result = {};
+        User.findOne({token: req.headers['f-token']}).then((doc) => {
+            if (String(doc._id) === String(req.body.uId)) {
+                throw new Error('自己不能关注自己');
+            }
+            result.user = doc;
+            // 先看看是否关注过
+            return RelationShip.findOne({
+                following: req.body.uId,
+                follower: doc._id
+            });
+        }).then((doc) => {
+            if (doc) {
+                throw new Error('已经关注过了');
+            } else {
+                // 新增一条新关注
+                const re = new RelationShip({
+                    following: req.body.uId,
+                    follower: result.user._id
+                });
+                return re.save();
+            }
+        }).then(() => {
+            // 关注加一
+            return User.update({token: req.headers['f-token']}, {$inc: {following_count: 1}});
+        }).then(() => {
+            // 粉丝加一
+            return User.update({_id: req.body.uId}, {$inc: {followers_count: 1}});
+        }).then(() => {
+            res.json({
+                code: 200,
+                message: '关注成功'
+            })
+        }).catch((err) => {
+            console.log(err);
+            let code;
+            if (err.message === '自己不能关注自己') {
+                code = 5008;
+            } else if (err.message === '已经关注过了') {
+                code = 5010;
+            } else {
+                code = 5001;
+            }
+            res.json({
+                code,
+                message: errCode[code]
+            });
+        })
+    } else {
+        // 取关
+        User.findOne({token: req.headers['f-token']}).then((doc) => {
+            // 先找是否有关注
+            return RelationShip.findOne({
+                following: req.body.uId,
+                follower: doc._id
+            });
+        }).then((doc) => {
+            if (doc) {
+                return doc.remove();
+            } else {
+                throw new Error('没有关注过');
+            }
+        }).then(() => {
+            // 粉丝减一
+            return User.update({_id: req.body.uId}, {$inc: {followers_count: -1}});
+        }).then(() => {
+            // 关注减一
+            return User.update({token: req.headers['f-token']}, {$inc: {following_count: -1}});
+        }).then(() => {
+            res.json({
+                code: 200,
+                message: '关注成功'
+            })
+        }).catch((err) => {
+            console.log(err);
+            let code;
+            if (err.message === '没有关注过') {
+                code = 5009;
+            } else {
+                code = 5001;
+            }
+            res.json({
+                code,
+                message: errCode[code]
+            });
+        })
+    }
+
 });
 export default router;

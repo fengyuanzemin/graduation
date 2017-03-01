@@ -9,8 +9,9 @@
       <div class="search-title">相关用户</div>
       <div class="search-user-container" v-for="user in users" @click.prevent.stop="toUser(user)">
         <span class="search-user-name">{{user.name}}</span><!--
-      --><span class="search-user-brief">{{user.brief}}</span><!--
-      --><span class="iconfont icon-guanzhu search-user-follow" @click.prevent.stop="follow(user)"/>
+      --><span class="search-user-brief" v-if="user.brief">{{user.brief}}</span><!--
+      --><span class="search-user-brief" v-else>暂无简介</span><!--
+      --><span class="iconfont search-user-follow" :class="{'icon-guanzhu': !user.follow, 'icon-icon-yiguanzhu': user.follow}" @click.prevent.stop="follow(user)"/>
       </div>
     </div>
     <div class="search-title" v-if="items.length > 0">相关搜索</div>
@@ -18,8 +19,10 @@
   </div>
 </template>
 <script>
-import {search} from 'src/api';
+import {search, follow} from 'src/api';
 import PostItem from 'src/components/PostItem';
+import {getCookie} from 'src/utils';
+
 export default {
   data() {
     return {
@@ -28,14 +31,18 @@ export default {
       users: []
     };
   },
+  computed: {
+    token() {
+      return getCookie('f-token');
+    }
+  },
   methods: {
     search() {
-      if(!this.text)
-      {
+      if(!this.text) {
         this.items.length = [];
         return;
       }
-      search(this.text).then((res) => {
+      search(this.text, this.token).then((res) => {
         console.log(res)
         if(res.data.code === 200) {
           this.items = res.data.post;
@@ -50,6 +57,12 @@ export default {
     },
     follow(data) {
       console.log(data)
+      follow(data._id, this.token, true).then((res) => {
+        console.log(res);
+
+      }).catch((err) => {
+        console.log(err);
+      });
     }
   },
   components: {

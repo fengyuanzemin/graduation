@@ -1,15 +1,17 @@
 /**
  * Created by fengyuanzemin on 17/2/15.
  */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
     following: {
-        type: ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     follower: {
-        type: ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 
-module.exports = mongoose.model('Relationship', Schema);
+export default mongoose.model('Relationship', Schema);

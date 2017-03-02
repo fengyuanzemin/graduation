@@ -632,17 +632,15 @@ router.post('/follow', (req, res) => {
 router.get('/getFollowList', (req, res) => {
     // 关注列表
     if (Number(req.query.follow)) {
-        User.findOne({token: req.headers['f-token']}).then((doc) => {
+        User.findOne({_id: req.query.uId}).then((doc) => {
             if (doc) {
                 return RelationShip.find({follower: doc._id})
                     .populate('following', ['name', 'brief']);
             }
         }).then((docs) => {
             let followList = JSON.parse(JSON.stringify(docs));
-            followList =  followList.map((item)=>{
-                console.log(item)
+            followList = followList.map((item) => {
                 item.following.follow = true;
-                console.log(item)
                 return item;
             });
             res.json({
@@ -658,7 +656,7 @@ router.get('/getFollowList', (req, res) => {
         });
     } else {
         // 粉丝列表
-        User.findOne({token: req.headers['f-token']}).then((doc) => {
+        User.findOne({_id: req.query.uId}).then((doc) => {
             if (doc) {
                 return RelationShip.find({following: doc._id})
                     .populate('follower', ['name', 'brief']);
@@ -676,6 +674,29 @@ router.get('/getFollowList', (req, res) => {
             })
         });
     }
+});
+
+router.get('/judgeUser', (req, res) => {
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        if (doc) {
+            const self = String(doc._id) === req.query.uId;
+            res.json({
+                code: 200,
+                self
+            });
+        } else {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
+        }
+    }).catch((err) => {
+        console.log(err);
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        })
+    });
 });
 
 export default router;

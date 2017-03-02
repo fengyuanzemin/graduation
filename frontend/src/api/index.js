@@ -179,10 +179,19 @@ export function follow(uId, token, follow) {
 
 // 关注列表和粉丝列表
 // follow为1是关注列表，为0是粉丝列表
-export function getFollowList(follow, token) {
+export function getFollowList(follow, uId) {
   return axios.get('/getFollowList', {
     params: {
-      follow
+      follow, uId
+    }
+  })
+}
+
+// 查看用户关注、粉丝的时候判断是不是在看本人的资料
+export function judgeUser(uId, token) {
+  return axios.get('/judgeUser',{
+    params: {
+      uId
     },
     headers: {
       'f-token': token

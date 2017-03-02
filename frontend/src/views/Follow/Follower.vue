@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <div class="follow-empty" v-if="items.length == 0">暂无粉丝</div>
     <div class="follow-container" v-for="item in items" @click="toUser(item.follower)">
       <span class="follow-name">{{item.follower.name}}</span><!--
       --><span class="follow-brief" v-if="item.follower.brief">{{item.follower.brief}}</span><!--
@@ -13,7 +14,7 @@ import {getFollowList} from 'src/api';
 import {getCookie} from 'src/utils';
 export default {
   created() {
-    getFollowList(0, this.token).then((res) => {
+    getFollowList(0, this.$route.params.userId).then((res) => {
       if(res.data.code === 200) {
         this.items = res.data.followList;
       }

@@ -146,8 +146,29 @@ export default new Router({
       component: resolve => require(['../views/UserPostList'], resolve)
     },
     {
-      path: '/follow',
-      component: resolve => require(['../views/Follow/Layout'], resolve)
+      path: '/follow/:userId',
+      name: 'follow',
+      component: resolve => require(['../views/Follow/Layout'], resolve),
+      beforeEnter: (to, from, next) => {
+        const token = getCookie('f-token');
+        if (!token) {
+          next('/un-login');
+        }
+        checkToken(token).then((res) => {
+          if (res.data.code === 200) {
+            const loggedIn = res.data.loggedIn;
+            if (loggedIn) {
+              next();
+            } else {
+              next('/un-login');
+            }
+          } else {
+            next('/un-login');
+          }
+        }).catch(() => {
+          next('/un-login');
+        });
+      }
     },
     {
       path: '/userUpdate',

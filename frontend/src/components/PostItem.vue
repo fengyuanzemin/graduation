@@ -39,12 +39,24 @@ export default {
       if(/^\/status/.test(this.$route.path)) {
         return;
       }
+      if(/^\/un-login/.test(this.$route.path)) {
+        this.$router.push('/login')
+        return;
+      }
       this.$router.push({name: 'status', params: { postId: data._id }});
     },
     repost(data) {
+      if(/^\/un-login/.test(this.$route.path)) {
+        this.$router.push('/login')
+        return;
+      }
       this.$router.push({name: 'repost', params: { postId: data._id }});
     },
     comment(data) {
+      if(/^\/un-login/.test(this.$route.path)) {
+        this.$router.push('/login')
+        return;
+      }
       if (data.comments_count) {
         this.$router.push({name: 'status', params: { postId: data._id }});
       } else {
@@ -52,6 +64,10 @@ export default {
       }
     },
     attitude(data) {
+      if(/^\/un-login/.test(this.$route.path)) {
+        this.$router.push('/login')
+        return;
+      }
       attitude(data._id, this.token).then((res) => {
         if (res.data.code === 200) {
           data.attitudes_count += 1;
@@ -64,6 +80,10 @@ export default {
     },
     toUser(data) {
       if(/^\/user/.test(this.$route.path)) {
+        return;
+      }
+      if(/^\/un-login/.test(this.$route.path)) {
+        this.$router.push('/login')
         return;
       }
       this.$router.push({name: 'user', params: {userId: data.user._id}});

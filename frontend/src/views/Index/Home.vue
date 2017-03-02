@@ -30,7 +30,6 @@ import {getCookie, clearCookie} from 'src/utils';
 export default {
   created() {
     getUserInfo(this.token).then((res) => {
-      console.log(res)
       this.userInfo = res.data.userInfo;
     }).catch((err) => {
       console.log(err)
@@ -62,10 +61,14 @@ export default {
       this.$router.push({name: 'user', params: {userId: this.userInfo._id}});
     },
     toFollowing() {
-      this.$router.push('/follow');
+      this.$router.push({name: 'follow', params: {userId: this.userInfo._id}});
     },
     toFollower() {
-      this.$router.push({path: '/follow', query: {component: 'f-follower'}})
+      this.$router.push({
+        name: 'follow',
+        params: {userId: this.userInfo._id},
+        query: {component: 'f-follower'}
+      })
     },
     update() {
       this.$router.push('/userUpdate');

@@ -100,14 +100,14 @@
   .container {
     padding-top: 45px;
     padding-bottom: 49px;
-    /*background-color: #f2f2f2;*/
     footer {
       display: flex;
       text-align: center;
       position: fixed;
       bottom: 0;
       width: 100%;
-      background-color: #f0f0f0;
+      background-color: #fff;
+      border-top: 1px solid #dcdcdc;
       .footer-item {
         flex: 1;
         display: flex;

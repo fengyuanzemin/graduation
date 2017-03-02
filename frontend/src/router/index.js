@@ -146,6 +146,10 @@ export default new Router({
       component: resolve => require(['../views/UserPostList'], resolve)
     },
     {
+      path: '/follow',
+      component: resolve => require(['../views/Follow/Layout'], resolve)
+    },
+    {
       path: '/userUpdate',
       component: resolve => require(['../views/UserUpdate'], resolve),
       beforeEnter: (to, from, next) => {

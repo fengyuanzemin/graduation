@@ -56,10 +56,11 @@ export default {
       this.$router.push({name: 'user', params: {userId: data._id}});
     },
     follow(data) {
-      console.log(data)
-      follow(data._id, this.token, true).then((res) => {
+      follow(data._id, this.token, !data.follow).then((res) => {
         console.log(res);
-
+        if(res.data.code === 200) {
+          data.follow = !data.follow;
+        }
       }).catch((err) => {
         console.log(err);
       });

@@ -5,6 +5,7 @@
       <span class="clickBoard clickBoard-left" @click="back"/>
       <div class="header-title">{{name}}</div>
     </header>
+
     <f-post-item v-for="item in items" :item="item"/>
   </div>
 </template>
@@ -14,10 +15,10 @@ import {getUserList} from 'src/api';
 
 export default {
   created() {
-    getUserList(this.$route.params.userId).then((res)=>{
+    getUserList(this.$route.params.userId).then((res) => {
       console.log(res)
       if(res.data.code === 200) {
-        this.name = res.data.items[0].user.name;
+        this.name = res.data.userInfo.name;
         this.items = res.data.items;
       }
     }).catch((err)=>{

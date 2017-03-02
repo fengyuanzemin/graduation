@@ -2,7 +2,7 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
 <svg xmlns="http://www.w3.org/2000/svg">
 <metadata>
-Created by FontForge 20120731 at Tue Feb 28 11:36:02 2017
+Created by FontForge 20120731 at Thu Mar  2 10:51:01 2017
  By admin
 </metadata>
 <defs>
@@ -19,7 +19,7 @@ Created by FontForge 20120731 at Tue Feb 28 11:36:02 2017
     bbox="0 -200 1024 895.815"
     underline-thickness="0"
     underline-position="0"
-    unicode-range="U+0078-E736"
+    unicode-range="U+0078-E763"
   />
 <missing-glyph 
  />
@@ -65,6 +65,8 @@ q0 -39 -35 -59zM691 371h-345v103q0 14 2 29.5t12.5 43t27.5 48t51 36.5t79.5 16t80 
 d="M739 472h-35v-35h35v35zM669 472h-35v-35h35v35zM634 129h35v35h-35v-35zM599 472h-35v-35h35v35zM718 406h-172v-211h172v211zM564 129h35v35h-35v-35zM424 129h35v35h-35v-35zM353 129h35v35h-35v-35zM318 164h-35v-35h35v35zM388 472h-35v-35h35v35zM318 472h-35v-35
 h35v35zM511 749q-91 0 -174 -35.5t-143 -95.5t-96 -143t-36 -174.5t36 -174.5t96 -143t143 -95.5t174 -35.5t174.5 35.5t143.5 95.5t95.5 143t35.5 174.5t-35.5 174.5t-95.5 143t-143.5 95.5t-174.5 35.5zM788 94h-554v413h554v-413zM529 164h-35v-35h35v35zM529 472h-35
 v-35h35v35zM304 195h172v211h-172v-211zM459 472h-35v-35h35v35zM704 129h35v35h-35v-35z" />
+    <glyph glyph-name="qianjin" unicode="&#xe763;" 
+d="M303.5 830q12.5 0 21.5 -8l416 -417q9 -9 9 -21t-9 -21l-416 -417q-9 -8 -21.5 -8t-21 8.5t-8.5 21t9 20.5l395 396l-395 396q-9 8 -9 20.5t8.5 21t21 8.5z" />
     <glyph glyph-name="homepage-red" unicode="&#xe660;" 
 d="M951 436l-122 96v107q0 13 -9.5 22.5t-23.5 9.5h-61q-13 0 -22.5 -9.5t-9.5 -22.5v-15l-151 116q-1 0 -2 1q-17 12 -38 12t-39 -13v0l-400 -304q-8 -6 -9.5 -16t4.5 -18t15.5 -9.5t17.5 4.5l399 304v0q6 4 12.5 4t11.5 -4v0v0l399 -304q8 -6 18 -4.5t15.5 9.5t4 18
 t-9.5 16v0zM821 386l-277 214v0q-14 10 -31.5 10t-32.5 -10v0l-277 -214q-9 -7 -9 -20v-270q0 -35 24 -59.5t59 -24.5h134v201q0 27 18.5 46t44.5 19h66q27 0 45.5 -19t18.5 -46v-201h144q34 0 58.5 24.5t24.5 59.5v270q0 13 -10 20v0zM821 386z" />

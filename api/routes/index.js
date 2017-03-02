@@ -146,7 +146,7 @@ router.get('/getHotList', (req, res) => {
         res.json({
             cardList,
             code: 200
-        }).catch(()=>{
+        }).catch(() => {
             res.json({
                 message: errCode[5002],
                 code: 5002
@@ -188,6 +188,7 @@ router.get('/getList', (req, res) => {
 
 // 用户的个人微博列表
 router.get('/getUserPostList', (req, res) => {
+    const result = {};
     Post.find({user: req.query.uId})
         .sort({_id: -1})
         .populate('user', ['name'])
@@ -200,20 +201,24 @@ router.get('/getUserPostList', (req, res) => {
             }
         })
         .then((docs) => {
-            if (docs) {
-                res.json({
-                    code: 200,
-                    items: docs
-                })
-            }
-        }).catch((err) => {
+            result.post = docs;
+            return User.findOne({_id: req.query.uId})
+                .select('followers_count following_count name posts_count brief');
+        }).then((doc) => {
+        res.json({
+            code: 200,
+            items: result.post,
+            userInfo: doc
+        })
+    }).catch((err) => {
         console.log(err);
         res.json({
             code: 5001,
             message: errCode[5001]
         })
     })
-});
+})
+;
 
 // 用户简介
 router.get('/getUserInfo', (req, res) => {
@@ -493,7 +498,6 @@ router.get('/search', (req, res) => {
                 select: 'name'
             }
         })
-
         .then((doc) => {
             result.post = doc;
             return User.find({name: {'$regex': req.query.text}})
@@ -511,10 +515,8 @@ router.get('/search', (req, res) => {
                     following: item._id,
                     follower: doc._id
                 }, (err, doc) => {
-                    if (doc) {
-                        user.follow = !!doc;
-                        callback(null, user);
-                    }
+                    user.follow = !!doc;
+                    callback(null, user);
                 });
             }, (err, user) => {
                 res.json({
@@ -523,10 +525,13 @@ router.get('/search', (req, res) => {
                     code: 200
                 });
             });
-
         }
     }).catch((err) => {
         console.log(err);
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        })
     })
 });
 
@@ -605,7 +610,7 @@ router.post('/follow', (req, res) => {
         }).then(() => {
             res.json({
                 code: 200,
-                message: '关注成功'
+                message: '取关成功'
             })
         }).catch((err) => {
             console.log(err);
@@ -621,6 +626,56 @@ router.post('/follow', (req, res) => {
             });
         })
     }
-
 });
+
+// 关注列表和粉丝列表
+router.get('/getFollowList', (req, res) => {
+    // 关注列表
+    if (Number(req.query.follow)) {
+        User.findOne({token: req.headers['f-token']}).then((doc) => {
+            if (doc) {
+                return RelationShip.find({follower: doc._id})
+                    .populate('following', ['name', 'brief']);
+            }
+        }).then((docs) => {
+            let followList = JSON.parse(JSON.stringify(docs));
+            followList =  followList.map((item)=>{
+                console.log(item)
+                item.following.follow = true;
+                console.log(item)
+                return item;
+            });
+            res.json({
+                code: 200,
+                followList
+            })
+        }).catch((err) => {
+            console.log(err);
+            res.json({
+                code: 5001,
+                message: errCode[5001]
+            })
+        });
+    } else {
+        // 粉丝列表
+        User.findOne({token: req.headers['f-token']}).then((doc) => {
+            if (doc) {
+                return RelationShip.find({following: doc._id})
+                    .populate('follower', ['name', 'brief']);
+            }
+        }).then((docs) => {
+            res.json({
+                code: 200,
+                followList: docs
+            })
+        }).catch((err) => {
+            console.log(err);
+            res.json({
+                code: 5001,
+                message: errCode[5001]
+            })
+        });
+    }
+});
+
 export default router;

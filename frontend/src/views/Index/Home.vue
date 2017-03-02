@@ -62,10 +62,10 @@ export default {
       this.$router.push({name: 'user', params: {userId: this.userInfo._id}});
     },
     toFollowing() {
-
+      this.$router.push('/follow');
     },
     toFollower() {
-
+      this.$router.push({path: '/follow', query: {component: 'f-follower'}})
     },
     update() {
       this.$router.push('/userUpdate');

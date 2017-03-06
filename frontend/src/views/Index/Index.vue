@@ -19,13 +19,9 @@ export default {
   },
   data() {
     return {
-      cardList: []
+      cardList: [],
+      token: getCookie('f-token')
     };
-  },
-  computed:{
-    token(){
-      return getCookie('f-token');
-    }
   },
   components: {
     'f-post-item': PostItem

@@ -2,7 +2,11 @@
  * Created by fengyuanzemin on 17/2/17.
  */
 import axios from 'axios';
-axios.defaults.baseURL = 'http://localhost:3000';
+if (process.env.NODE_ENV === 'production') {
+  axios.defaults.baseURL = 'http://192.168.1.100:3000';
+} else {
+  axios.defaults.baseURL = 'http://localhost:3000';
+}
 
 // 注册
 export function signUp(name, password) {
@@ -189,7 +193,7 @@ export function getFollowList(follow, uId) {
 
 // 查看用户关注、粉丝的时候判断是不是在看本人的资料
 export function judgeUser(uId, token) {
-  return axios.get('/judgeUser',{
+  return axios.get('/judgeUser', {
     params: {
       uId
     },
@@ -197,4 +201,15 @@ export function judgeUser(uId, token) {
       'f-token': token
     }
   })
+}
+
+// 记录查看微博的点击事件
+export function clickIn(pId, token) {
+  return axios.post('/clickIn', {
+    pId
+  }, {
+    headers: {
+      'f-token': token
+    }
+  }).then(res => res);
 }

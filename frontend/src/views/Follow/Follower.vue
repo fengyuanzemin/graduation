@@ -22,14 +22,10 @@ export default {
       console.log(err);
     });
   },
-  computed: {
-    token() {
-      return getCookie('f-token');
-    }
-  },
   data() {
     return {
-      items: []
+      items: [],
+      token: getCookie('f-token')
     };
   },
   methods: {

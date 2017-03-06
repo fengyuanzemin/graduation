@@ -4,10 +4,12 @@
   </div>
 </template>
 <script>
+import {getCookie} from 'src/utils';
+
 export default {
   data() {
     return {
-
+       token: getCookie('f-token')
     };
   }
 };

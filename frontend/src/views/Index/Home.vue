@@ -35,11 +35,6 @@ export default {
       console.log(err)
     })
   },
-  computed:{
-    token() {
-      return getCookie('f-token');
-    }
-  },
   data() {
     return {
       userInfo: {
@@ -48,7 +43,8 @@ export default {
         following_count: 0,
         followers_count: 0,
         brief: ''
-      }
+      },
+      token: getCookie('f-token')
     };
   },
   methods: {

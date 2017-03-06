@@ -5,7 +5,7 @@
       <span class="clickBoard clickBoard-left" @click="back"/>
       <div class="header-title">正文</div>
     </header>
-    <div class="card" v-if="item" @click.stop.prevent="detail(item)">
+    <div class="card" v-if="item">
       <div class="card-header">
         <span class="card-name" @click.stop.prevent="toUser(item)">{{item.user.name}}</span>
         <span class="card-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
@@ -72,7 +72,6 @@ export default {
     // 如果用户已登录，还要查看是否点过赞
     if (this.token) {
       checkAttitude(this.$route.params.postId, this.token).then((res) => {
-        console.log(res);
         if(res.data.code === 200) {
           this.attituded = res.data.check;
         }
@@ -86,7 +85,8 @@ export default {
       item: null,
       attituded: false,
       currentView: 'f-comment-item',
-      actionItem: []
+      actionItem: [],
+      token: getCookie('f-token')
     };
   },
   filters: {
@@ -107,6 +107,7 @@ export default {
     attitude() {
       if(!this.token) {
         this.$router.push('/login');
+        return;
       }
       attitude(this.$route.params.postId, this.token).then((res) => {
         if (res.data.code === 200) {
@@ -123,21 +124,16 @@ export default {
     toUser(data) {
       this.$router.push({name: 'user', params: {userId: data.user._id}});
     },
+    // 切换组件
     checkout(component) {
       this.currentView = `f-${component}-item`;
-      getActionInfo(this.$route.params.postId, component, this.token).then((res)=>{
-        console.log(res)
+      getActionInfo(this.$route.params.postId, component, this.token).then((res) => {
         if(res.data.code === 200) {
           this.actionItem = res.data.items;
         }
-      }).catch((err)=>{
+      }).catch((err) => {
         console.log(err)
       })
-    }
-  },
-  computed: {
-    token() {
-      return getCookie('f-token');
     }
   },
   components: {

@@ -17,7 +17,8 @@ import {post} from 'src/api/';
 export default {
   data() {
     return {
-      text: ''
+      text: '',
+      token: getCookie('f-token')
     };
   },
   methods: {
@@ -28,9 +29,7 @@ export default {
       if(!this.text) {
         return;
       }
-      const token = getCookie('f-token');
-      post(this.text, token).then((res) => {
-        console.log(res);
+      post(this.text, this.token).then((res) => {
         switch (res.data.code) {
           case 200:
           // 发送成功

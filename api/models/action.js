@@ -19,6 +19,7 @@ const Schema = mongoose.Schema({
         default: '',
         trim: true
     },
+    // 点赞attitude 转发repost 评论comment 查看click
     action: {
         type: String,
         require: ''

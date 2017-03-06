@@ -15,11 +15,17 @@ import {randomKey} from '../utils/index';
 // 空请求
 router.get('/', (req, res) => {
     res.json({
-        data: {
-            message: '首页'
-        },
+        message: '首页',
         code: 200
     });
+});
+
+// 请求/favicon的，给个空
+router.get('/favicon', (req, res) => {
+    res.json({
+        message: '没有这个东西，好烦呢你',
+        code: 200
+    })
 });
 
 // 登录
@@ -146,11 +152,11 @@ router.get('/getHotList', (req, res) => {
         res.json({
             cardList,
             code: 200
-        }).catch(() => {
-            res.json({
-                message: errCode[5002],
-                code: 5002
-            })
+        });
+    }).catch(() => {
+        res.json({
+            message: errCode[5002],
+            code: 5002
         });
     });
 });
@@ -676,6 +682,7 @@ router.get('/getFollowList', (req, res) => {
     }
 });
 
+// 判断用户是否在看自己的个人中心
 router.get('/judgeUser', (req, res) => {
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
@@ -695,6 +702,47 @@ router.get('/judgeUser', (req, res) => {
         res.json({
             code: 5001,
             message: errCode[5001]
+        })
+    });
+});
+
+// 记录用户查看微博的行为
+router.post('/clickIn', (req, res) => {
+    const result = {};
+    Post.findOne({_id: req.body.pId}).then((doc) => {
+        result.user = doc.user;
+        return User.findOne({token: req.headers['f-token']});
+    }).then((doc) => {
+        if (doc) {
+            // 如果查看的是自己的微博
+            if (String(doc._id) === String(result.user)) {
+                throw new Error('看自己的微博不记录');
+            } else {
+                return new Action({
+                    user: doc._id,
+                    post: req.body.pId,
+                    action: 'click'
+                }).save();
+            }
+        } else {
+            throw new Error('没有该用户');
+        }
+    }).then(() => {
+        res.json({
+            code: 200,
+            message: '成功记录'
+        })
+    }).catch((err) => {
+        console.log(err);
+        let code = 5001;
+        if (err.message === '没有该用户') {
+            code = 5002;
+        } else if(err.message === '看自己的微博不记录') {
+            code = 5011;
+        }
+        res.json({
+            code: code,
+            message: errCode[code]
         })
     });
 });

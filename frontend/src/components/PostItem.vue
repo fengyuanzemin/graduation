@@ -31,18 +31,21 @@
 </template>
 <script>
 import {dateFormat, getCookie} from 'src/utils';
-import {attitude} from 'src/api';
+import {attitude, clickIn} from 'src/api';
 export default {
   props: ['item'],
+  data() {
+    return {
+      token: getCookie('f-token')
+    }
+  },
   methods: {
     detail(data) {
-      if(/^\/status/.test(this.$route.path)) {
-        return;
-      }
       if(/^\/un-login/.test(this.$route.path)) {
         this.$router.push('/login')
         return;
       }
+      clickIn(data._id, this.token);
       this.$router.push({name: 'status', params: { postId: data._id }});
     },
     repost(data) {
@@ -87,11 +90,6 @@ export default {
         return;
       }
       this.$router.push({name: 'user', params: {userId: data.user._id}});
-    }
-  },
-  computed: {
-    token(){
-      return getCookie('f-token');
     }
   },
   filters: {

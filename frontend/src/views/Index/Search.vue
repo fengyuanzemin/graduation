@@ -28,13 +28,9 @@ export default {
     return {
       text: '',
       items: [],
-      users: []
+      users: [],
+      token: getCookie('f-token')
     };
-  },
-  computed: {
-    token() {
-      return getCookie('f-token');
-    }
   },
   methods: {
     search() {

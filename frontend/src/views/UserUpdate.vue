@@ -27,13 +27,9 @@ export default {
   data() {
     return {
       name: '',
-      text: ''
+      text: '',
+      token: getCookie('f-token')
     };
-  },
-  computed: {
-    token() {
-      return getCookie('f-token');
-    }
   },
   methods: {
     back() {

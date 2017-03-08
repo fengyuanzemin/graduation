@@ -96,7 +96,7 @@ export default {
   },
   methods: {
     back() {
-      this.$router.push('/');
+      this.$router.back();
     },
     repost() {
       this.$router.push({name: 'repost', params:{ postId: this.$route.params.postId }});

@@ -31,19 +31,19 @@
 </template>
 <script>
 import PostItem from 'src/components/PostItem';
-import {getUserList} from 'src/api';
+import {getUserPostList} from 'src/api';
+import {getCookie} from 'src/utils';
 
 export default {
   created() {
-    getUserList(this.$route.params.userId).then((res) => {
-      console.log(res)
+    getUserPostList(this.$route.params.userId, this.token).then((res) => {
       if(res.data.code === 200) {
         this.items = res.data.items;
         this.userInfo = res.data.userInfo;
       }
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err);
-    })
+    });
   },
   data() {
     return {
@@ -54,8 +54,22 @@ export default {
         followers_count: 0,
         brief: ''
       },
-      items: []
+      items: [],
+      token: getCookie('f-token')
     };
+  },
+  watch: {
+    // route 只有后面的变化的时候需要用watch
+    '$route'(route) {
+      getUserPostList(route.params.userId, this.token).then((res) => {
+      if(res.data.code === 200) {
+        this.items = res.data.items;
+        this.userInfo = res.data.userInfo;
+      }
+      }).catch((err) => {
+        console.log(err);
+      });
+    }
   },
   methods: {
     back() {
@@ -85,12 +99,13 @@ export default {
   margin-top: 45px;
   .user-header {
     padding: 25px 0;
-    background-color: #f2f2f2;
+    /*background-color: #888;*/
+    background-image: linear-gradient(0deg, #2DB0F9 0%, #1979f0 100%);
     position: relative;
     text-align: center;
     .name {
       font-size: 28px;
-      color: #333;
+      color: #fff;
       margin-bottom: 20px;
       font-weight: 300;
       padding: 0 25px 0 25px;
@@ -98,7 +113,7 @@ export default {
     .brief {
       overflow: hidden;
       font-size: 14px;
-      color: #666;
+      color: #fff;
       font-weight: 300;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -109,7 +124,7 @@ export default {
       .info-container {
         flex: 1;
         font-size: 18px;
-        color: #666;
+        color: #fff;
         font-weight: 300;
         .info-number {
           margin: 5px;

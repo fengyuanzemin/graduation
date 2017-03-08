@@ -55,10 +55,13 @@ export function getList(token, page) {
 }
 
 // 拉取某一用户微博
-export function getUserList(uId, page) {
+export function getUserPostList(uId, token, page) {
   return axios.get('/getUserPostList', {
     params: {
       uId, page
+    },
+    headers: {
+      'f-token': token
     }
   })
 }

@@ -1,5 +1,6 @@
 import express from 'express';
 const router = express.Router();
+import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import async from 'async';
 import {saltRounds} from '../config/salt';
@@ -163,10 +164,59 @@ router.get('/getHotList', (req, res) => {
 
 // 已登录首页数据
 router.get('/getList', (req, res) => {
+    const result = {};
     User.findOne({token: req.headers['f-token']}).then((doc) => {
         if (doc) {
-            Post.find({user: doc._id})
-                .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
+            result.user = [];
+            result.user.push(doc._id);
+            // 搜索的是关注的人的ID
+            return RelationShip.find({follower: doc._id});
+        } else {
+            throw new Error('token不存在');
+        }
+    }).then((docs) => {
+        docs.forEach(item => {
+            result.user.push(item.following);
+        });
+        return Post.find({user: {$in: result.user}})
+            .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
+            .sort({_id: -1})
+            .populate('user', ['name'])
+            .populate('retweeted_post')
+            .populate({
+                path: 'retweeted_post',
+                populate: {
+                    path: 'user',
+                    select: 'name'
+                }
+            });
+    }).then((cardList) => {
+        res.json({
+            cardList,
+            code: 200
+        });
+    }).catch((err) => {
+        console.log(err);
+        let code = 5001;
+        if (err.message === 'token不存在') {
+            code = 5002;
+        }
+        res.json({
+            code: code,
+            message: errCode[code]
+        })
+    });
+});
+
+// 用户的个人微博列表
+router.get('/getUserPostList', (req, res) => {
+    User.findOne({token: req.headers['f-token']}).then((doc) => {
+        // 两种情况
+        const selfUserId = doc._id;
+        if (String(selfUserId) === String(req.query.uId)) {
+            // 看自己的个人微博
+            const result = {};
+            Post.find({user: req.query.uId})
                 .sort({_id: -1})
                 .populate('user', ['name'])
                 .populate('retweeted_post')
@@ -176,46 +226,83 @@ router.get('/getList', (req, res) => {
                         path: 'user',
                         select: 'name'
                     }
+                }).then((docs) => {
+                result.post = docs;
+                return User.findOne({_id: req.query.uId})
+                    .select('followers_count following_count name posts_count brief');
+            }).then((doc) => {
+                res.json({
+                    code: 200,
+                    items: result.post,
+                    userInfo: doc
                 })
-                .then((cardList) => {
-                    res.json({
-                        cardList,
-                        code: 200
-                    });
-                });
+            })
         } else {
-            res.json({
-                message: errCode[5002],
-                code: 5002
+            // 看别人的个人微博
+            const result = {};
+            User.findOne({_id: req.query.uId})
+                .select('followers_count following_count name posts_count brief').then((doc) => {
+                    result.user = doc;
+                    // 查找别人点赞的，不属于别人，也不属于自己的微博
+                    // 先找到别人点赞的所有微博
+                    return Action.find({action: 'attitude', user: req.query.uId})
+                        .sort({_id: -1})
+                        .populate({
+                            path: 'post',
+                            match: {
+                                user: {
+                                    $nin: [req.query.uId,selfUserId]
+                                }
+                            },
+                            populate: [
+                                {
+                                    path: 'user',
+                                    select: 'name _id'
+                                },
+                                {
+                                    path: 'retweeted_post',
+                                    populate: {
+                                        path: 'user',
+                                        select: 'name'
+                                    }
+                                }
+                            ]
+                        })
+                        .populate('user');
+
+                }
+            ).then((docs) => {
+                result.attitude = docs;
+                return Post.find({user: req.query.uId})
+                    .sort({_id: -1})
+                    .populate('user', ['name'])
+                    .populate('retweeted_post')
+                    .populate({
+                        path: 'retweeted_post',
+                        populate: {
+                            path: 'user',
+                            select: 'name'
+                        }
+                    });
+            }).then((docs) => {
+                result.items = [];
+                result.attitude.forEach(item => {
+                    if(item.post) {
+                        result.items.push(item);
+                    }
+                });
+                docs.forEach(item => {
+                    result.items.push(item);
+                });
+                res.json({
+                    code: 200,
+                    items: result.items,
+                    userInfo: result.user
+                })
+            }).catch((err) => {
+                console.log(err)
             })
         }
-    });
-});
-
-// 用户的个人微博列表
-router.get('/getUserPostList', (req, res) => {
-    const result = {};
-    Post.find({user: req.query.uId})
-        .sort({_id: -1})
-        .populate('user', ['name'])
-        .populate('retweeted_post')
-        .populate({
-            path: 'retweeted_post',
-            populate: {
-                path: 'user',
-                select: 'name'
-            }
-        })
-        .then((docs) => {
-            result.post = docs;
-            return User.findOne({_id: req.query.uId})
-                .select('followers_count following_count name posts_count brief');
-        }).then((doc) => {
-        res.json({
-            code: 200,
-            items: result.post,
-            userInfo: doc
-        })
     }).catch((err) => {
         console.log(err);
         res.json({
@@ -737,7 +824,7 @@ router.post('/clickIn', (req, res) => {
         let code = 5001;
         if (err.message === '没有该用户') {
             code = 5002;
-        } else if(err.message === '看自己的微博不记录') {
+        } else if (err.message === '看自己的微博不记录') {
             code = 5011;
         }
         res.json({

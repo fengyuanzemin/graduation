@@ -49,9 +49,8 @@ export default {
   },
   methods: {
     logout() {
-      clearCookie('f-token', () => {
-        this.$router.push('/login');
-      });
+      clearCookie('f-token');
+      this.$router.push('/login');
     },
     toList() {
       this.$router.push({name: 'user', params: {userId: this.userInfo._id}});

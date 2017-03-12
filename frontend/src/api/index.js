@@ -173,7 +173,7 @@ export function search(text, token) {
 }
 
 // 关注和取消关注
-// follow 为1是关注，0是取关
+// follow 为true是关注，false是取关
 export function follow(uId, token, follow) {
   return axios.post('/follow', {
     uId, follow

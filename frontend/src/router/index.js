@@ -215,7 +215,6 @@ export default new Router({
         });
       }
     },
-
     {path: '*', component: resolve => require(['../views/404'], resolve)}
   ]
 })

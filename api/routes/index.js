@@ -242,37 +242,59 @@ router.get('/getUserPostList', (req, res) => {
             const result = {};
             User.findOne({_id: req.query.uId})
                 .select('followers_count following_count name posts_count brief').then((doc) => {
-                    result.user = doc;
-                    // 查找别人点赞的，不属于别人，也不属于自己的微博
-                    // 先找到别人点赞的所有微博
-                    return Action.find({action: 'attitude', user: req.query.uId})
-                        .sort({_id: -1})
-                        .populate({
-                            path: 'post',
-                            match: {
-                                user: {
-                                    $nin: [req.query.uId,selfUserId]
-                                }
-                            },
-                            populate: [
-                                {
-                                    path: 'user',
-                                    select: 'name _id'
-                                },
-                                {
-                                    path: 'retweeted_post',
-                                    populate: {
-                                        path: 'user',
-                                        select: 'name'
-                                    }
-                                }
-                            ]
-                        })
-                        .populate('user');
-
+                result.user = doc;
+                // 查找该用户与自己的关系
+                return RelationShip.findOne({following: req.query.uId, follower: selfUserId});
+            }).then((doc) => {
+                // 是否是粉丝
+                result.following = !!doc;
+                return RelationShip.findOne({follower: req.query.uId, following: selfUserId});
+            }).then((doc) => {
+                // 是否是关注自己的人
+                result.follower = !!doc;
+                // 互相关注
+                if (result.follower && result.following) {
+                    result.follow = 'eachOther';
+                } else if (!result.follower && result.following) {
+                    // 已经关注
+                    result.follow = 'following';
+                } else {
+                    // 并没有关注
+                    result.follow = 'none';
                 }
-            ).then((docs) => {
-                result.attitude = docs;
+                // 查找别人点赞的，不属于别人，也不属于自己的微博
+                // 先找到别人点赞的所有微博
+                return Action.find({action: 'attitude', user: req.query.uId})
+                    .sort({_id: -1})
+                    .populate({
+                        path: 'post',
+                        match: {
+                            user: {
+                                $nin: [req.query.uId, selfUserId]
+                            }
+                        },
+                        populate: [
+                            {
+                                path: 'user',
+                                select: 'name _id'
+                            },
+                            {
+                                path: 'retweeted_post',
+                                populate: {
+                                    path: 'user',
+                                    select: 'name'
+                                }
+                            }
+                        ]
+                    })
+                    .populate('user');
+            }).then((docs) => {
+                result.attitude = [];
+                docs.forEach(item => {
+                    if (item.post) {
+                        result.attitude.push(item);
+                    }
+                });
                 return Post.find({user: req.query.uId})
                     .sort({_id: -1})
                     .populate('user', ['name'])
@@ -286,21 +308,31 @@ router.get('/getUserPostList', (req, res) => {
                     });
             }).then((docs) => {
                 result.items = [];
-                result.attitude.forEach(item => {
-                    if(item.post) {
-                        result.items.push(item);
+                // 按时间排序
+                let [i, j, k] = [0, 0, 0];
+                // 先排序
+                while (i < result.attitude.length && j < docs.length) {
+                    if (new Date(result.attitude[i].createdAt).valueOf() >= new Date(docs[j].createdAt).valueOf()) {
+                        result.items[k++] = result.attitude[i++];
+                    } else {
+                        result.items[k++] = docs[j++];
                     }
-                });
-                docs.forEach(item => {
-                    result.items.push(item);
-                });
+                }
+                // 再把剩下的全放进去
+                while (i < result.attitude.length) {
+                    result.items[k++] = result.attitude[i++];
+                }
+                while (j < docs.length) {
+                    result.items[k++] = docs[j++];
+                }
                 res.json({
                     code: 200,
                     items: result.items,
-                    userInfo: result.user
+                    userInfo: result.user,
+                    follow: result.follow
                 })
             }).catch((err) => {
-                console.log(err)
+                console.log(err);
             })
         }
     }).catch((err) => {
@@ -607,9 +639,27 @@ router.get('/search', (req, res) => {
                 RelationShip.findOne({
                     following: item._id,
                     follower: doc._id
-                }, (err, doc) => {
-                    user.follow = !!doc;
-                    callback(null, user);
+                }, (err, following) => {
+                    // 是否是粉丝
+                    user.following = !!following;
+                    RelationShip.findOne({
+                        following: doc._id,
+                        follower: item._id
+                    }, (err, follower) => {
+                        // 是否是关注的人
+                        user.follower = !!follower;
+                        // 互相关注
+                        if (user.follower && user.following) {
+                            user.follow = 'eachOther';
+                        } else if (!user.follower && user.following) {
+                            // 已经关注
+                            user.follow = 'following';
+                        } else {
+                            // 并没有关注
+                            user.follow = 'none';
+                        }
+                        callback(null, user);
+                    });
                 });
             }, (err, user) => {
                 res.json({
@@ -655,6 +705,13 @@ router.post('/follow', (req, res) => {
                 return re.save();
             }
         }).then(() => {
+            // 查询是否互相关注
+            return RelationShip.findOne({
+                follower: req.body.uId,
+                following: result.user._id
+            });
+        }).then((doc) => {
+            result.eachOtherFollow = !!doc;
             // 关注加一
             return User.update({token: req.headers['f-token']}, {$inc: {following_count: 1}});
         }).then(() => {
@@ -663,7 +720,8 @@ router.post('/follow', (req, res) => {
         }).then(() => {
             res.json({
                 code: 200,
-                message: '关注成功'
+                message: '关注成功',
+                eachOtherFollow: result.eachOtherFollow
             })
         }).catch((err) => {
             console.log(err);

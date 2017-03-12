@@ -10,14 +10,8 @@ export function getCookie(name) {
 }
 
 // 清理cookie
-export function clearCookie(name, callback) {
-  const exp = new Date();
-  exp.setTime(exp.getTime() - 1);
-  const cval = getCookie(name);
-  if (cval !== null) {
-    document.cookie = `${name}=${cval};expires=${exp.toGMTString()}`;
-  }
-  return callback('success');
+export function clearCookie(name) {
+  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 export function dateFormat(val, option) {

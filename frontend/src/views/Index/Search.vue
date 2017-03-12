@@ -11,7 +11,12 @@
         <span class="search-user-name">{{user.name}}</span><!--
       --><span class="search-user-brief" v-if="user.brief">{{user.brief}}</span><!--
       --><span class="search-user-brief" v-else>暂无简介</span><!--
-      --><span class="iconfont search-user-follow" :class="{'icon-guanzhu': !user.follow, 'icon-icon-yiguanzhu': user.follow}" @click.prevent.stop="follow(user)"/>
+      --><span class="iconfont search-user-follow icon-guanzhu" v-if="user.follow === 'none'"
+               @click.prevent.stop="follow(user)"/><!--
+      --><span class="iconfont search-user-follow icon-icon-yiguanzhu" v-else-if="user.follow === 'following'"
+               @click.prevent.stop="follow(user)"/><!--
+      --><span class="iconfont search-user-follow icon-huxiangguanzhu" v-else-if="user.follow === 'eachOther'"
+               @click.prevent.stop="follow(user)"/>
       </div>
     </div>
     <div class="search-title" v-if="items.length > 0">相关搜索</div>
@@ -52,14 +57,25 @@ export default {
       this.$router.push({name: 'user', params: {userId: data._id}});
     },
     follow(data) {
-      follow(data._id, this.token, !data.follow).then((res) => {
-        console.log(res);
-        if(res.data.code === 200) {
-          data.follow = !data.follow;
-        }
-      }).catch((err) => {
-        console.log(err);
-      });
+      if(data.follow === 'none') {
+        // 关注
+        follow(data._id, this.token, true).then((res) => {
+          if(res.data.code === 200) {
+            data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      } else {
+        // 取关
+        follow(data._id, this.token, false).then((res) => {
+          if(res.data.code === 200) {
+            data.follow = 'none';
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
     }
   },
   components: {
@@ -136,7 +152,7 @@ export default {
           top: 4px;
           font-size: 23px;
           color: #1478f0;
-          padding:15px;
+          padding: 15px;
         }
       }
     }

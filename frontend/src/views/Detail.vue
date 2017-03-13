@@ -4,6 +4,8 @@
       <span class="header-left iconfont icon-houtui"/>
       <span class="clickBoard clickBoard-left" @click="back"/>
       <div class="header-title">正文</div>
+      <span class="header-right">回首页</span>
+      <span class="clickBoard clickBoard-right clickBoard-right-big" @click="toIndex"/>
     </header>
     <div class="card" v-if="item">
       <div class="card-header">
@@ -49,7 +51,7 @@
 import AttitudeItem from 'src/components/AttitudeItem';
 import CommentItem from 'src/components/CommentItem';
 import RepostItem from 'src/components/RepostItem';
-import {getPostItem, attitude, getActionInfo, checkAttitude} from 'src/api';
+import {getPostItem, attitude, getActionInfo, checkAttitude, clickIn} from 'src/api';
 import {dateFormat, getCookie} from 'src/utils';
 export default {
   created() {
@@ -94,9 +96,42 @@ export default {
       return dateFormat(val, option);
     }
   },
+  watch: {
+    '$route'(route) {
+      // 拉取主要信息
+      getPostItem(this.$route.params.postId).then((res) => {
+        if(res.data.code === 200) {
+          this.item = res.data.detail;
+        }
+      }).catch((err) => {
+        console.log(err);
+      });
+      // 拉取评论点赞
+      getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
+        if(res.data.code === 200) {
+          this.actionItem = res.data.items;
+        }
+      }).catch((err) => {
+          console.log(err);
+      });
+      // 如果用户已登录，还要查看是否点过赞
+      if (this.token) {
+        checkAttitude(this.$route.params.postId, this.token).then((res) => {
+          if(res.data.code === 200) {
+            this.attituded = res.data.check;
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+    }
+  },
   methods: {
     back() {
       this.$router.back();
+    },
+    toIndex() {
+      this.$router.push('/');
     },
     repost() {
       this.$router.push({name: 'repost', params:{ postId: this.$route.params.postId }});
@@ -134,7 +169,11 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
-    }
+    },
+    detail(data) {
+      clickIn(data._id, this.token);
+      this.$router.push({name: 'status', params: { postId: data._id }});
+    },
   },
   components: {
     'f-attitude-item': AttitudeItem,

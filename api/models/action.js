@@ -1,7 +1,7 @@
 /**
  * Created by fengyuanzemin on 17/2/22.
  */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
     user: {
@@ -30,4 +30,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Action', Schema);
+export default mongoose.model('Action', Schema);

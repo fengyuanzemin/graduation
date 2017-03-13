@@ -74,6 +74,7 @@ export default {
       if(res.data.code === 200) {
         this.items = res.data.items;
         this.userInfo = res.data.userInfo;
+        this.follow = res.data.follow;
       }
       }).catch((err) => {
         console.log(err);

@@ -1,9 +1,9 @@
 import express from 'express';
 const router = express.Router();
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import async from 'async';
 import {saltRounds} from '../config/salt';
+import {calculateSimilar} from '../algorithm';
 
 import User from '../models/user';
 import Post from '../models/post';
@@ -888,6 +888,15 @@ router.post('/clickIn', (req, res) => {
         res.json({
             code: code,
             message: errCode[code]
+        })
+    });
+});
+
+router.get('/algorithm', (req, res) => {
+    calculateSimilar().then(data=>{
+        res.json({
+            code: 200,
+            result: data
         })
     });
 });

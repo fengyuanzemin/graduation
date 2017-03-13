@@ -1,7 +1,7 @@
 /**
  * Created by fengyuanzemin on 17/2/15.
  */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
     name: {
@@ -27,4 +27,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Movie', Schema);
+export default mongoose.model('Movie', Schema);

@@ -6,8 +6,6 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
 import index from './routes/index';
-// import admin from './routes/admin';
-// import weibo from './routes/weibo';
 
 const app = express();
 
@@ -22,10 +20,6 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, '连接错误:'));
 
 app.use('/', index);
-// app.use('/admin', admin);
-// app.use('/weibo', weibo);
-
-
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 if (process.env.NODE_ENV === 'production') {
-  axios.defaults.baseURL = 'http://192.168.1.100:3000';
+  axios.defaults.baseURL = 'http://192.168.1.13:3000';
 } else {
   axios.defaults.baseURL = 'http://localhost:3000';
 }

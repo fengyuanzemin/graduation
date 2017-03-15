@@ -4,7 +4,7 @@
       <span class="header-left iconfont icon-houtui"/>
       <span class="clickBoard clickBoard-left" @click="back"/>
       <div class="header-title">设置用户信息</div>
-      <span class="iconfont icon-fasong1" :class="{active: text || name}"/>
+      <span class="iconfont icon-baocun" :class="{active: text || name}"/>
       <span class="clickBoard clickBoard-right" @click="post"/>
     </header>
     <label class="post-container">
@@ -68,7 +68,7 @@ export default {
 <style lang="scss" scoped>
   .container {
     margin-top: 45px;
-    .icon-fasong1 {
+    .icon-baocun {
       position: absolute;
       top: 13px;
       right: 15px;;

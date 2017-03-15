@@ -22,7 +22,7 @@ const Schema = mongoose.Schema({
     // 点赞attitude 转发repost 评论comment 查看click
     action: {
         type: String,
-        require: ''
+        require: true
     },
     createdAt:{
         type: Date,

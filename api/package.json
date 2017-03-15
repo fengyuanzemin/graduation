@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "curl": "node ./spiders/weibo.js"
+    "curl": "node ./spiders/weibo.js",
+    "calculate": "node ./algorithm/index.js"
   },
   "dependencies": {
     "async": "^2.1.5",

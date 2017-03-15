@@ -14,7 +14,11 @@ const Schema = mongoose.Schema({
         ref: 'Post',
         require: true
     },
-    weight: {
+    maxSum: {
+        type: Number,
+        default: 0
+    },
+    point: {
         type: Number,
         default: 0
     }

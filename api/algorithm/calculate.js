@@ -26,6 +26,7 @@ export async function calculateSimilar() {
          */
         // 将Weight清空
         await Weight.remove({});
+        await Similar.remove({});
         // 找到所有的用户
         let user = await User.find({});
         // 将用户id放入数组里
@@ -81,7 +82,7 @@ export async function calculateSimilar() {
                     }
                     // 循环到最后面就存进weight
                     if (i === action.length - 1) {
-                        new Weight({
+                        await new Weight({
                             user: item,
                             post: postId,
                             maxSum: actionSum
@@ -91,15 +92,10 @@ export async function calculateSimilar() {
             }
         }
         // 找到最大值
-        let weight = await Weight.findOne({}).sort({'maxSum': -1});
-
-        let weightArr = await Weight.find();
-
-        if (weight) {
-            let maxPoint = weight.maxSum;
-            for (let i of weightArr) {
-                await Weight.update({_id: i._id}, {point: i.maxSum / maxPoint})
-            }
+        let weightMax = await Weight.findOne({}).sort('-maxSum');
+        let weightArr = await Weight.find({});
+        for (let i of weightArr) {
+            await Weight.update({_id: i._id}, {point: i.maxSum / weightMax.maxSum})
         }
 
         /*
@@ -108,38 +104,48 @@ export async function calculateSimilar() {
          * 计算InterAction
          *
          */
-        // weightArr = await Weight.find({}).populate('post');
-        // // console.log(weightArr)
-        // for (let i = 0; i < weightArr.length; i += 1) {
-        //     let tempA = '', tempB = '', flag = 1, tempSum = 0;
-        //     for (let j = i; j < weightArr.length; j += 1) {
-        //         // 计算A和B的直接交互度，A不能是B
-        //         if (weightArr[j].post && weightArr[j] &&
-        //             String(weightArr[j].user) !== String(weightArr[j].post.user)) {
-        //             if (flag) {
-        //                 tempA = weightArr[j].user;
-        //                 tempB = weightArr[j].post.user;
-        //                 flag = 0;
-        //                 tempSum += weightArr[j].point;
-        //                 // console.log(tempSum)
-        //             } else if (String(weightArr[j].user) === String(tempA) &&
-        //                 String(weightArr[j].post.user) == String(tempB)) {
-        //                 tempSum += weightArr[j].point;
-        //                 i = j;
-        //                 // console.log(tempSum)
-        //             }
-        //         }
-        //         // if (j === weightArr.length - 1) {
-        //         //     // console.log(j)
-        //         //     new Similar({
-        //         //         userA: tempA,
-        //         //         userB: tempB,
-        //         //         interAction: tempSum
-        //         //     }).save();
-        //         // }
-        //     }
-        //     // console.log(tempSum)
-        // }
+        weightArr = await Weight.find({}).sort('user').populate('post');
+        for (let i = 0; i < weightArr.length; i += 1) {
+            // A -> B
+            let tempA = '', tempB = '', tempSumA = 0, countA = 0;
+            // B -> A
+            let tempSumB = 0, countB = 0;
+            for (let j = i; j < weightArr.length; j += 1) {
+                // 计算A对B的直接交互度，A、B不能相等
+                if (String(weightArr[j].user) !== String(weightArr[j].post.user)) {
+                    if (!countA) {
+                        tempA = weightArr[j].user;
+                        tempB = weightArr[j].post.user;
+                        tempSumA += weightArr[j].point;
+                        countA += 1;
+                        i = j;
+                    } else if (String(weightArr[j].user) === String(tempA) &&
+                        String(weightArr[j].post.user) === String(tempB)) {
+                        tempSumA += weightArr[j].point;
+                        i = j;
+                        countA += 1;
+                    }
+                }
+
+            }
+            for (let k = i + 1; k < weightArr.length; k += 1) {
+                // 计算B对A的直接交互度，A、B不能相等
+                if (String(weightArr[k].user) !== String(weightArr[k].post.user) &&
+                    String(weightArr[k].user) === String(tempB) &&
+                    String(weightArr[k].post.user) === String(tempA)) {
+                    tempSumB += weightArr[k].point;
+                    countB += 1;
+                    weightArr.splice(k--, 1)
+                }
+            }
+            if (countA || countB) {
+                await new Similar({
+                    userA: tempA,
+                    userB: tempB,
+                    interAction: (tempSumA + tempSumB) / (countA + countB)
+                }).save();
+            }
+        }
 
 
         /*

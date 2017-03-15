@@ -6,10 +6,12 @@ require('babel-polyfill');
 const calculate = require('./calculate');
 const mongoose = require('mongoose');
 
+
 mongoose.connect('mongodb://localhost/graduation');
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, '连接错误:'));
 
+mongoose.Promise = global.Promise;
 // setInterval(() => {
 calculate.calculateSimilar().then(() => {
 

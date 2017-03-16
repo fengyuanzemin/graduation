@@ -26,6 +26,7 @@ export async function calculateSimilar() {
          */
         // 将Weight清空
         await Weight.remove({});
+        // 将Similar清空
         await Similar.remove({});
         // 找到所有的用户
         let user = await User.find({});
@@ -126,7 +127,6 @@ export async function calculateSimilar() {
                         countA += 1;
                     }
                 }
-
             }
             for (let k = i + 1; k < weightArr.length; k += 1) {
                 // 计算B对A的直接交互度，A、B不能相等
@@ -147,13 +147,78 @@ export async function calculateSimilar() {
             }
         }
 
-
         /*
          * 第三步：
          *
          * 计算Coupling
          *
          */
+        weightArr = await Weight.find({}).sort('user');
+        // console.log(weightArr)
+        let combination = [];
+        let combinationUser = '';
+        for (let i = 0; i < weightArr.length - 1; i += 1) {
+            if (!i) {
+                combinationUser = weightArr[i].user;
+                if (String(weightArr[i].user) !== String(weightArr[i + 1].user)) {
+                    combination.push(weightArr.splice(0, i + 1))
+                    i = -1;
+                }
+            } else if (String(weightArr[i].user) !== String(weightArr[i + 1].user) &&
+                String(weightArr[i].user) === String(weightArr[i - 1].user)) {
+                combination.push(weightArr.splice(0, i + 1));
+                i = -1;
+            }
+        }
+        combination.push(weightArr);
+        // 求交集
+        for (let i = 0; i < combination.length; i += 1) {
+            for (let j = i + 1; j < combination.length; j += 1) {
+                let intersectionA = operation(combination[i], combination[j]);
+                let intersectionB = operation(combination[j], combination[i]);
+                if (intersectionA.length > 0) {
+                    let interactionSum = 0;
+                    let interactionSumA = 0;
+                    let interactionSumB = 0;
+                    let interactionMax = 0;
+                    for (let m = 0; m < intersectionA.length; m += 1) {
+                        interactionSum += intersectionA[m].point > intersectionB[m].point ? intersectionB[m].point : intersectionA[m].point;
+                        interactionSumA += intersectionA[m].point;
+                        interactionSumB += intersectionB[m].point;
+                    }
+                    interactionMax = interactionSumA > interactionSumB ? interactionSumA : interactionSumB;
+                    // 查找是否存在Similar
+                    const s = await Similar.findOne({
+                        $or: [{
+                            userA: intersectionA[0].user,
+                            userB: intersectionB[0].user
+                        }, {
+                            userA: intersectionB[0].user,
+                            userB: intersectionA[0].user
+                        }]
+                    });
+                    if (s) {
+                        await Similar.update({
+                            $or: [{
+                                userA: s.userA,
+                                userB: s.userB
+                            },{
+                                userA: s.userB,
+                                userB: s.userA
+                            }]
+                        },{
+                            coupling: interactionSum / interactionMax
+                        })
+                    } else {
+                        await new Similar({
+                            userA: intersectionA[0].user,
+                            userB: intersectionB[0].user,
+                            coupling: interactionSum / interactionMax
+                        })
+                    }
+                }
+            }
+        }
 
         /*
          * 第四步：
@@ -161,11 +226,15 @@ export async function calculateSimilar() {
          * 计算Similar
          *
          */
+        
 
         return action;
     } catch (err) {
         console.log(err)
     }
+}
 
-
+// 计算combination值的
+function operation(list1, list2) {
+    return list1.filter(a => true === list2.some(b => String(a.post) === String(b.post)));
 }

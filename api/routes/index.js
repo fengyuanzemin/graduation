@@ -3,7 +3,7 @@ const router = express.Router();
 import bcrypt from 'bcrypt';
 import async from 'async';
 import {saltRounds} from '../config/salt';
-// import {calculateSimilar} from '../algorithm/calculate';
+import {calculateSimilar} from '../algorithm/calculate';
 
 import User from '../models/user';
 import Post from '../models/post';
@@ -892,13 +892,13 @@ router.post('/clickIn', (req, res) => {
     });
 });
 
-// router.get('/algorithm', (req, res) => {
-//     calculateSimilar().then(data=>{
-//         res.json({
-//             code: 200,
-//             result: data
-//         })
-//     });
-// });
+router.get('/algorithm', (req, res) => {
+    calculateSimilar().then(data=>{
+        res.json({
+            code: 200,
+            result: data
+        })
+    });
+});
 
 export default router;

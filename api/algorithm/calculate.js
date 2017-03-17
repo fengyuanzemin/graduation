@@ -154,7 +154,6 @@ export async function calculateSimilar() {
          *
          */
         weightArr = await Weight.find({}).sort('user');
-        // console.log(weightArr)
         let combination = [];
         let combinationUser = '';
         for (let i = 0; i < weightArr.length - 1; i += 1) {
@@ -202,11 +201,11 @@ export async function calculateSimilar() {
                             $or: [{
                                 userA: s.userA,
                                 userB: s.userB
-                            },{
+                            }, {
                                 userA: s.userB,
                                 userB: s.userA
                             }]
-                        },{
+                        }, {
                             coupling: interactionSum / interactionMax
                         })
                     } else {
@@ -226,8 +225,15 @@ export async function calculateSimilar() {
          * 计算Similar
          *
          */
-        
-
+        let sim = await Similar.find({});
+        for (let si of sim) {
+            await Similar.update({
+                userA: si.userA,
+                userB: si.userB
+            }, {
+                similar: 0.7 * si.interAction + 0.3 * si.coupling
+            })
+        }
         return action;
     } catch (err) {
         console.log(err)

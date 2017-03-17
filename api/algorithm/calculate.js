@@ -6,13 +6,49 @@ import Action from '../models/action';
 import User from '../models/user';
 import Post from '../models/post';
 import Similar from '../models/similar';
+import RelationShip from '../models/relationship';
 
-// export default function similar() {
-//
-// }
+export default async function similar(token) {
+    try {
+        let recommend = [];
+        // 查找是谁的推荐人
+        let user = await User.findOne({token});
+        if (user) {
+            let recommendFollow = [];
+            let sim = await Similar.find({$or: [{userA: user._id}, {userB: user._id}]})
+                .sort('-similar');
+            for (let s of sim) {
+                let re = await RelationShip.findOne({
+                    $or: [{
+                        follower: user._id,
+                        following: s.userA
+                    }, {
+                        follower: user._id,
+                        following: s.userB
+                    }]
+                });
+                // 没有关注过
+                if (!re) {
+                    recommendFollow.push(s);
+                }
+            }
+            for (let i of recommendFollow) {
+                let id = String(i.userA) === String(user._id) ? i.userB : i.userA;
+                let follow = await User.findOne({_id: id},'name brief');
+                let parseFollow = JSON.parse(JSON.stringify(follow));
+                parseFollow.follow = false;
+                recommend.push(parseFollow);
+            }
+        } else {
+            new Error('没有这个用户');
+        }
+        return recommend;
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 export async function calculateSimilar() {
-    let action = [];
     try {
         /*
          * 第一步：
@@ -36,7 +72,7 @@ export async function calculateSimilar() {
         for (let item of userId) {
             // 找到用户所有的行为
             // 将相同postID的生成一个weight
-            action = await Action.find({user: item}).sort('post');
+            let action = await Action.find({user: item}).sort('post');
             // 每次循环代表不同的用户行为
             for (let j = 0; j < action.length; j += 1) {
                 let flag = 0;
@@ -234,7 +270,6 @@ export async function calculateSimilar() {
                 similar: 0.7 * si.interAction + 0.3 * si.coupling
             })
         }
-        return action;
     } catch (err) {
         console.log(err)
     }

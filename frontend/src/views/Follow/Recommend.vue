@@ -1,23 +1,93 @@
 <template>
   <div class="container">
-    <h2>敬请期待</h2>
+    <div class="follow-empty" v-if="items.length == 0">暂无推荐</div>
+    <div class="follow-container" v-for="item in items" @click="toUser(item)">
+      <span class="follow-name">{{item.name}}</span><!--
+      --><span class="follow-brief" v-if="item.brief">{{item.brief}}</span><!--
+      --><span class="follow-brief" v-else>暂无简介</span><!--
+      --><span class="follow-icon iconfont" :class="{'icon-guanzhu': !item.follow, 'icon-icon-yiguanzhu': item.follow}" @click.prevent.stop="follow(item)"/>
+    </div>
   </div>
 </template>
 <script>
 import {getCookie} from 'src/utils';
+import {recommend, follow} from 'src/api';
 
 export default {
+  created() {
+    recommend(this.token).then((res) => {
+      console.log(res);
+      this.items = res.data.recommend;
+    }).catch((err) => {
+      console.log(err);
+    })
+  },
   data() {
     return {
+       items: [],
        token: getCookie('f-token')
     };
+  },
+  methods: {
+    toUser(data) {
+      this.$router.push({name: 'user', params: {userId: data._id}});
+    },
+    follow(data) {
+      follow(data._id, this.token, !data.follow).then((res)=>{
+        if(res.data.code === 200) {
+          data.follow = !data.follow;
+        }
+      }).catch((err)=>{
+        console.log(err);
+      });
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
   .container {
-    h2 {
-      text-align: center;
+    .follow-container {
+      position: relative;
+      padding: 20px;
+      border-top:1px solid #dcdcdc;
+      background-color: #fff;
+      &:nth-last-child(1) {
+        border-bottom: 1px solid #dcdcdc;
+      }
+      .follow-name {
+        color: #333;
+        margin-right:10px;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100px;
+      }
+      .follow-brief {
+        color: #666;
+        font-size: 12px;
+        display: inline-block;
+        width: 200px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      @media screen and (min-width: 320px) and (max-width: 355px){
+        .follow-name {
+          width: 80px;
+        }
+        .follow-brief {
+          width: 160px;
+        }
+      }
+      .follow-icon {
+        position: absolute;
+        top: 7px;
+        right: 12px;
+        color: #1478f0;
+        font-size: 24px;
+        padding: 10px;
+      }
     }
   }
 </style>

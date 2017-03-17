@@ -216,3 +216,12 @@ export function clickIn(pId, token) {
     }
   }).then(res => res);
 }
+
+// 推荐
+export function recommend(token) {
+  return axios.get('/recommend',{
+    headers: {
+      'f-token': token
+    }
+  })
+}

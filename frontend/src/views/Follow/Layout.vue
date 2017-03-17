@@ -59,7 +59,7 @@ export default {
         },
         {
           id: 2,
-          text: '推荐',
+          text: '猜你认识',
           component: 'f-recommend',
           active: false
         }

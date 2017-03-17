@@ -3,7 +3,7 @@ const router = express.Router();
 import bcrypt from 'bcrypt';
 import async from 'async';
 import {saltRounds} from '../config/salt';
-import {calculateSimilar} from '../algorithm/calculate';
+import similar from '../algorithm/calculate';
 
 import User from '../models/user';
 import Post from '../models/post';
@@ -892,11 +892,17 @@ router.post('/clickIn', (req, res) => {
     });
 });
 
-router.get('/algorithm', (req, res) => {
-    calculateSimilar().then(data=>{
+router.get('/recommend', (req, res) => {
+    similar(req.headers['f-token']).then((data) => {
         res.json({
             code: 200,
-            result: data
+            recommend: data
+        })
+    }).catch((err) => {
+        console.log(err)
+        res.json({
+            code: 5001,
+            message: errCode[5001]
         })
     });
 });

@@ -5,85 +5,95 @@ import bcrypt from 'bcrypt';
 
 import {errCode} from '../utils/codeTransfer';
 import {saltRounds} from '../config/salt';
+import {randomKey} from '../utils';
 
 import User from '../models/user';
 import Post from '../models/post';
 import Action from '../models/action';
 
 // 登录
-function login(req, res) {
-    const result = {};
-    User.findOne({name: req.body.name}).then((data) => {
-        if (data) {
-            result.token = data.token;
-            return bcrypt.compare(req.body.password, data.password);
+async function login(req, res) {
+    try {
+        const user = await User.findOne({name: req.body.name});
+        let doc;
+        if (user) {
+            doc = await bcrypt.compare(req.body.password, user.password);
+
         } else {
-            throw new Error('5000');
+            res.json({
+                message: errCode[5000],
+                code: 5000
+            });
+            return;
         }
-    }).then((doc) => {
         if (doc) {
             res.json({
                 message: '登录成功',
-                token: result.token,
+                token: user.token,
                 code: 200
             })
         } else {
-            throw new Error('5000');
+            res.json({
+                message: errCode[5000],
+                code: 5000
+            });
         }
-    }).catch((err) => {
+    } catch (err) {
         console.log(err);
-        let code;
-        if (err.message === '5000') {
-            code = 5000;
-        } else {
-            code = 5001;
-        }
         res.json({
-            message: errCode[code],
-            code: code
+            message: errCode[5001],
+            code: 5001
         });
-    });
+    }
 }
 
 // 注册
-function signUp(req, res) {
-    const token = randomKey();
-    bcrypt.hash(req.body.password, saltRounds).then((hash) => {
-        const userInfo = new User({
+async function signUp(req, res) {
+    try {
+        const token = randomKey();
+        let hash = await bcrypt.hash(req.body.password, saltRounds);
+        await new User({
             name: req.body.name,
             password: hash,
             token
-        });
-        return userInfo.save();
-    }).then(() => {
+        }).save();
         res.json({
             message: '注册成功',
             token,
             code: 200
         });
-    }).catch((err) => {
+    } catch (err) {
+        console.log(err);
         res.json({
             message: errCode[err.code] || '注册失败',
             code: err.code
         });
-    });
+    }
 }
 
 // 判断用户是否登录
-function checkToken(req, res) {
-    User.findOne({token: req.headers['f-token']}).then((doc) => {
+async function checkToken(req, res) {
+    try {
+        let user = await User.findOne({token: req.headers['f-token']});
         res.json({
-            loggedIn: !!doc,
+            loggedIn: !!user,
             code: 200
         })
-    })
+    } catch (err) {
+        console.log(err);
+        res.json({
+            message: errCode[5001],
+            code: 5001
+        });
+    }
 }
 
 // 判断用户是否在看自己的个人中心
-function judgeUser(req, res) {
-    User.findOne({token: req.headers['f-token']}).then((doc) => {
+async function judgeUser(req, res) {
+    try {
+        let doc = await User.findOne({token: req.headers['f-token']});
         if (doc) {
-            const self = String(doc._id) === req.query.uId;
+            const self = String(doc._id) === String(req.query.uId);
             res.json({
                 code: 200,
                 self
@@ -94,57 +104,53 @@ function judgeUser(req, res) {
                 message: errCode[5002]
             });
         }
-    }).catch((err) => {
+    } catch (err) {
         console.log(err);
         res.json({
             code: 5001,
             message: errCode[5001]
         })
-    });
+    }
 }
 
 // 记录用户查看微博的行为
-function clickIn(req, res) {
-    const result = {};
-    Post.findOne({_id: req.body.pId}).then((doc) => {
-        result.user = doc.user;
-        return User.findOne({token: req.headers['f-token']});
-    }).then((doc) => {
-        if (doc) {
-            // 如果查看的是自己的微博
-            if (String(doc._id) === String(result.user)) {
-                throw new Error('看自己的微博不记录');
+async function clickIn(req, res) {
+    try {
+        let post = await Post.findOne({_id: req.body.pId});
+        let user = await User.findOne({token: req.headers['f-token']});
+        if (user && post) {
+            if (String(user._id) === String(post.user)) {
+                res.json({
+                    code: 5011,
+                    message: errCode[5011]
+                });
             } else {
-                return new Action({
-                    user: doc._id,
+                await new Action({
+                    user: user._id,
                     post: req.body.pId,
                     action: 'click'
                 }).save();
+                res.json({
+                    code: 200,
+                    message: '成功记录'
+                });
             }
         } else {
-            throw new Error('没有该用户');
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
         }
-    }).then(() => {
-        res.json({
-            code: 200,
-            message: '成功记录'
-        })
-    }).catch((err) => {
+    } catch (err) {
         console.log(err);
-        let code = 5001;
-        if (err.message === '没有该用户') {
-            code = 5002;
-        } else if (err.message === '看自己的微博不记录') {
-            code = 5011;
-        }
         res.json({
-            code: code,
-            message: errCode[code]
-        })
-    });
+            code: 5001,
+            message: errCode[5001]
+        });
+    }
 }
 // 更改用户简介
-function updateUserInfo(req, res) {
+async function updateUserInfo(req, res) {
     if (!(req.body.name || req.body.brief)) {
         res.json({
             code: 5004,
@@ -152,66 +158,82 @@ function updateUserInfo(req, res) {
         });
         return;
     }
-    User.findOne({token: req.headers['f-token']}).then((doc) => {
-        if (doc) {
+    try {
+        let user = await User.findOne({token: req.headers['f-token']});
+        if (user) {
             if (req.body.name) {
-                doc.name = req.body.name;
+                user.name = req.body.name;
             }
             if (req.body.brief) {
-                doc.brief = req.body.brief;
+                user.brief = req.body.brief;
             }
-            return doc.save();
+            await user.save();
+            res.json({
+                code: 200,
+                message: '更改成功'
+            });
+        } else {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
         }
-    }).then(() => {
+    } catch (err) {
+        console.log(err);
         res.json({
-            code: 200,
-            message: '更改成功'
-        })
-    }).catch((err) => {
+            code: 5001,
+            message: errCode[5001]
+        });
+    }
+}
+
+// 用户简介
+async function getUserInfo(req, res) {
+    try {
+        const userInfo = await User.findOne({token: req.headers['f-token']})
+            .select('followers_count following_count name posts_count brief');
+        if (userInfo) {
+            res.json({
+                userInfo,
+                code: 200
+            });
+        } else {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            })
+        }
+    } catch (err) {
         console.log(err);
         res.json({
             code: 5001,
             message: errCode[5001]
         })
-    });
-}
-
-// 用户简介
-function getUserInfo(req, res) {
-    User.findOne({token: req.headers['f-token']})
-        .select('followers_count following_count name posts_count brief')
-        .then((doc) => {
-            if (doc) {
-                res.json({
-                    userInfo: doc,
-                    code: 200
-                });
-            } else {
-                res.json({
-                    code: 5002,
-                    message: errCode[5002]
-                })
-            }
-        });
+    }
 }
 // 在微博正文检查用户是否点过赞
-function checkAttitude(req, res) {
-    User.findOne({token: req.headers['f-token']}).then((doc) => {
-        if (doc) {
-            return Action.find({post: req.query.pId, user: doc._id, action: 'attitude'});
+async function checkAttitude(req, res) {
+    try {
+        const user = await User.findOne({token: req.headers['f-token']});
+        if (user) {
+            const action = await Action.find({post: req.query.pId, user: user._id, action: 'attitude'});
+            res.json({
+                code: 200,
+                check: action.length > 0
+            })
+        } else {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
         }
-    }).then((docs) => {
-        const check = docs.length > 0;
-        res.json({
-            code: 200,
-            check
-        })
-    }).catch(() => {
+    } catch (err) {
+        console.log(err);
         res.json({
             code: 5001,
             message: errCode[5001]
         });
-    })
+    }
 }
 export default {
     login, signUp, checkToken, judgeUser, clickIn,

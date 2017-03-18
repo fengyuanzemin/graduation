@@ -4,19 +4,20 @@
 import similar from '../algorithm/calculate';
 import {errCode} from '../utils/codeTransfer';
 
-function getUserRecommend(req, res) {
-    similar(req.headers['f-token']).then((data) => {
+async function getUserRecommend(req, res) {
+    try {
+        const recommend = await similar(req.headers['f-token']);
         res.json({
             code: 200,
-            recommend: data
-        })
-    }).catch((err) => {
+            recommend
+        });
+    } catch (err) {
         console.log(err);
         res.json({
             code: 5001,
             message: errCode[5001]
-        })
-    });
+        });
+    }
 }
 
 export default {

@@ -196,24 +196,7 @@ export default new Router({
     },
     {
       path: '/login',
-      component: resolve => require(['../views/Login/Layout'], resolve),
-      // beforeEnter: (to, from, next) => {
-      //   const token = getCookie('f-token');
-      //   checkToken(token).then((res) => {
-      //     if (res.data.code === 200) {
-      //       const loggedIn = res.data.loggedIn;
-      //       if (loggedIn) {
-      //         next('/');
-      //       } else {
-      //         next();
-      //       }
-      //     } else {
-      //       next();
-      //     }
-      //   }).catch(() => {
-      //     next();
-      //   });
-      // }
+      component: resolve => require(['../views/Login/Layout'], resolve)
     },
     {path: '*', component: resolve => require(['../views/404'], resolve)}
   ]

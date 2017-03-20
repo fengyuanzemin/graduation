@@ -34,9 +34,9 @@ export default async function similar(token) {
             }
             for (let i of recommendFollow) {
                 let id = String(i.userA) === String(user._id) ? i.userB : i.userA;
-                let follow = await User.findOne({_id: id},'name brief');
+                let follow = await User.findOne({_id: id}, 'name brief');
                 let parseFollow = JSON.parse(JSON.stringify(follow));
-                parseFollow.follow = false;
+                parseFollow.follow = 'none';
                 recommend.push(parseFollow);
             }
         } else {
@@ -50,6 +50,11 @@ export default async function similar(token) {
 
 export async function calculateSimilar() {
     try {
+        // 将Weight清空
+        await Weight.remove({});
+        // 将Similar清空
+        await Similar.remove({});
+
         /*
          * 第一步：
          *
@@ -60,10 +65,6 @@ export async function calculateSimilar() {
          * 查看 0.1
          * 评论 0.7
          */
-        // 将Weight清空
-        await Weight.remove({});
-        // 将Similar清空
-        await Similar.remove({});
         // 找到所有的用户
         let user = await User.find({});
         // 将用户id放入数组里
@@ -132,7 +133,8 @@ export async function calculateSimilar() {
         let weightMax = await Weight.findOne({}).sort('-maxSum');
         let weightArr = await Weight.find({});
         for (let i of weightArr) {
-            await Weight.update({_id: i._id}, {point: i.maxSum / weightMax.maxSum})
+            i.point = i.maxSum / weightMax.maxSum;
+            await i.save();
         }
 
         /*
@@ -196,7 +198,7 @@ export async function calculateSimilar() {
             if (!i) {
                 combinationUser = weightArr[i].user;
                 if (String(weightArr[i].user) !== String(weightArr[i + 1].user)) {
-                    combination.push(weightArr.splice(0, i + 1))
+                    combination.push(weightArr.splice(0, i + 1));
                     i = -1;
                 }
             } else if (String(weightArr[i].user) !== String(weightArr[i + 1].user) &&
@@ -233,23 +235,14 @@ export async function calculateSimilar() {
                         }]
                     });
                     if (s) {
-                        await Similar.update({
-                            $or: [{
-                                userA: s.userA,
-                                userB: s.userB
-                            }, {
-                                userA: s.userB,
-                                userB: s.userA
-                            }]
-                        }, {
-                            coupling: interactionSum / interactionMax
-                        })
+                        s.coupling = interactionSum / interactionMax;
+                        await s.save();
                     } else {
                         await new Similar({
                             userA: intersectionA[0].user,
                             userB: intersectionB[0].user,
                             coupling: interactionSum / interactionMax
-                        })
+                        }).save();
                     }
                 }
             }
@@ -263,12 +256,8 @@ export async function calculateSimilar() {
          */
         let sim = await Similar.find({});
         for (let si of sim) {
-            await Similar.update({
-                userA: si.userA,
-                userB: si.userB
-            }, {
-                similar: 0.7 * si.interAction + 0.3 * si.coupling
-            })
+            si.similar = 0.7 * si.interAction + 0.3 * si.coupling;
+            await si.save();
         }
     } catch (err) {
         console.log(err)

@@ -5,12 +5,17 @@
       <span class="follow-name">{{item.follower.name}}</span><!--
       --><span class="follow-brief" v-if="item.follower.brief">{{item.follower.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
-      --><span class="follow-icon iconfont icon-qianjin"/>
+      --><span class="iconfont follow-icon icon-guanzhu" v-if="item.follower.follow === 'none'"
+               @click.prevent.stop="follow(item.follower)"/><!--
+      --><span class="iconfont follow-icon icon-icon-yiguanzhu" v-else-if="item.follower.follow === 'following'"
+               @click.prevent.stop="follow(item.follower)"/><!--
+      --><span class="iconfont follow-icon icon-huxiangguanzhu" v-else-if="item.follower.follow === 'eachOther'"
+               @click.prevent.stop="follow(item.follower)"/>
     </div>
   </div>
 </template>
 <script>
-import {getFollowList} from 'src/api';
+import {getFollowList, follow} from 'src/api';
 import {getCookie} from 'src/utils';
 
 export default {
@@ -19,7 +24,7 @@ export default {
       if(res.data.code === 200) {
         this.items = res.data.followList;
       }
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err);
     });
   },
@@ -32,6 +37,27 @@ export default {
   methods: {
     toUser(data) {
       this.$router.push({name: 'user', params: {userId: data._id}});
+    },
+    follow(data) {
+      if(data.follow === 'none') {
+        // 关注
+        follow(data._id, this.token, true).then((res) => {
+          if(res.data.code === 200) {
+            data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      } else {
+        // 取关
+        follow(data._id, this.token, false).then((res) => {
+          if(res.data.code === 200) {
+            data.follow = 'none';
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
     }
   }
 };
@@ -74,8 +100,11 @@ export default {
     }
     .follow-icon {
       position: absolute;
-      top: 22px;
-      right: 15px;
+      top: 7px;
+      right: 12px;
+      color: #1478f0;
+      font-size: 24px;
+      padding: 10px;
     }
   }
 }

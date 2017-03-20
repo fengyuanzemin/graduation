@@ -18,7 +18,6 @@ async function login(req, res) {
         let doc;
         if (user) {
             doc = await bcrypt.compare(req.body.password, user.password);
-
         } else {
             res.json({
                 message: errCode[5000],
@@ -51,7 +50,7 @@ async function login(req, res) {
 async function signUp(req, res) {
     try {
         const token = randomKey();
-        let hash = await bcrypt.hash(req.body.password, saltRounds);
+        const hash = await bcrypt.hash(req.body.password, saltRounds);
         await new User({
             name: req.body.name,
             password: hash,
@@ -74,7 +73,7 @@ async function signUp(req, res) {
 // 判断用户是否登录
 async function checkToken(req, res) {
     try {
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         res.json({
             loggedIn: !!user,
             code: 200
@@ -91,12 +90,11 @@ async function checkToken(req, res) {
 // 判断用户是否在看自己的个人中心
 async function judgeUser(req, res) {
     try {
-        let doc = await User.findOne({token: req.headers['f-token']});
+        const doc = await User.findOne({token: req.headers['f-token']});
         if (doc) {
-            const self = String(doc._id) === String(req.query.uId);
             res.json({
                 code: 200,
-                self
+                self: String(doc._id) === String(req.query.uId)
             });
         } else {
             res.json({

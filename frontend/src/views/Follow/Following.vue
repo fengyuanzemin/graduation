@@ -5,7 +5,13 @@
       <span class="follow-name">{{item.following.name}}</span><!--
       --><span class="follow-brief" v-if="item.following.brief">{{item.following.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
-      --><span class="follow-icon iconfont" :class="{'icon-guanzhu': !item.following.follow, 'icon-icon-yiguanzhu': item.following.follow}" @click.prevent.stop="follow(item.following)"/>
+      --><span class="iconfont follow-icon icon-guanzhu" v-if="item.following.follow === 'none'"
+               @click.prevent.stop="follow(item.following)"/><!--
+      --><span class="iconfont follow-icon icon-icon-yiguanzhu" v-else-if="item.following.follow === 'following'"
+               @click.prevent.stop="follow(item.following)"/><!--
+      --><span class="iconfont follow-icon icon-huxiangguanzhu" v-else-if="item.following.follow === 'eachOther'"
+               @click.prevent.stop="follow(item.following)"/>
+
     </div>
   </div>
 </template>
@@ -34,13 +40,25 @@ export default {
       this.$router.push({name: 'user', params: {userId: data._id}});
     },
     follow(data) {
-      follow(data._id, this.token, !data.follow).then((res)=>{
-        if(res.data.code === 200) {
-          data.follow = !data.follow;
-        }
-      }).catch((err)=>{
-        console.log(err);
-      });
+      if(data.follow === 'none') {
+        // 关注
+        follow(data._id, this.token, true).then((res) => {
+          if(res.data.code === 200) {
+            data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      } else {
+        // 取关
+        follow(data._id, this.token, false).then((res) => {
+          if(res.data.code === 200) {
+            data.follow = 'none';
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
     }
   }
 };

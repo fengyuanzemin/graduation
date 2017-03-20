@@ -10,9 +10,7 @@
         <span class="select-text">{{item.text}}</span>
       </div>
     </div>
-    <keep-alive>
-      <component :is="currentView"/>
-    </keep-alive>
+    <component :is="currentView"/>
   </div>
 </template>
 <script>

@@ -26,13 +26,31 @@
 </template>
 <script>
 import {getUserInfo} from 'src/api';
-import {getCookie, clearCookie} from 'src/utils';
+
 export default {
   created() {
     getUserInfo(this.token).then((res) => {
-      this.userInfo = res.data.userInfo;
+      if(res.data.code === 200) {
+        this.userInfo = res.data.userInfo;
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+          if(res.data.code === 5002) {
+            this.$route.push('/login');
+          }
+        }, 2000);
+      }
     }).catch((err) => {
-      console.log(err)
+      console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+      });
+      setTimeout(() => {
+        this.$store.dispatch('close');
+      }, 2000);
     })
   },
   data() {
@@ -44,12 +62,12 @@ export default {
         followers_count: 0,
         brief: ''
       },
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     };
   },
   methods: {
     logout() {
-      clearCookie('f-token');
+      localStorage.removeItem('f-token');
       this.$router.push('/login');
     },
     toList() {

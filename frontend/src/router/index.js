@@ -20,7 +20,7 @@ export default new Router({
       path: '/',
       component: resolve => require(['../views/Index/Layout'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         if (!token) {
           next('/un-login');
         }
@@ -44,7 +44,7 @@ export default new Router({
       path: '/un-login',
       component: resolve => require(['../views/UnLogin/Layout'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         checkToken(token).then((res) => {
           if (res.data.code === 200) {
             const loggedIn = res.data.loggedIn;
@@ -65,7 +65,7 @@ export default new Router({
       path: '/post',
       component: resolve => require(['../views/Post'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         if (!token) {
           next('/un-login');
         }
@@ -90,7 +90,7 @@ export default new Router({
       name: 'repost',
       component: resolve => require(['../views/Repost'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         if (!token) {
           next('/un-login');
         }
@@ -115,7 +115,7 @@ export default new Router({
       name: 'comment',
       component: resolve => require(['../views/Comment'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         if (!token) {
           next('/un-login');
         }
@@ -150,7 +150,7 @@ export default new Router({
       name: 'follow',
       component: resolve => require(['../views/Follow/Layout'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         if (!token) {
           next('/un-login');
         }
@@ -174,7 +174,7 @@ export default new Router({
       path: '/userUpdate',
       component: resolve => require(['../views/UserUpdate'], resolve),
       beforeEnter: (to, from, next) => {
-        const token = getCookie('f-token');
+        const token = localStorage.getItem('f-token');
         if (!token) {
           next('/un-login');
         }

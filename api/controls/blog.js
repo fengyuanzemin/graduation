@@ -8,6 +8,7 @@ import RelationShip from '../models/relationship';
 
 import {errCode} from '../utils/codeTransfer';
 
+// 发送原创微博
 async function post(req, res) {
     if (!req.body.text) {
         res.json({
@@ -74,6 +75,7 @@ async function getHotList(req, res) {
         });
     }
 }
+
 // 已登录首页数据
 async function getList(req, res) {
     try {
@@ -422,6 +424,11 @@ async function getFollowList(req, res) {
         });
     }
 }
+
+// 转发时，取得转发的微博的数据
+
+
+// 评论时，取得评论的微博的数据
 
 export default {
     post, getHotList, getList, getUserPostList,

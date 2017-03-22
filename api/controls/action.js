@@ -10,13 +10,6 @@ import {errCode} from '../utils/codeTransfer';
 
 // 转发
 async function repost(req, res) {
-    if (!req.body.content) {
-        res.json({
-            code: 5004,
-            message: errCode[5004]
-        });
-        return;
-    }
     try {
         let post = await Post.findOne({_id: req.body.pId}).populate('user', ['name']);
         // 不是原创
@@ -28,7 +21,7 @@ async function repost(req, res) {
             content = `${req.body.content} // @${post.user.name}：${post.content}`;
         } else {
             originalPostId = req.body.pId;
-            content = req.body.content;
+            content = req.body.content ? req.body.content : '转发';
         }
         // 找到用户
         let user = await User.findOne({token: req.headers['f-token']});

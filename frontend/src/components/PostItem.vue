@@ -61,13 +61,12 @@
   </div>
 </template>
 <script>
-import {dateFormat, getCookie} from 'src/utils';
 import {attitude, clickIn} from 'src/api';
 export default {
   props: ['item'],
   data() {
     return {
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     }
   },
   methods: {
@@ -107,9 +106,25 @@ export default {
           data.attitudes_count += 1;
         } else if (res.data.code === 5007) {
           data.attitudes_count -= 1;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+  	      });
+  	      setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
-        console.log(res)
+        console.log(res);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       });
     },
     toUser(data) {
@@ -119,15 +134,10 @@ export default {
       }
       // 在未登录页面，要去登录
       if(/^\/un-login/.test(this.$route.path)) {
-        this.$router.push('/login')
+        this.$router.push('/login');
         return;
       }
       this.$router.push({name: 'user', params: {userId: data.user._id}});
-    }
-  },
-  filters: {
-    timeFormat(val, option) {
-      return dateFormat(val, option);
     }
   }
 };

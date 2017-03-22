@@ -52,33 +52,81 @@ import AttitudeItem from 'src/components/AttitudeItem';
 import CommentItem from 'src/components/CommentItem';
 import RepostItem from 'src/components/RepostItem';
 import {getPostItem, attitude, getActionInfo, checkAttitude, clickIn} from 'src/api';
-import {dateFormat, getCookie} from 'src/utils';
+
 export default {
   created() {
     // 拉取主要信息
     getPostItem(this.$route.params.postId).then((res) => {
-      if(res.data.code === 200) {
+      if (res.data.code === 200) {
           this.item = res.data.detail;
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+  	    });
+  	    setTimeout(() => {
+          this.$store.dispatch('close');
+          if(res.data.code === 5002) {
+            this.$route.push('/login');
+          }
+        }, 2000);
       }
     }).catch((err) => {
       console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+      });
+      setTimeout(() => {
+        this.$store.dispatch('close');
+      }, 2000);
     });
     // 拉取评论点赞
     getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
       if(res.data.code === 200) {
         this.actionItem = res.data.items;
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+  	    });
+  	    setTimeout(() => {
+          this.$store.dispatch('close');
+          if(res.data.code === 5002) {
+            this.$route.push('/login');
+          }
+        }, 2000);
       }
     }).catch((err) => {
-        console.log(err);
+      console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+      });
+      setTimeout(() => {
+        this.$store.dispatch('close');
+      }, 2000);
     });
     // 如果用户已登录，还要查看是否点过赞
     if (this.token) {
       checkAttitude(this.$route.params.postId, this.token).then((res) => {
         if(res.data.code === 200) {
           this.attituded = res.data.check;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
         console.log(err);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       });
     }
   },
@@ -88,13 +136,8 @@ export default {
       attituded: false,
       currentView: 'f-comment-item',
       actionItem: [],
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     };
-  },
-  filters: {
-    timeFormat(val, option) {
-      return dateFormat(val, option);
-    }
   },
   watch: {
     '$route'(route) {
@@ -102,26 +145,74 @@ export default {
       getPostItem(this.$route.params.postId).then((res) => {
         if(res.data.code === 200) {
           this.item = res.data.detail;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
         console.log(err);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       });
       // 拉取评论点赞
       getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
         if(res.data.code === 200) {
           this.actionItem = res.data.items;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
-          console.log(err);
+        console.log(err);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       });
       // 如果用户已登录，还要查看是否点过赞
       if (this.token) {
         checkAttitude(this.$route.params.postId, this.token).then((res) => {
           if(res.data.code === 200) {
             this.attituded = res.data.check;
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if(res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
           }
         }).catch((err) => {
           console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         });
       }
     }
@@ -151,9 +242,25 @@ export default {
         } else if (res.data.code === 5007){
           this.attituded = false;
           this.item.attitudes_count -= 1;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
-        console.log(res)
+        console.log(err);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       });
     },
     toUser(data) {
@@ -165,9 +272,25 @@ export default {
       getActionInfo(this.$route.params.postId, component, this.token).then((res) => {
         if(res.data.code === 200) {
           this.actionItem = res.data.items;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
-        console.log(err)
+        console.log(err);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       })
     },
     detail(data) {

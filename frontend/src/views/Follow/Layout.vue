@@ -15,7 +15,6 @@
 </template>
 <script>
 import {judgeUser} from 'src/api';
-import {getCookie} from 'src/utils';
 import Follower from './Follower';
 import Following from './Following';
 import Recommend from './Recommend';
@@ -30,12 +29,28 @@ export default {
       this.currentView = this.$route.query.component;
     }
     // 判断是否为自己的主页
-    judgeUser(this.$route.params.userId, this.token).then((res)=>{
+    judgeUser(this.$route.params.userId, this.token).then((res) => {
       if (res.data.code === 200) {
         this.name = res.data.self ? '我的好友' : '他的好友';
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+  	    });
+  	    setTimeout(() => {
+          this.$store.dispatch('close');
+          if(res.data.code === 5002) {
+            this.$route.push('/login');
+          }
+        }, 2000);
       }
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+      });
+      setTimeout(() => {
+        this.$store.dispatch('close');
+      }, 2000);
     })
   },
   data() {
@@ -61,13 +76,9 @@ export default {
           component: 'f-recommend',
           active: false
         }
-      ]
+      ],
+      token: localStorage.getItem('f-token')
     };
-  },
-  computed: {
-    token() {
-      return getCookie('f-token');
-    }
   },
   methods: {
     checkout(data) {

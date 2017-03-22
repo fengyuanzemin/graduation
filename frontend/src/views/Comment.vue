@@ -11,14 +11,13 @@
   </div>
 </template>
 <script>
-import {getCookie} from 'src/utils/';
 import {comment} from 'src/api/';
 
 export default {
   data() {
     return {
       text: '',
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     };
   },
   methods: {
@@ -30,19 +29,27 @@ export default {
         return;
       }
       comment(this.$route.params.postId, this.text, this.token).then((res) => {
-        switch (res.data.code) {
-          case 200:
-          // 发送成功
-            this.$router.push({name: 'status', params: { postId: this.$route.params.postId }});
-          break;
-          case 5002:
-          // token过期
-            this.$router.push('/login');
-          break;
+        if(res.data.code === 200) {
+          this.$router.push({name: 'status', params: { postId: this.$route.params.postId }});
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
         console.log(err);
-        // 发送失败
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       })
     }
   }

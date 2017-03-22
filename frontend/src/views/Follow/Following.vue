@@ -17,22 +17,33 @@
 </template>
 <script>
 import {getFollowList, follow} from 'src/api';
-import {getCookie} from 'src/utils';
 export default {
   created() {
     getFollowList(1, this.$route.params.userId).then((res) => {
-      console.log(res)
       if(res.data.code === 200) {
         this.items = res.data.followList;
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+  	    });
+  	    setTimeout(() => {
+          this.$store.dispatch('close');
+  	    }, 2000);
       }
     }).catch((err) => {
       console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+  	  });
+  	  setTimeout(() => {
+        this.$store.dispatch('close');
+  	  }, 2000);
     });
   },
   data() {
     return {
       items: [],
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     };
   },
   methods: {
@@ -45,18 +56,50 @@ export default {
         follow(data._id, this.token, true).then((res) => {
           if(res.data.code === 200) {
             data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+  	        });
+  	        setTimeout(() => {
+              this.$store.dispatch('close');
+              if(res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
           }
         }).catch((err) => {
           console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         });
       } else {
         // 取关
         follow(data._id, this.token, false).then((res) => {
           if(res.data.code === 200) {
             data.follow = 'none';
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+  	        });
+  	        setTimeout(() => {
+              this.$store.dispatch('close');
+              if(res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
           }
         }).catch((err) => {
           console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         });
       }
     }

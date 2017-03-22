@@ -39,7 +39,6 @@
 <script>
 import PostItem from 'src/components/PostItem';
 import {getUserPostList, follow} from 'src/api';
-import {getCookie} from 'src/utils';
 
 export default {
   created() {
@@ -48,9 +47,22 @@ export default {
         this.items = res.data.items;
         this.userInfo = res.data.userInfo;
         this.follow = res.data.follow;
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+  	    });
+  	    setTimeout(() => {
+          this.$store.dispatch('close');
+  	    }, 2000);
       }
     }).catch((err) => {
       console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+      });
+      setTimeout(() => {
+        this.$store.dispatch('close');
+      }, 2000);
     });
   },
   data() {
@@ -64,20 +76,36 @@ export default {
       },
       follow: 'none',
       items: [],
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     };
   },
   watch: {
     // route 只有后面的变化的时候需要用watch
     '$route'(route) {
       getUserPostList(route.params.userId, this.token).then((res) => {
-      if(res.data.code === 200) {
-        this.items = res.data.items;
-        this.userInfo = res.data.userInfo;
-        this.follow = res.data.follow;
-      }
+        if(res.data.code === 200) {
+          this.items = res.data.items;
+          this.userInfo = res.data.userInfo;
+          this.follow = res.data.follow;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
+        }
       }).catch((err) => {
         console.log(err);
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       });
     }
   },
@@ -104,18 +132,50 @@ export default {
         follow(this.$route.params.userId, this.token, true).then((res) => {
           if(res.data.code === 200) {
             this.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if(res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
           }
         }).catch((err) => {
           console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         });
       } else {
         // 取关
         follow(this.$route.params.userId, this.token, false).then((res) => {
           if(res.data.code === 200) {
             this.follow = 'none';
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if(res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
           }
         }).catch((err) => {
           console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         });
       }
     }

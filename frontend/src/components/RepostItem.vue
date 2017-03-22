@@ -13,14 +13,8 @@
   </div>
 </template>
 <script>
-import {dateFormat} from 'src/utils';
 export default {
-  props: ['items'],
-  filters: {
-    timeFormat(val, option) {
-      return dateFormat(val, option);
-    }
-  }
+  props: ['items']
 };
 </script>
 <style lang="scss" scoped>

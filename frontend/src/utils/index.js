@@ -1,22 +1,8 @@
 /**
  * Created by fengyuanzemin on 17/2/18.
  */
-// 根据名字取cookie
-export function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop().split(';').shift();
-  } else {
-    return parts.pop();
-  }
-}
 
-// 清理cookie
-export function clearCookie(name) {
-  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
-
+// 输出为一个filter
 export function dateFormat(val, option) {
   const time = new Date(val);
   const now = Date.now();

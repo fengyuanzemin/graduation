@@ -21,6 +21,7 @@
 <script>
 import FadeSpinner from 'components/FadeSpinner';
 import {login} from 'src/api/index';
+
 export default {
   data() {
     return {
@@ -32,14 +33,30 @@ export default {
   },
   methods: {
   	login() {
-      login(this.name,this.password).then((res) => {
-        console.log(res);
+  	  this.$store.dispatch('show', {
+        msg: '登录中，请等待'
+  	  });
+      login(this.name, this.password).then((res) => {
         if(res.data.code === 200) {
-          document.cookie = `f-token=${res.data.token}`;
+          localStorage.setItem('f-token', res.data.token);
+          this.$store.dispatch('close');
           this.$router.push('/');
+        } else {
+          this.$store.dispatch('checkoutMsg', {
+            msg: res.data.message
+  	      });
+  	      setTimeout(() => {
+            this.$store.dispatch('close');
+  	      }, 2000);
         }
       }).catch((err) => {
         console.log(err)
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+  	    });
+  	    setTimeout(() => {
+          this.$store.dispatch('close');
+  	    }, 2000);
       })
   	},
   	toSignUp() {

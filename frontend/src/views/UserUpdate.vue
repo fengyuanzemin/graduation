@@ -17,23 +17,40 @@
   </div>
 </template>
 <script>
-import {getCookie} from 'src/utils/';
 import {updateUserInfo, getUserInfo} from 'src/api/';
 
 export default {
   created() {
-    getUserInfo(this.token).then((res)=>{
-      this.name = res.data.userInfo.name;
-      this.text = res.data.userInfo.brief;
-    }).catch((err)=>{
+    getUserInfo(this.token).then((res) => {
+      if(res.data.code === 200) {
+        this.name = res.data.userInfo.name;
+        this.text = res.data.userInfo.brief;
+      } else {
+        this.$store.dispatch('show', {
+          msg: res.data.message
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+          if(res.data.code === 5002) {
+            this.$route.push('/login');
+          }
+        }, 2000);
+      }
+    }).catch((err) => {
       console.log(err);
+      this.$store.dispatch('show', {
+        msg: '服务器错误啦，请稍后再试'
+      });
+      setTimeout(() => {
+        this.$store.dispatch('close');
+      }, 2000);
     });
   },
   data() {
     return {
       name: '',
       text: '',
-      token: getCookie('f-token')
+      token: localStorage.getItem('f-token')
     };
   },
   methods: {
@@ -45,20 +62,27 @@ export default {
         return;
       }
       updateUserInfo(this.name, this.text, this.token).then((res) => {
-        console.log(res);
-        switch (res.data.code) {
-          case 200:
-          // 发送成功
-            this.$router.push('/');
-          break;
-          case 5002:
-          // token过期
-            this.$router.push('/login');
-          break;
+        if(res.data.code === 200) {
+          this.$router.push('/');
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if(res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
         }
       }).catch((err) => {
         console.log(err);
-        // 发送失败
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
       })
     }
   }

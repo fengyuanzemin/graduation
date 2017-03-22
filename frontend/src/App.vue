@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view></router-view>
+    <f-msg-with-loading/>
   </div>
 </template>
 
@@ -8,7 +9,11 @@
   import 'assets/css/reset.css';
   import 'assets/css/global.scss';
   import 'assets/fonts/iconfont.css';
+  import MsgWithLoading from 'components/MsgWithLoading';
   export default {
-    name: 'app'
+    name: 'app',
+    components: {
+      'f-msg-with-loading': MsgWithLoading
+    }
   };
 </script>

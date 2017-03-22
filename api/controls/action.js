@@ -9,7 +9,7 @@ import RelationShip from '../models/relationship';
 import {errCode} from '../utils/codeTransfer';
 
 // 转发
-async function repost(req, res) {
+export async function repost(req, res) {
     try {
         let post = await Post.findOne({_id: req.body.pId}).populate('user', ['name']);
         // 不是原创
@@ -64,7 +64,7 @@ async function repost(req, res) {
 }
 
 //评论
-async function comment(req, res) {
+export async function comment(req, res) {
     if (!req.body.content) {
         res.json({
             code: 5004,
@@ -105,7 +105,7 @@ async function comment(req, res) {
 }
 
 // 点赞
-async function attitude(req, res) {
+export async function attitude(req, res) {
     try {
         let count = 1;
         // 查找用户
@@ -151,7 +151,7 @@ async function attitude(req, res) {
 }
 
 // 关注或者取关
-async function follow(req, res) {
+export async function follow(req, res) {
     try {
         let user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
@@ -231,8 +231,46 @@ async function follow(req, res) {
         });
     }
 }
+
+// 记录用户查看微博的行为
+export async function clickIn(req, res) {
+    try {
+        let post = await Post.findOne({_id: req.body.pId});
+        let user = await User.findOne({token: req.headers['f-token']});
+        if (user && post) {
+            if (String(user._id) === String(post.user)) {
+                res.json({
+                    code: 5011,
+                    message: errCode[5011]
+                });
+            } else {
+                await new Action({
+                    user: user._id,
+                    post: req.body.pId,
+                    action: 'click'
+                }).save();
+                res.json({
+                    code: 200,
+                    message: '成功记录'
+                });
+            }
+        } else {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        res.json({
+            code: 5001,
+            message: errCode[5001]
+        });
+    }
+}
+
 // 拉取转发、评论、点赞
-async function getActionInfo(req, res) {
+export async function getActionInfo(req, res) {
     try {
         const items = await Action.find({post: req.query.pId, action: req.query.action})
             .populate('user', ['name']);
@@ -247,9 +285,4 @@ async function getActionInfo(req, res) {
             message: errCode[5001]
         });
     }
-}
-
-export default {
-    attitude, repost, comment, follow,
-    getActionInfo
 }

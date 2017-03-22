@@ -9,7 +9,7 @@ import RelationShip from '../models/relationship';
 import {errCode} from '../utils/codeTransfer';
 
 // 发送原创微博
-async function post(req, res) {
+export async function post(req, res) {
     if (!req.body.text) {
         res.json({
             code: 5004,
@@ -49,7 +49,7 @@ async function post(req, res) {
 }
 
 // 热门微博
-async function getHotList(req, res) {
+export async function getHotList(req, res) {
     try {
         const cardList = await Post.find()
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
@@ -77,10 +77,9 @@ async function getHotList(req, res) {
 }
 
 // 已登录首页数据
-async function getList(req, res) {
+export async function getList(req, res) {
     try {
-        let userArr = [];
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
             res.json({
                 code: 5002,
@@ -88,12 +87,15 @@ async function getList(req, res) {
             });
             return;
         }
+        let userArr = [];
         userArr.push(user._id);
-        let relationShip = await RelationShip.find({follower: user._id});
+        // 找到关注过的
+        const relationShip = await RelationShip.find({follower: user._id});
         relationShip.forEach(item => {
             userArr.push(item.following);
         });
-        let cardList = await Post.find({user: {$in: userArr}})
+        // 找到所有的数据
+        const cards = await Post.find({user: {$in: userArr}})
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
             .sort({_id: -1})
             .populate('user', ['name'])
@@ -105,6 +107,13 @@ async function getList(req, res) {
                     select: 'name'
                 }
             });
+        let cardList = [];
+        // 判断用户在当前数据是否点过赞
+        for (let card of cards) {
+            const c = JSON.parse(JSON.stringify(card));
+            c.attituded = !!await Action.findOne({user: user._id, post: c._id, action: 'attitude'});
+            cardList.push(c);
+        }
         res.json({
             cardList,
             code: 200
@@ -119,9 +128,9 @@ async function getList(req, res) {
 }
 
 // 用户的个人微博列表
-async function getUserPostList(req, res) {
+export async function getUserPostList(req, res) {
     try {
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
             res.json({
                 code: 5002,
@@ -129,11 +138,12 @@ async function getUserPostList(req, res) {
             });
             return;
         }
-        let userInfo = await User.findOne({_id: req.query.uId})
+        // 用户个人介绍
+        const userInfo = await User.findOne({_id: req.query.uId})
             .select('followers_count following_count name posts_count brief');
         if (String(user._id) === String(req.query.uId)) {
             // 看自己的个人微博
-            let items = await Post.find({user: req.query.uId})
+            const postItems = await Post.find({user: req.query.uId})
                 .sort({_id: -1})
                 .populate('user', ['name'])
                 .populate('retweeted_post')
@@ -144,6 +154,13 @@ async function getUserPostList(req, res) {
                         select: 'name'
                     }
                 });
+            // 查看自己是否点过赞
+            let items = [];
+            for (let item of postItems) {
+                const i = JSON.parse(JSON.stringify(item));
+                i.attituded = !!await Action.findOne({post: i._id, user: user._id, action: 'attitude'});
+                items.push(i);
+            }
             res.json({
                 code: 200,
                 items,
@@ -153,9 +170,9 @@ async function getUserPostList(req, res) {
             // 看别人微博
             let follow;
             // 是否是已经关注ta
-            let following = await RelationShip.findOne({following: req.query.uId, follower: user._id});
+            const following = await RelationShip.findOne({following: req.query.uId, follower: user._id});
             // 是否是粉丝
-            let follower = await RelationShip.findOne({follower: req.query.uId, following: user._id});
+            const follower = await RelationShip.findOne({follower: req.query.uId, following: user._id});
             // 互相关注
             if (follower && following) {
                 follow = 'eachOther';
@@ -168,7 +185,7 @@ async function getUserPostList(req, res) {
             }
             // 查找别人点赞的，不属于别人，也不属于自己的微博
             // 先找到别人点赞的所有微博
-            let action = await Action.find({action: 'attitude', user: req.query.uId})
+            const action = await Action.find({action: 'attitude', user: req.query.uId})
                 .sort({_id: -1})
                 .populate({
                     path: 'post',
@@ -200,7 +217,7 @@ async function getUserPostList(req, res) {
                 }
             });
             // 再找到他的所有微博
-            let postArr = await Post.find({user: req.query.uId})
+            const postArr = await Post.find({user: req.query.uId})
                 .sort({_id: -1})
                 .populate('user', ['name'])
                 .populate('retweeted_post')
@@ -213,27 +230,56 @@ async function getUserPostList(req, res) {
                 });
             // 按时间排序
             let [i, j, k] = [0, 0, 0];
-            let items = [];
+            let postItems = [];
             // 先排序
             while (i < attitude.length && j < postArr.length) {
                 if (new Date(attitude[i].createdAt).valueOf() >= new Date(postArr[j].createdAt).valueOf()) {
-                    items[k++] = attitude[i++];
+                    postItems[k++] = attitude[i++];
                 } else {
-                    items[k++] = postArr[j++];
+                    postItems[k++] = postArr[j++];
                 }
             }
             // 再把剩下的全放进去
             while (i < attitude.length) {
-                items[k++] = attitude[i++];
+                postItems[k++] = attitude[i++];
             }
             while (j < postArr.length) {
-                items[k++] = postArr[j++];
+                postItems[k++] = postArr[j++];
             }
+            // 查看自己是否点过赞
+            let items = [];
+            for (let item of postItems) {
+                const i = JSON.parse(JSON.stringify(item));
+                i.attituded = !!await Action.findOne({post: i._id, user: user._id, action: 'attitude'});
+                items.push(i);
+            }
+            // // 关注他的人
+            // const userFollower = await RelationShip.find({
+            //     following: req.query.uId,
+            //     follower: {
+            //         $ne: user._id
+            //     }
+            // }).populate('follower');
+            // // 也关注他
+            // let userRecommend = [];
+            // for (let u of userFollower) {
+            //     const userR = await RelationShip.find({
+            //         following: {
+            //             $nin: [
+            //                 user._id,
+            //                 req.query.uId
+            //             ]
+            //         },
+            //         follower: u.follower
+            //     }).populate('following');
+            //     userRecommend = userRecommend.concat(userR);
+            // }
             res.json({
                 code: 200,
                 items,
                 userInfo,
-                follow
+                follow,
+                // userRecommend
             })
         }
     } catch (err) {
@@ -246,7 +292,7 @@ async function getUserPostList(req, res) {
 }
 
 // 只拿一个微博数据
-async function getPostItem(req, res) {
+export async function getPostItem(req, res) {
     try {
         const detail = await Post.findOne({_id: req.query.pId})
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
@@ -280,7 +326,7 @@ async function getPostItem(req, res) {
 }
 
 // 搜索
-async function search(req, res) {
+export async function search(req, res) {
     try {
         let user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
@@ -344,7 +390,7 @@ async function search(req, res) {
 }
 
 // 关注列表和粉丝列表
-async function getFollowList(req, res) {
+export async function getFollowList(req, res) {
     try {
         const user = await User.findOne({_id: req.query.uId});
         if (!user) {
@@ -429,8 +475,3 @@ async function getFollowList(req, res) {
 
 
 // 评论时，取得评论的微博的数据
-
-export default {
-    post, getHotList, getList, getUserPostList,
-    getPostItem, search, getFollowList
-}

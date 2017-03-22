@@ -4,7 +4,7 @@
 import similar from '../algorithm/calculate';
 import {errCode} from '../utils/codeTransfer';
 
-async function getUserRecommend(req, res) {
+export async function getUserRecommend(req, res) {
     try {
         const recommend = await similar(req.headers['f-token']);
         res.json({
@@ -20,6 +20,3 @@ async function getUserRecommend(req, res) {
     }
 }
 
-export default {
-    getUserRecommend
-}

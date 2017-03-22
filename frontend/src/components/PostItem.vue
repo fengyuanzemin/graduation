@@ -23,7 +23,7 @@
           <span class="iconfont icon-pinglun"/><span v-if="item.post.comments_count" class="card-footer-text">{{item.post.comments_count}}</span><span
           class="card-footer-text" v-else>评论</span>
         </div>
-        <div class="card-footer-container" @click.stop.prevent="attitude(item.post)">
+        <div class="card-footer-container" @click.stop.prevent="attitude(item.post)" :class="{attituded: item.attituded}">
           <span class="iconfont icon-unie60e"/><span v-if="item.post.attitudes_count" class="card-footer-text">{{item.post.attitudes_count}}</span><span
           class="card-footer-text" v-else>点赞</span>
         </div>
@@ -53,7 +53,7 @@
           <span class="iconfont icon-pinglun"/><span v-if="item.comments_count" class="card-footer-text">{{item.comments_count}}</span><span
           class="card-footer-text" v-else>评论</span>
         </div>
-        <div class="card-footer-container" @click.stop.prevent="attitude(item)">
+        <div class="card-footer-container" @click.stop.prevent="attitude(item)" :class="{attituded: item.attituded}">
           <span class="iconfont icon-unie60e"/><span v-if="item.attitudes_count" class="card-footer-text">{{item.attitudes_count}}</span><span
           class="card-footer-text" v-else>点赞</span>
         </div>
@@ -104,8 +104,10 @@ export default {
       attitude(data._id, this.token).then((res) => {
         if (res.data.code === 200) {
           data.attitudes_count += 1;
+          data.attituded = true;
         } else if (res.data.code === 5007) {
           data.attitudes_count -= 1;
+          data.attituded = false;
         } else {
           this.$store.dispatch('show', {
             msg: res.data.message
@@ -208,6 +210,9 @@ export default {
         padding: 10px;
         border-right: 1px solid #dcdcdc;
         color: #777;
+        &.attituded {
+          color: #ea5d5d;
+        }
         &:nth-last-child(1) {
           border-right: none;
         }

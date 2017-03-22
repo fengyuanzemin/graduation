@@ -8,11 +8,10 @@ import {saltRounds} from '../config/salt';
 import {randomKey} from '../utils';
 
 import User from '../models/user';
-import Post from '../models/post';
 import Action from '../models/action';
 
 // 登录
-async function login(req, res) {
+export async function login(req, res) {
     try {
         const user = await User.findOne({name: req.body.name});
         let doc;
@@ -47,7 +46,7 @@ async function login(req, res) {
 }
 
 // 注册
-async function signUp(req, res) {
+export async function signUp(req, res) {
     try {
         const token = randomKey();
         const hash = await bcrypt.hash(req.body.password, saltRounds);
@@ -71,7 +70,7 @@ async function signUp(req, res) {
 }
 
 // 判断用户是否登录
-async function checkToken(req, res) {
+export async function checkToken(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
         res.json({
@@ -88,7 +87,7 @@ async function checkToken(req, res) {
 }
 
 // 判断用户是否在看自己的个人中心
-async function judgeUser(req, res) {
+export async function judgeUser(req, res) {
     try {
         const doc = await User.findOne({token: req.headers['f-token']});
         if (doc) {
@@ -111,44 +110,8 @@ async function judgeUser(req, res) {
     }
 }
 
-// 记录用户查看微博的行为
-async function clickIn(req, res) {
-    try {
-        let post = await Post.findOne({_id: req.body.pId});
-        let user = await User.findOne({token: req.headers['f-token']});
-        if (user && post) {
-            if (String(user._id) === String(post.user)) {
-                res.json({
-                    code: 5011,
-                    message: errCode[5011]
-                });
-            } else {
-                await new Action({
-                    user: user._id,
-                    post: req.body.pId,
-                    action: 'click'
-                }).save();
-                res.json({
-                    code: 200,
-                    message: '成功记录'
-                });
-            }
-        } else {
-            res.json({
-                code: 5002,
-                message: errCode[5002]
-            });
-        }
-    } catch (err) {
-        console.log(err);
-        res.json({
-            code: 5001,
-            message: errCode[5001]
-        });
-    }
-}
 // 更改用户简介
-async function updateUserInfo(req, res) {
+export async function updateUserInfo(req, res) {
     if (!(req.body.name || req.body.brief)) {
         res.json({
             code: 5004,
@@ -186,7 +149,7 @@ async function updateUserInfo(req, res) {
 }
 
 // 用户简介
-async function getUserInfo(req, res) {
+export async function getUserInfo(req, res) {
     try {
         const userInfo = await User.findOne({token: req.headers['f-token']})
             .select('followers_count following_count name posts_count brief');
@@ -210,7 +173,7 @@ async function getUserInfo(req, res) {
     }
 }
 // 在微博正文检查用户是否点过赞
-async function checkAttitude(req, res) {
+export async function checkAttitude(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
@@ -232,8 +195,4 @@ async function checkAttitude(req, res) {
             message: errCode[5001]
         });
     }
-}
-export default {
-    login, signUp, checkToken, judgeUser, clickIn,
-    updateUserInfo, getUserInfo, checkAttitude
 }

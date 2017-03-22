@@ -1,10 +1,10 @@
 import express from 'express';
 const router = express.Router();
 
-import user from '../controls/user';
-import action from '../controls/action';
-import algorithm from '../controls/algorithm';
-import blog from '../controls/blog';
+import * as user from '../controls/user';
+import * as action from '../controls/action';
+import * as algorithm from '../controls/algorithm';
+import * as blog from '../controls/blog';
 
 // 空请求
 router.get('/', (req, res) => {
@@ -12,14 +12,6 @@ router.get('/', (req, res) => {
         message: '首页',
         code: 200
     });
-});
-
-// 请求/favicon的，给个空
-router.get('/favicon', (req, res) => {
-    res.json({
-        message: '没有这个东西，好烦呢你',
-        code: 200
-    })
 });
 
 /**
@@ -46,9 +38,6 @@ router.get('/checkAttitude', user.checkAttitude);
 
 // 判断用户是否在看自己的个人中心
 router.get('/judgeUser', user.judgeUser);
-
-// 记录用户查看微博的行为
-router.post('/clickIn', user.clickIn);
 
 /**
  * blog route
@@ -94,6 +83,12 @@ router.get('/getActionInfo', action.getActionInfo);
 // 关注或者取关
 router.post('/follow', action.follow);
 
+// 记录用户查看微博的行为
+router.post('/clickIn', action.clickIn);
+
+/**
+ * algorithm route
+ */
 // 推荐用户
 router.get('/recommend', algorithm.getUserRecommend);
 

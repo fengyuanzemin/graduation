@@ -48,7 +48,13 @@ export async function login(req, res) {
 // 注册
 export async function signUp(req, res) {
     try {
-        const token = randomKey();
+        let token = randomKey();
+        let tokenExist = await User.findOne({token});
+        // 检查token是否已经存在了
+        while (tokenExist) {
+            token = randomKey();
+            tokenExist = await User.findOne({token});
+        }
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         await new User({
             name: req.body.name,
@@ -172,6 +178,7 @@ export async function getUserInfo(req, res) {
         })
     }
 }
+
 // 在微博正文检查用户是否点过赞
 export async function checkAttitude(req, res) {
     try {

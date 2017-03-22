@@ -235,8 +235,8 @@ export async function follow(req, res) {
 // 记录用户查看微博的行为
 export async function clickIn(req, res) {
     try {
-        let post = await Post.findOne({_id: req.body.pId});
-        let user = await User.findOne({token: req.headers['f-token']});
+        const post = await Post.findOne({_id: req.body.pId});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (user && post) {
             if (String(user._id) === String(post.user)) {
                 res.json({
@@ -273,7 +273,7 @@ export async function clickIn(req, res) {
 export async function getActionInfo(req, res) {
     try {
         const items = await Action.find({post: req.query.pId, action: req.query.action})
-            .populate('user', ['name']);
+            .populate('user', ['name']).sort({_id: -1});
         res.json({
             items,
             code: 200

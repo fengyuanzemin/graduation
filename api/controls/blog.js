@@ -294,7 +294,15 @@ export async function getUserPostList(req, res) {
 // 只拿一个微博数据
 export async function getPostItem(req, res) {
     try {
-        const detail = await Post.findOne({_id: req.query.pId})
+        const user = await User.findOne({token: req.headers['f-token']});
+        if (!user) {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
+            return;
+        }
+        const post = await Post.findOne({_id: req.query.pId})
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
             .populate('user', ['name'])
             .populate('retweeted_post')
@@ -305,7 +313,9 @@ export async function getPostItem(req, res) {
                     select: 'name'
                 }
             });
-        if (detail) {
+        if (post) {
+            const detail = JSON.parse(JSON.stringify(post));
+            detail.attituded = !!await Action.findOne({user: user._id, post: post._id, action: 'attitude'});
             res.json({
                 code: 200,
                 detail
@@ -392,14 +402,17 @@ export async function search(req, res) {
 // 关注列表和粉丝列表
 export async function getFollowList(req, res) {
     try {
-        const user = await User.findOne({_id: req.query.uId});
-        if (!user) {
+        // 该用户
+        const userSelf = await User.findOne({token: req.headers['f-token']});
+        if (!userSelf) {
             res.json({
                 code: 5002,
                 message: errCode[5002]
             });
             return;
         }
+        // 观看的用户的微博，可能是自己
+        const user = await User.findOne({_id: req.query.uId});
         if (Number(req.query.follow)) {
             let relationShip = await RelationShip.find({follower: user._id})
                 .populate('following', ['name', 'brief']);
@@ -408,10 +421,10 @@ export async function getFollowList(req, res) {
                 let parseU = JSON.parse(JSON.stringify(u));
                 let following = await RelationShip.findOne({
                     following: u.following._id,
-                    follower: user._id
+                    follower: userSelf._id
                 });
                 let follower = await RelationShip.findOne({
-                    following: user._id,
+                    following: userSelf._id,
                     follower: u.following._id
                 });
                 if (follower && following) {
@@ -439,10 +452,10 @@ export async function getFollowList(req, res) {
                 let parseU = JSON.parse(JSON.stringify(u));
                 let following = await RelationShip.findOne({
                     following: u.follower._id,
-                    follower: user._id
+                    follower: userSelf._id
                 });
                 let follower = await RelationShip.findOne({
-                    following: user._id,
+                    following: userSelf._id,
                     follower: u.follower._id
                 });
                 if (follower && following) {

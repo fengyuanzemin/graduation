@@ -19,7 +19,7 @@ import {getFollowList, follow} from 'src/api';
 
 export default {
   created() {
-    getFollowList(0, this.$route.params.userId).then((res) => {
+    getFollowList(0, this.$route.params.userId, this.token).then((res) => {
       if(res.data.code === 200) {
         this.items = res.data.followList;
       } else {
@@ -28,7 +28,10 @@ export default {
   	    });
   	    setTimeout(() => {
           this.$store.dispatch('close');
-  	    }, 2000);
+          if(res.data.code === 5002) {
+            this.$route.push('/login');
+          }
+        }, 2000);
       }
     }).catch((err) => {
       console.log(err)

@@ -85,10 +85,13 @@ export function getUserInfo(token) {
 }
 
 // 拉取微博正文
-export function getPostItem(pId) {
+export function getPostItem(pId, token) {
   return axios.get('/getPostItem', {
     params: {
       pId
+    },
+    headers: {
+      'f-token': token
     }
   })
 }
@@ -186,10 +189,13 @@ export function follow(uId, token, follow) {
 
 // 关注列表和粉丝列表
 // follow为1是关注列表，为0是粉丝列表
-export function getFollowList(follow, uId) {
+export function getFollowList(follow, uId, token) {
   return axios.get('/getFollowList', {
     params: {
       follow, uId
+    },
+    headers: {
+      'f-token': token
     }
   })
 }
@@ -219,7 +225,7 @@ export function clickIn(pId, token) {
 
 // 推荐
 export function recommend(token) {
-  return axios.get('/recommend',{
+  return axios.get('/recommend', {
     headers: {
       'f-token': token
     }

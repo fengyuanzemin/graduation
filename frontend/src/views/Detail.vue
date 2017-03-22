@@ -42,7 +42,7 @@
         <span class="iconfont icon-pinglun"/><span class="footer-text">评论</span>
       </div>
       <div class="footer-container" @click.stop.prevent="attitude">
-        <span class="iconfont icon-unie60e" :class="{active: attituded}"/><span class="footer-text">点赞</span>
+        <span class="iconfont icon-unie60e" :class="{active: item.attituded}"/><span class="footer-text">点赞</span>
       </div>
     </footer>
   </div>
@@ -56,7 +56,7 @@ import {getPostItem, attitude, getActionInfo, checkAttitude, clickIn} from 'src/
 export default {
   created() {
     // 拉取主要信息
-    getPostItem(this.$route.params.postId).then((res) => {
+    getPostItem(this.$route.params.postId, this.token).then((res) => {
       if (res.data.code === 200) {
           this.item = res.data.detail;
       } else {
@@ -103,32 +103,6 @@ export default {
         this.$store.dispatch('close');
       }, 2000);
     });
-    // 如果用户已登录，还要查看是否点过赞
-    if (this.token) {
-      checkAttitude(this.$route.params.postId, this.token).then((res) => {
-        if(res.data.code === 200) {
-          this.attituded = res.data.check;
-        } else {
-          this.$store.dispatch('show', {
-            msg: res.data.message
-          });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-            if(res.data.code === 5002) {
-              this.$route.push('/login');
-            }
-          }, 2000);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
-        });
-        setTimeout(() => {
-          this.$store.dispatch('close');
-        }, 2000);
-      });
-    }
   },
   data() {
     return {
@@ -142,7 +116,7 @@ export default {
   watch: {
     '$route'(route) {
       // 拉取主要信息
-      getPostItem(this.$route.params.postId).then((res) => {
+      getPostItem(this.$route.params.postId, this.token).then((res) => {
         if(res.data.code === 200) {
           this.item = res.data.detail;
         } else {
@@ -189,32 +163,6 @@ export default {
           this.$store.dispatch('close');
         }, 2000);
       });
-      // 如果用户已登录，还要查看是否点过赞
-      if (this.token) {
-        checkAttitude(this.$route.params.postId, this.token).then((res) => {
-          if(res.data.code === 200) {
-            this.attituded = res.data.check;
-          } else {
-            this.$store.dispatch('show', {
-              msg: res.data.message
-            });
-            setTimeout(() => {
-              this.$store.dispatch('close');
-              if(res.data.code === 5002) {
-                this.$route.push('/login');
-              }
-            }, 2000);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$store.dispatch('show', {
-            msg: '服务器错误啦，请稍后再试'
-          });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-          }, 2000);
-        });
-      }
     }
   },
   methods: {
@@ -237,10 +185,10 @@ export default {
       }
       attitude(this.$route.params.postId, this.token).then((res) => {
         if (res.data.code === 200) {
-          this.attituded = true;
+          this.item.attituded = true;
           this.item.attitudes_count += 1;
         } else if (res.data.code === 5007){
-          this.attituded = false;
+          this.item.attituded = false;
           this.item.attitudes_count -= 1;
         } else {
           this.$store.dispatch('show', {
@@ -304,7 +252,6 @@ export default {
     'f-repost-item': RepostItem
   }
 };
-
 </script>
 <style lang="scss" scoped>
   .container {

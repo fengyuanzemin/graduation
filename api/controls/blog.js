@@ -5,7 +5,7 @@ import User from '../models/user';
 import Post from '../models/post';
 import Action from '../models/action';
 import RelationShip from '../models/relationship';
-
+import Similar from '../models/similar';
 import {errCode} from '../utils/codeTransfer';
 
 // 发送原创微博
@@ -139,7 +139,7 @@ export async function getUserPostList(req, res) {
             return;
         }
         // 用户个人介绍
-        const userInfo = await User.findOne({_id: req.query.uId})
+        let userInfo = await User.findOne({_id: req.query.uId})
             .select('followers_count following_count name posts_count brief');
         if (String(user._id) === String(req.query.uId)) {
             // 看自己的个人微博
@@ -183,6 +183,8 @@ export async function getUserPostList(req, res) {
                 // 并没有关注
                 follow = 'none';
             }
+            userInfo = JSON.parse(JSON.stringify(userInfo));
+            userInfo.follow = follow;
             // 查找别人点赞的，不属于别人，也不属于自己的微博
             // 先找到别人点赞的所有微博
             const action = await Action.find({action: 'attitude', user: req.query.uId})
@@ -253,33 +255,57 @@ export async function getUserPostList(req, res) {
                 i.attituded = !!await Action.findOne({post: i._id, user: user._id, action: 'attitude'});
                 items.push(i);
             }
-            // // 关注他的人
-            // const userFollower = await RelationShip.find({
-            //     following: req.query.uId,
-            //     follower: {
-            //         $ne: user._id
-            //     }
-            // }).populate('follower');
-            // // 也关注他
-            // let userRecommend = [];
-            // for (let u of userFollower) {
-            //     const userR = await RelationShip.find({
-            //         following: {
-            //             $nin: [
-            //                 user._id,
-            //                 req.query.uId
-            //             ]
-            //         },
-            //         follower: u.follower
-            //     }).populate('following');
-            //     userRecommend = userRecommend.concat(userR);
-            // }
+            // 给当前用户推荐可能认识的人
+            let recommend = [];
+            // 首先这得是自己的关注
+            if (following) {
+                // 别人熟悉的人
+                const userASimilar = await Similar.find({
+                    $or: [
+                        {userA: req.query.uId},
+                        {userB: req.query.uId}
+                    ]
+                }).sort({similar: -1});
+                // 该用户熟悉的人
+                const userBSimilar = await Similar.find({
+                    $or: [
+                        {userA: user._id},
+                        {userB: user._id}
+                    ]
+                }).sort({similar: -1});
+                // 只取出用户ID
+                const userA = userASimilar.map(item =>
+                    String(item.userA) === String(req.query.uId) ?
+                        String(item.userB) : String(item.userA));
+                const userB = userBSimilar.map(item =>
+                    String(item.userA) === String(user._id) ?
+                        String(item.userB) : String(item.userA));
+                // 相似度有交集的
+                const userAB = userA.filter(a => userB.includes(a));
+                // 查看自己是否关注过这几个人
+                for (let u of userAB) {
+                    let isFollow = await RelationShip.findOne({
+                        following: u,
+                        follower: user._id
+                    });
+                    // 自己并没有关注他
+                    // 放进可能喜欢的数组里面
+                    if (!isFollow) {
+                        recommend.push(u);
+                    }
+                }
+            }
+            let userRecommend = await User.find({_id: {$in: recommend}}).select('name brief');
+            // 都是未关注的
+            userRecommend = JSON.parse(JSON.stringify(userRecommend)).map(item => {
+                item.follow = 'none';
+                return item;
+            });
             res.json({
                 code: 200,
                 items,
                 userInfo,
-                follow,
-                // userRecommend
+                userRecommend
             })
         }
     } catch (err) {

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="follow-empty" v-if="items.length == 0">暂无推荐</div>
+    <div class="follow-empty" v-if="items.length == 0">暂无粉丝</div>
     <div class="follow-container" v-for="item in items" @click="toUser(item.follower)">
       <span class="follow-name">{{item.follower.name}}</span><!--
       --><span class="follow-brief" v-if="item.follower.brief">{{item.follower.brief}}</span><!--
@@ -34,7 +34,7 @@ export default {
         }, 2000);
       }
     }).catch((err) => {
-      console.log(err)
+      console.log(err);
       this.$store.dispatch('show', {
         msg: '服务器错误啦，请稍后再试'
   	  });

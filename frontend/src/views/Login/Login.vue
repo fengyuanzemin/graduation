@@ -39,8 +39,13 @@ export default {
       login(this.name, this.password).then((res) => {
         if(res.data.code === 200) {
           localStorage.setItem('f-token', res.data.token);
-          this.$store.dispatch('close');
-          this.$router.push('/');
+          this.$store.dispatch('checkoutMsg', {
+            msg: '登录成功'
+  	      });
+  	      setTimeout(() => {
+            this.$store.dispatch('close');
+            this.$router.push('/');
+  	      }, 1200);
         } else {
           this.$store.dispatch('checkoutMsg', {
             msg: res.data.message

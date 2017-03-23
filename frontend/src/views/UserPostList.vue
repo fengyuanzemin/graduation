@@ -11,11 +11,11 @@
       <div class="name">{{userInfo.name}}</div>
       <div class="brief" v-if="userInfo.brief">简介：{{userInfo.brief}}</div>
       <div class="brief" v-else>暂无简介</div>
-      <div class="follow-btn" v-if="follow === 'none'" @click="checkoutFollow"><span class="iconfont icon-jia"/>关注</div>
-      <div class="follow-btn" v-else-if="follow === 'following'" @click="checkoutFollow"><span
+      <div class="follow-btn" v-if="userInfo.follow === 'none'" @click="followIt(userInfo)"><span class="iconfont icon-jia"/>关注</div>
+      <div class="follow-btn" v-else-if="userInfo.follow === 'following'" @click="followIt(userInfo)"><span
         class="iconfont icon-chenggong"/>已关注
       </div>
-      <div class="follow-btn" v-else-if="follow === 'eachOther'" @click="checkoutFollow"><span
+      <div class="follow-btn" v-else-if="userInfo.follow === 'eachOther'" @click="followIt(userInfo)"><span
         class="iconfont icon-huxiangguanzhu"/>相互关注
       </div>
       <div class="info">
@@ -33,6 +33,20 @@
         </div>
       </div>
     </div>
+    <div class="user-recommend" v-if="userRecommend && userRecommend.length > 0">
+      <div class="user-recommend-title">可能感兴趣的人</div>
+      <div class="user-recommend-container" v-for="item in userRecommend" @click.prevent.stop="toUser(item)">
+        <span class="user-recommend-name">{{item.name}}</span><!--
+      --><span class="user-recommend-brief" v-if="item.brief">{{item.brief}}</span><!--
+      --><span class="user-recommend-brief" v-else>暂无简介</span><!--
+      --><span class="iconfont user-recommend-icon icon-guanzhu" v-if="item.follow === 'none'"
+               @click.prevent.stop="followIt(item)"/><!--
+      --><span class="iconfont user-recommend-icon icon-icon-yiguanzhu" v-else-if="item.follow === 'following'"
+               @click.prevent.stop="followIt(item)"/><!--
+      --><span class="iconfont user-recommend-icon icon-huxiangguanzhu" v-else-if="item.follow === 'eachOther'"
+               @click.prevent.stop="followIt(item)"/>
+      </div>
+    </div>
     <f-post-item v-for="item in items" :item="item"/>
   </div>
 </template>
@@ -46,7 +60,7 @@ export default {
       if(res.data.code === 200) {
         this.items = res.data.items;
         this.userInfo = res.data.userInfo;
-        this.follow = res.data.follow;
+        this.userRecommend = res.data.userRecommend;
       } else {
         this.$store.dispatch('show', {
           msg: res.data.message
@@ -72,9 +86,10 @@ export default {
         posts_count: 0,
         following_count: 0,
         followers_count: 0,
-        brief: ''
+        brief: '',
+        follow: 'none'
       },
-      follow: 'none',
+      userRecommend: [],
       items: [],
       token: localStorage.getItem('f-token')
     };
@@ -86,7 +101,7 @@ export default {
         if(res.data.code === 200) {
           this.items = res.data.items;
           this.userInfo = res.data.userInfo;
-          this.follow = res.data.follow;
+          this.userRecommend = res.data.userRecommend;
         } else {
           this.$store.dispatch('show', {
             msg: res.data.message
@@ -126,17 +141,20 @@ export default {
         query: {component: 'f-follower'}
       })
     },
-    checkoutFollow() {
-      if(this.follow === 'none') {
+    toUser(data) {
+      this.$router.push({name: 'user', params: {userId: data._id}});
+    },
+    followIt(data) {
+      if(data.follow === 'none') {
         // 关注
-        follow(this.$route.params.userId, this.token, true).then((res) => {
+        follow(data._id, this.token, true).then((res) => {
           if(res.data.code === 200) {
-            this.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+            data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
           } else {
             this.$store.dispatch('show', {
               msg: res.data.message
-            });
-            setTimeout(() => {
+  	        });
+  	        setTimeout(() => {
               this.$store.dispatch('close');
               if(res.data.code === 5002) {
                 this.$route.push('/login');
@@ -154,14 +172,14 @@ export default {
         });
       } else {
         // 取关
-        follow(this.$route.params.userId, this.token, false).then((res) => {
+        follow(data._id, this.token, false).then((res) => {
           if(res.data.code === 200) {
-            this.follow = 'none';
+            data.follow = 'none';
           } else {
             this.$store.dispatch('show', {
               msg: res.data.message
-            });
-            setTimeout(() => {
+  	        });
+  	        setTimeout(() => {
               this.$store.dispatch('close');
               if(res.data.code === 5002) {
                 this.$route.push('/login');
@@ -232,6 +250,59 @@ export default {
           .info-number {
             margin: 5px;
           }
+        }
+      }
+    }
+    .user-recommend {
+      border-bottom: 10px solid #f2f2f2;
+      .user-recommend-title {
+        padding: 8px 15px;
+        color: #1478f0;
+        font-weight: 300;
+        font-size: 13px;
+        border-bottom: 1px solid #dcdcdc;
+      }
+      .user-recommend-container {
+        position: relative;
+        padding: 20px;
+        border-bottom:1px solid #dcdcdc;
+        background-color: #fff;
+        &:nth-last-child(1) {
+          border-bottom: none;
+        }
+        .user-recommend-name {
+          color: #333;
+          margin-right:10px;
+          display: inline-block;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          width: 100px;
+        }
+        .user-recommend-brief {
+          color: #666;
+          font-size: 12px;
+          display: inline-block;
+          width: 200px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+        @media screen and (min-width: 320px) and (max-width: 355px){
+          .follow-name {
+            width: 80px;
+          }
+          .follow-brief {
+            width: 160px;
+          }
+        }
+        .user-recommend-icon {
+          position: absolute;
+          top: 7px;
+          right: 12px;
+          color: #1478f0;
+          font-size: 24px;
+          padding: 10px;
         }
       }
     }

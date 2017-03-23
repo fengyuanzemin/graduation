@@ -512,5 +512,3 @@ export async function getFollowList(req, res) {
 
 // 转发时，取得转发的微博的数据
 
-
-// 评论时，取得评论的微博的数据

@@ -12,11 +12,11 @@
         <div class="info-number">{{userInfo.posts_count}}</div>
         <div class="info-text">微博</div>
       </div>
-      <div class="info-container" @click="toFollowing">
+      <div class="info-container" @click="toFollow">
         <div class="info-number">{{userInfo.following_count}}</div>
         <div class="info-text">关注</div>
       </div>
-      <div class="info-container" @click="toFollower">
+      <div class="info-container" @click="toFollow">
         <div class="info-number">{{userInfo.followers_count}}</div>
         <div class="info-text">粉丝</div>
       </div>
@@ -73,22 +73,14 @@ export default {
     toList() {
       this.$router.push({name: 'user', params: {userId: this.userInfo._id}});
     },
-    toFollowing() {
+    toFollow() {
       this.$router.push({name: 'follow', params: {userId: this.userInfo._id}});
-    },
-    toFollower() {
-      this.$router.push({
-        name: 'follow',
-        params: {userId: this.userInfo._id},
-        query: {component: 'f-follower'}
-      })
     },
     update() {
       this.$router.push('/userUpdate');
     }
   }
 };
-
 </script>
 <style lang="scss" scoped>
   .home {

@@ -17,6 +17,7 @@
 </template>
 <script>
 import {getFollowList, follow} from 'src/api';
+
 export default {
   created() {
     getFollowList(1, this.$route.params.userId, this.token).then((res) => {
@@ -114,14 +115,14 @@ export default {
     .follow-container {
       position: relative;
       padding: 20px;
-      border-top:1px solid #dcdcdc;
+      border-top: 1px solid #dcdcdc;
       background-color: #fff;
       &:nth-last-child(1) {
         border-bottom: 1px solid #dcdcdc;
       }
       .follow-name {
         color: #333;
-        margin-right:10px;
+        margin-right: 10px;
         display: inline-block;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -137,7 +138,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
       }
-      @media screen and (min-width: 320px) and (max-width: 355px){
+      @media screen and (min-width: 320px) and (max-width: 355px) {
         .follow-name {
           width: 80px;
         }

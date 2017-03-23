@@ -8,8 +8,8 @@
     </keep-alive>
     <footer>
       <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
-        <span class="iconfont" :class="item.icon" v-if="item.hasText" />
-        <span class="iconfont footer-plus" :class="item.icon" v-else />
+        <span class="iconfont" :class="item.icon" v-if="item.hasText"/>
+        <span class="iconfont footer-plus" :class="item.icon" v-else/>
         <span class="footer-text">{{item.text}}</span>
       </div>
     </footer>
@@ -20,7 +20,13 @@
   import Home from './Home';
   import Movie from './Movie';
   import Search from './Search';
+
   export default {
+    created() {
+      if (this.$route.query.component) {
+       this.currentView = this.$route.query.component;
+      }
+    },
     data() {
       return {
         currentView: 'f-index',
@@ -31,16 +37,14 @@
             hasText: true,
             text: '首页',
             showItem: 'f-index',
-            id: 0,
-            isActive: true
+            id: 0
           },
           {
             icon: 'icon-dianying',
             hasText: true,
             text: '电影',
             showItem: 'f-movie',
-            id: 1,
-            isActive: false
+            id: 1
           },
           {
             icon: 'icon-jia',
@@ -52,19 +56,22 @@
             hasText: true,
             text: '搜索',
             showItem: 'f-search',
-            id: 3,
-            isActive: false
+            id: 3
           },
           {
             icon: 'icon-yonghu',
             hasText: true,
             text: '我',
             showItem: 'f-home',
-            id: 4,
-            isActive: false
+            id: 4
           }
         ]
       };
+    },
+    watch: {
+      '$route'() {
+        this.currentView = this.$route.query.component;
+      }
     },
     methods: {
       checkout(item) {
@@ -72,17 +79,7 @@
           this.toPost();
           return;
         }
-        this.currentView = item.showItem;
-        this.footerItem = this.footerItem.map((v) => {
-          if (item.id === v.id) {
-            v.isActive = true;
-            this.title = v.text;
-          } else {
-            v.isActive = false;
-          }
-          return v;
-        })
-
+        this.$router.push({path: '/', query: {component: item.showItem}});
       },
       toPost() {
         this.$router.push('/post');

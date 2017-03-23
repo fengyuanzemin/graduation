@@ -3,15 +3,14 @@
     <header>
       <div class="header-title">{{title}}</div>
       <span class="header-right">登录</span>
-      <span class="clickBoard clickBoard-right" @click="toLogin" />
+      <span class="clickBoard clickBoard-right" @click="toLogin"/>
     </header>
     <keep-alive>
-      <component :is="currentView" />
+      <component :is="currentView"/>
     </keep-alive>
     <footer>
       <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
-        <span class="iconfont" :class="item.icon" v-if="item.hasText" />
-        <span class="iconfont footer-plus" :class="item.icon" v-else />
+        <span class="iconfont" :class="item.icon"/>
         <span class="footer-text">{{item.text}}</span>
       </div>
     </footer>
@@ -21,6 +20,11 @@
   import Index from './Index';
   import Movie from './Movie';
   export default {
+    created() {
+      if (this.$route.query.component) {
+       this.currentView = this.$route.query.component;
+      }
+    },
     data() {
       return {
         currentView: 'f-index',
@@ -28,34 +32,25 @@
         footerItem: [
           {
             icon: 'icon-homepage-red',
-            hasText: true,
             text: '首页',
-            showItem: 'f-index',
-            id: 0,
-            isActive: true
+            showItem: 'f-index'
           },
           {
             icon: 'icon-dianying',
-            hasText: true,
             text: '电影',
-            showItem: 'f-movie',
-            id: 1,
-            isActive: false
+            showItem: 'f-movie'
           }
         ]
       };
     },
+    watch: {
+      '$route'() {
+        this.currentView = this.$route.query.component;
+      }
+    },
     methods: {
       checkout(item) {
-        this.currentView = item.showItem;
-        this.footerItem = this.footerItem.map((v) => {
-          if (item.id === v.id) {
-            v.isActive = true;
-          } else {
-            v.isActive = false;
-          }
-          return v;
-        });
+        this.$router.push({path: '/un-login', query: {component: item.showItem}});
       },
       toLogin() {
       	this.$router.push('/login');

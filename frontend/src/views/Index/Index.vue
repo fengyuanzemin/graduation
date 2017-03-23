@@ -43,7 +43,6 @@ export default {
     'f-post-item': PostItem
   }
 };
-
 </script>
 <style lang="scss" scoped>
   .index {

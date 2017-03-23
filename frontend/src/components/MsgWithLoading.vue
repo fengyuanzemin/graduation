@@ -9,6 +9,17 @@
     </div>
   </transition>
 </template>
+<script>
+import {mapState} from 'vuex';
+
+export default {
+  computed: mapState({
+    show : state => state.isShow,
+    msg : state => state.msg,
+    isBig : state => state.isBig
+  })
+};
+</script>
 <style lang="scss" scoped>
   $width: 200px;
   $height: 40px;
@@ -57,14 +68,3 @@
     }
   }
 </style>
-<script>
-import {mapState} from 'vuex';
-
-export default {
-  computed: mapState({
-    show : state => state.isShow,
-    msg : state => state.msg,
-    isBig : state => state.isBig
-  })
-};
-</script>

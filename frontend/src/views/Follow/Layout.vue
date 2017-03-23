@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <header>
-      <span class="iconfont icon-houtui header-left" />
+      <span class="iconfont icon-houtui header-left"/>
       <span class="clickBoard clickBoard-left" @click="back"/>
       <div class="header-title">{{name}}</div>
     </header>
@@ -55,25 +55,25 @@ export default {
   },
   data() {
     return {
-      currentView: 'f-following',
+      currentView: 'f-recommend',
       name: '我的好友',
       selectItem: [
         {
           id: 0,
-          text: '关注',
-          component: 'f-following',
+          text: '猜你认识',
+          component: 'f-recommend',
           active: true
         },
         {
           id: 1,
-          text: '粉丝',
-          component: 'f-follower',
-          active: false
+          text: '关注',
+          component: 'f-following',
+          active: false,
         },
         {
           id: 2,
-          text: '猜你认识',
-          component: 'f-recommend',
+          text: '粉丝',
+          component: 'f-follower',
           active: false
         }
       ],
@@ -82,8 +82,8 @@ export default {
   },
   methods: {
     checkout(data) {
-      this.selectItem = this.selectItem.map((item)=>{
-        if(item.id === data.id) {
+      this.selectItem = this.selectItem.map((item) => {
+        if(data.id === item.id) {
           this.currentView = data.component;
         }
         item.active = !!(item.id === data.id);
@@ -102,26 +102,26 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.container {
-  margin-top: 81px;
-  .select {
-    display: flex;
-    position: absolute;
-    top: 45px;
-    width:100%;
-    .select-container {
-      box-sizing: border-box;
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      .select-text {
-        color: #333;
-      }
-      &.active {
-        background-color: #f2f2f2;
+  .container {
+    margin-top: 81px;
+    .select {
+      display: flex;
+      position: absolute;
+      top: 45px;
+      width: 100%;
+      .select-container {
+        box-sizing: border-box;
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        .select-text {
+          color: #333;
+        }
+        &.active {
+          background-color: #f2f2f2;
+        }
       }
     }
   }
-}
 </style>
 

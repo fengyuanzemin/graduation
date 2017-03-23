@@ -8,11 +8,12 @@
       <span class="clickBoard clickBoard-right" @click="post"/>
     </header>
     <label class="post-container">
-      <span class="post-input-title">用户名：</span><input class="post-input" placeholder="请输入新名称" v-model.trim="name" autofocus="on"/>
+      <span class="post-input-title">用户名：</span><input class="post-input" placeholder="请输入新名称" v-model.trim="name"
+                                                       autofocus="on"/>
     </label>
     <label>
       <span class="post-title">用户签名:</span>
-    <textarea placeholder="请输入新签名" class="post-textarea" v-model.trim="text"/>
+      <textarea placeholder="请输入新签名" class="post-textarea" v-model.trim="text"/>
     </label>
   </div>
 </template>
@@ -87,7 +88,6 @@ export default {
     }
   }
 };
-
 </script>
 <style lang="scss" scoped>
   .container {

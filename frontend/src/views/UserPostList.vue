@@ -11,7 +11,9 @@
       <div class="name">{{userInfo.name}}</div>
       <div class="brief" v-if="userInfo.brief">简介：{{userInfo.brief}}</div>
       <div class="brief" v-else>暂无简介</div>
-      <div class="follow-btn" v-if="userInfo.follow === 'none'" @click="followIt(userInfo)"><span class="iconfont icon-jia"/>关注</div>
+      <div class="follow-btn" v-if="userInfo.follow === 'none'" @click="followIt(userInfo)"><span
+        class="iconfont icon-jia"/>关注
+      </div>
       <div class="follow-btn" v-else-if="userInfo.follow === 'following'" @click="followIt(userInfo)"><span
         class="iconfont icon-chenggong"/>已关注
       </div>
@@ -265,14 +267,14 @@ export default {
       .user-recommend-container {
         position: relative;
         padding: 20px;
-        border-bottom:1px solid #dcdcdc;
+        border-bottom: 1px solid #dcdcdc;
         background-color: #fff;
         &:nth-last-child(1) {
           border-bottom: none;
         }
         .user-recommend-name {
           color: #333;
-          margin-right:10px;
+          margin-right: 10px;
           display: inline-block;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -288,7 +290,7 @@ export default {
           white-space: nowrap;
           overflow: hidden;
         }
-        @media screen and (min-width: 320px) and (max-width: 355px){
+        @media screen and (min-width: 320px) and (max-width: 355px) {
           .follow-name {
             width: 80px;
           }

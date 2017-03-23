@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-	  <f-post-item v-for="item in items" :item="item"/>
+    <f-post-item v-for="item in items" :item="item"/>
   </div>
 </template>
 <script>
@@ -41,8 +41,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.index {
+  .index {
 
-}
+  }
 </style>
 

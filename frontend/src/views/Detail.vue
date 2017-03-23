@@ -42,7 +42,7 @@
         <span class="iconfont icon-pinglun"/><span class="footer-text">评论</span>
       </div>
       <div class="footer-container" @click.stop.prevent="attitude">
-        <span class="iconfont icon-unie60e" :class="{active: item.attituded}"/><span class="footer-text">点赞</span>
+        <span class="iconfont icon-unie60e" :class="{active: item && item.attituded}"/><span class="footer-text">点赞</span>
       </div>
     </footer>
   </div>
@@ -51,7 +51,7 @@
 import AttitudeItem from 'src/components/AttitudeItem';
 import CommentItem from 'src/components/CommentItem';
 import RepostItem from 'src/components/RepostItem';
-import {getPostItem, attitude, getActionInfo, checkAttitude, clickIn} from 'src/api';
+import {getPostItem, attitude, getActionInfo, clickIn} from 'src/api';
 
 export default {
   created() {
@@ -107,7 +107,6 @@ export default {
   data() {
     return {
       item: null,
-      attituded: false,
       currentView: 'f-comment-item',
       actionItem: [],
       token: localStorage.getItem('f-token')

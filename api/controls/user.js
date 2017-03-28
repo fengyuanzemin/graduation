@@ -126,7 +126,7 @@ export async function updateUserInfo(req, res) {
         return;
     }
     try {
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             if (req.body.name) {
                 user.name = req.body.name;

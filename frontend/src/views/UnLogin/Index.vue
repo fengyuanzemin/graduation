@@ -1,10 +1,15 @@
 <template>
   <div class="index">
     <f-post-item v-for="item in items" :item="item"/>
+    <div class="loading" v-show="loading">
+      <span class="loading-text">{{loadingText}}</span>
+      <f-fade-spinner size="middle"/>
+    </div>
   </div>
 </template>
 <script>
 import PostItem from 'src/components/PostItem';
+import FadeSpinner from 'components/FadeSpinner';
 import {getHotList} from 'src/api';
 
 export default {
@@ -20,7 +25,7 @@ export default {
           this.$store.dispatch('close');
         }, 2000);
       }
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err);
       this.$store.dispatch('show', {
         msg: '服务器错误啦，请稍后再试'
@@ -32,17 +37,94 @@ export default {
   },
   data() {
     return {
-      items: []
+      items: [],
+      page: 0,
+      loading: false,
+      loadingText: '加载中',
+      disabled: false
     };
   },
+  activated() {
+    document.addEventListener('scroll', this.judgeBottom);
+  },
+  deactivated() {
+    document.removeEventListener('scroll', this.judgeBottom);
+  },
+  methods: {
+    judgeBottom() {
+      // 滚动高度
+      const sHeight = document.documentElement.scrollTop || document.body.scrollTop;
+      // window
+      const wHeight = document.documentElement.clientHeight;
+      // 整个文档高度
+      const dHeight = document.documentElement.offsetHeight;
+      if (sHeight + wHeight === dHeight) {
+        this.loadMore();
+      }
+    },
+    loadMore() {
+      if (this.disabled) {
+        return;
+      }
+      if (this.loading) {
+        return;
+      }
+      this.loadingText = '加载中';
+      this.loading = true;
+      getHotList(this.page + 1).then((res) => {
+        if(res.data.code === 200) {
+          if (res.data.cardList.length !== 0) {
+            this.items = this.items.concat(res.data.cardList);
+            this.page += 1;
+            this.loading = false;
+          } else {
+            this.loadingText = '没数据了喔';
+            this.disabled = true;
+            setTimeout(() => {
+              this.loading = false;
+            }, 2000);
+          }
+        } else {
+          this.loading = false;
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        }
+      }).catch((error) => {
+        console.log(error);
+        this.loading = false;
+        this.$store.dispatch('show', {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
+          this.$store.dispatch('close');
+        }, 2000);
+      });
+    }
+  },
   components: {
-    'f-post-item': PostItem
+    'f-post-item': PostItem,
+    'f-fade-spinner': FadeSpinner
   }
 };
 </script>
 <style lang="scss" scoped>
   .index {
-
+    .loading {
+      background-color: #f2f2f2;
+      padding: 10px 0 20px 0;
+      text-align: center;
+      .loading-text {
+        color: #666;
+        font-size: 14px;
+        position: relative;
+        top: -5px;
+        right: 10px;
+      }
+    }
   }
 </style>
 

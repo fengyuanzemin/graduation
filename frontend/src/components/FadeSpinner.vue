@@ -16,7 +16,7 @@
     width: 25px;
     height: 25px;
     .spinner-fading-circle-circle:before {
-      background-color: #1478f0;
+      background-color: #666;
     }
   }
 

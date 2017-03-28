@@ -7,6 +7,7 @@ import Action from '../models/action';
 import RelationShip from '../models/relationship';
 import Similar from '../models/similar';
 import {errCode} from '../utils/codeTransfer';
+import {PAGE_OPTION} from '../utils/const';
 
 // 发送原创微博
 export async function post(req, res) {
@@ -19,7 +20,7 @@ export async function post(req, res) {
     }
     try {
         // 查找用户
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             user.posts_count += 1;
             await user.save();
@@ -51,9 +52,15 @@ export async function post(req, res) {
 // 热门微博
 export async function getHotList(req, res) {
     try {
+        // 分页，一页多少条数据
+        const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
+        // 跳过前面多少条
+        const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
         const cardList = await Post.find()
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
             .sort({_id: -1})
+            .limit(size)
+            .skip(skip)
             .populate('user', ['name'])
             .populate('retweeted_post')
             .populate({
@@ -87,6 +94,11 @@ export async function getList(req, res) {
             });
             return;
         }
+        // 分页，一页多少条数据
+        const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
+        // 跳过前面多少条
+        const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
+        // 此数组放置用户ID和用户关注的人的ID
         let userArr = [];
         userArr.push(user._id);
         // 找到关注过的
@@ -98,6 +110,8 @@ export async function getList(req, res) {
         const cards = await Post.find({user: {$in: userArr}})
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
             .sort({_id: -1})
+            .limit(size)
+            .skip(skip)
             .populate('user', ['name'])
             .populate('retweeted_post')
             .populate({
@@ -107,6 +121,55 @@ export async function getList(req, res) {
                     select: 'name'
                 }
             });
+        // // 用户并没有发过微博的情况下
+        // // 没关注的情况下，热门微博
+        // // 有关注的情况下，但是关注的人并没有发送微博
+        // if (cards.length === 0) {
+        //     // 查看是否有关注
+        //     const follow = await RelationShip.find({follower: user._id});
+        //     const followList = follow.map(item => item.following);
+        //     if (follow.length === 0) {
+        //         const followCards = await Post.find({}).sort({_id: -1})
+        //             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
+        //             .sort({_id: -1})
+        //             .populate('user', ['name'])
+        //             .populate('retweeted_post')
+        //             .populate({
+        //                 path: 'retweeted_post',
+        //                 populate: {
+        //                     path: 'user',
+        //                     select: 'name'
+        //                 }
+        //             });
+        //         res.json({
+        //             code: 200,
+        //             cardList: followCards
+        //         });
+        //         return;
+        //     } else {
+        //         // 有关注，但是关注的人并没有发微博
+        //         const followCards = await Post.find({user: {$in: followList}});
+        //         if (followCards.length === 0) {
+        //             const hotCards = await Post.find({}).sort({_id: -1})
+        //                 .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
+        //                 .sort({_id: -1})
+        //                 .populate('user', ['name'])
+        //                 .populate('retweeted_post')
+        //                 .populate({
+        //                     path: 'retweeted_post',
+        //                     populate: {
+        //                         path: 'user',
+        //                         select: 'name'
+        //                     }
+        //                 });
+        //             res.json({
+        //                 code: 200,
+        //                 cardList: hotCards
+        //             });
+        //             return;
+        //         }
+        //     }
+        // }
         let cardList = [];
         // 判断用户在当前数据是否点过赞
         for (let card of cards) {
@@ -138,6 +201,10 @@ export async function getUserPostList(req, res) {
             });
             return;
         }
+        // 分页，一页多少条数据
+        const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
+        // 跳过前面多少条
+        const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
         // 用户个人介绍
         let userInfo = await User.findOne({_id: req.query.uId})
             .select('followers_count following_count name posts_count brief');
@@ -145,6 +212,8 @@ export async function getUserPostList(req, res) {
             // 看自己的个人微博
             const postItems = await Post.find({user: req.query.uId})
                 .sort({_id: -1})
+                .limit(size)
+                .skip(skip)
                 .populate('user', ['name'])
                 .populate('retweeted_post')
                 .populate({
@@ -255,6 +324,19 @@ export async function getUserPostList(req, res) {
                 i.attituded = !!await Action.findOne({post: i._id, user: user._id, action: 'attitude'});
                 items.push(i);
             }
+            // 拿这里面的分页数据
+            if (items.length > skip) {
+                // 最后一页了
+                if (skip + size > items.length) {
+                    items = items.slice(skip === 0 ? 0 : skip - 1);
+                } else {
+                    // 不是最后一页
+                    items = items.slice(skip === 0 ? 0 : skip - 1, skip + size - 1);
+                }
+            } else {
+                // 这个时候说明已经没数据了
+                items = items.slice(skip === 0 ? 0 : skip - 1);
+            }
             // 给当前用户推荐可能认识的人
             let recommend = [];
             // 首先这得是自己的关注
@@ -364,7 +446,7 @@ export async function getPostItem(req, res) {
 // 搜索
 export async function search(req, res) {
     try {
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
             res.json({
                 code: 5002,

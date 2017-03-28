@@ -24,7 +24,18 @@
   export default {
     created() {
       if (this.$route.query.component) {
-       this.currentView = this.$route.query.component;
+        let i = 0;
+        this.footerItem.forEach(item => {
+          if(item.showItem === this.$route.query.component) {
+            this.currentView = this.$route.query.component;
+          } else {
+            i += 1;
+          }
+        });
+        // 防止乱输入
+        if(i === this.footerItem.length) {
+          this.$router.push('/404');
+        }
       }
     },
     data() {

@@ -22,7 +22,17 @@
   export default {
     created() {
       if (this.$route.query.component) {
-       this.currentView = this.$route.query.component;
+        let i = 0;
+        this.footerItem.forEach((item) => {
+          if(item.showItem === this.$route.query.component) {
+            this.currentView = this.$route.query.component;
+          } else {
+            i += 1;
+          }
+        });
+        if(i === this.footerItem.length) {
+          this.$router.push('/404');
+        }
       }
     },
     data() {
@@ -65,7 +75,7 @@
 <style lang="scss" scoped>
   .container {
     margin-top: 45px;
-    padding-bottom: 45px;
+    padding-bottom: 49px;
     overflow: auto;
     footer {
       display: flex;

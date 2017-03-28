@@ -1,5 +1,5 @@
 <template>
-  <div class="card" v-if="item.action" @click.stop.prevent="detail(item.post)">
+  <div class="card" v-if="item.action" @click.stop.prevent="detail(item.post)" :key="item._id">
     <!--如果是用户点赞的，别人的微博-->
     <div class="card-attitude">他{{item.createdAt | timeFormat('{m}-{d}')}}赞过的微博</div>
     <div class="card-header">

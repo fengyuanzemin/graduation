@@ -1,14 +1,14 @@
 <template>
   <div class="not-found">
     <p class="not-found-text">404 Not Found</p>
-    <span class="not-found-button" @touchend.stop.prevent="reload">刷新</span>
+    <span class="not-found-button" @touchend.stop.prevent="back">回首页</span>
   </div>
 </template>
 <script>
 export default {
   methods:{
-    reload() {
-      window.location.reload();
+    back() {
+      this.$router.push('/');
     }
   }
 };

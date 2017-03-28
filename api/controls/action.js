@@ -11,20 +11,8 @@ import {errCode} from '../utils/codeTransfer';
 // 转发
 export async function repost(req, res) {
     try {
-        let post = await Post.findOne({_id: req.body.pId}).populate('user', ['name']);
-        // 不是原创
-        let originalPostId = '';
-        let content = '';
-        // 判断转发时写什么
-        if (post && post.retweeted_post) {
-            originalPostId = post.retweeted_post;
-            content = `${req.body.content} // @${post.user.name}：${post.content}`;
-        } else {
-            originalPostId = req.body.pId;
-            content = req.body.content ? req.body.content : '转发';
-        }
         // 找到用户
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             // 用户转发行为添加
             await new Action({
@@ -39,6 +27,18 @@ export async function repost(req, res) {
                 message: errCode[5002]
             });
             return;
+        }
+        const post = await Post.findOne({_id: req.body.pId}).populate('user', ['name']);
+        // 不是原创
+        let originalPostId = '';
+        let content = '';
+        // 判断转发时写什么
+        if (post && post.retweeted_post) {
+            originalPostId = post.retweeted_post;
+            content = `${req.body.content} // @${post.user.name}：${post.content}`;
+        } else {
+            originalPostId = req.body.pId;
+            content = req.body.content ? req.body.content : '转发';
         }
         // 文章的被转发数加一
         await Post.update({_id: req.body.pId}, {$inc: {reposts_count: 1}});
@@ -73,7 +73,7 @@ export async function comment(req, res) {
         return;
     }
     try {
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             // 用户评论行为加一
             await new Action({
@@ -109,7 +109,7 @@ export async function attitude(req, res) {
     try {
         let count = 1;
         // 查找用户
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
             res.json({
                 code: 5002,
@@ -118,7 +118,7 @@ export async function attitude(req, res) {
             return;
         }
         // 查找之前是否点过赞
-        let action = await Action.findOne({post: req.body.pId, user: user._id, action: 'attitude'});
+        const action = await Action.findOne({post: req.body.pId, user: user._id, action: 'attitude'});
         if (action) {
             count = -1;
             await action.remove();
@@ -153,7 +153,7 @@ export async function attitude(req, res) {
 // 关注或者取关
 export async function follow(req, res) {
     try {
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (!user) {
             res.json({
                 code: 5002,
@@ -169,7 +169,7 @@ export async function follow(req, res) {
             return;
         }
         // 查询是否关注过
-        let relationShip = await RelationShip.findOne({
+        const relationShip = await RelationShip.findOne({
             following: req.body.uId,
             follower: user._id
         });
@@ -190,7 +190,7 @@ export async function follow(req, res) {
                 }).save();
             }
             // 查询是否互相关注
-            let eachOtherFollow = !!await RelationShip.findOne({
+            const eachOtherFollow = !!await RelationShip.findOne({
                 follower: req.body.uId,
                 following: user._id
             });
@@ -272,6 +272,14 @@ export async function clickIn(req, res) {
 // 拉取转发、评论、点赞
 export async function getActionInfo(req, res) {
     try {
+        const user = await User.findOne({token: req.headers['f-token']});
+        if (!user) {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
+            return;
+        }
         const items = await Action.find({post: req.query.pId, action: req.query.action})
             .populate('user', ['name']).sort({_id: -1});
         res.json({

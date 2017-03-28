@@ -43,10 +43,10 @@ export function getHotList(page) {
 }
 
 // 拉取用户微博
-export function getList(token, page) {
+export function getList(token, page, size) {
   return axios.get('/getList', {
     params: {
-      page
+      size, page
     },
     headers: {
       'f-token': token
@@ -55,10 +55,10 @@ export function getList(token, page) {
 }
 
 // 拉取某一用户微博
-export function getUserPostList(uId, token, page) {
+export function getUserPostList(uId, token, page, size) {
   return axios.get('/getUserPostList', {
     params: {
-      uId, page
+      uId, page, size
     },
     headers: {
       'f-token': token
@@ -138,18 +138,6 @@ export function getActionInfo(pId, action, token) {
       'f-token': token
     }
   });
-}
-
-// 检查是否点过赞
-export function checkAttitude(pId, token) {
-  return axios.get('/checkAttitude', {
-    params: {
-      pId
-    },
-    headers: {
-      'f-token': token
-    }
-  })
 }
 
 // 更改用户信息

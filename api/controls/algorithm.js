@@ -10,13 +10,13 @@ export async function getUserRecommend(req, res) {
     try {
         let recommend = [];
         // 查找是谁的推荐人
-        let user = await User.findOne({token: req.headers['f-token']});
+        const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             let recommendFollow = [];
-            let sim = await Similar.find({$or: [{userA: user._id}, {userB: user._id}]})
+            const sim = await Similar.find({$or: [{userA: user._id}, {userB: user._id}]})
                 .sort('-similar');
             for (let s of sim) {
-                let re = await RelationShip.findOne({
+                const re = await RelationShip.findOne({
                     $or: [{
                         follower: user._id,
                         following: s.userA
@@ -31,9 +31,9 @@ export async function getUserRecommend(req, res) {
                 }
             }
             for (let i of recommendFollow) {
-                let id = String(i.userA) === String(user._id) ? i.userB : i.userA;
-                let follow = await User.findOne({_id: id}, 'name brief');
-                let parseFollow = JSON.parse(JSON.stringify(follow));
+                const id = String(i.userA) === String(user._id) ? i.userB : i.userA;
+                const follow = await User.findOne({_id: id}, 'name brief');
+                const parseFollow = JSON.parse(JSON.stringify(follow));
                 parseFollow.follow = 'none';
                 recommend.push(parseFollow);
             }

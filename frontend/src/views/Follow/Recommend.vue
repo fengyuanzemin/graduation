@@ -1,16 +1,16 @@
 <template>
   <div class="container">
-    <div class="follow-empty" v-if="items.length == 0">暂无推荐</div>
+    <div class="follow-empty" v-if="items.length === 0">暂无推荐</div>
     <div class="follow-container" v-for="item in items" @click="toUser(item)">
       <span class="follow-name">{{item.name}}</span><!--
       --><span class="follow-brief" v-if="item.brief">{{item.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
       --><span class="iconfont follow-icon icon-guanzhu" v-if="item.follow === 'none'"
-               @click.prevent.stop="follow(item)"/><!--
+               @click.prevent.stop="follow(item)"></span><!--
       --><span class="iconfont follow-icon icon-icon-yiguanzhu" v-else-if="item.follow === 'following'"
-               @click.prevent.stop="follow(item)"/><!--
+               @click.prevent.stop="follow(item)"></span><!--
       --><span class="iconfont follow-icon icon-huxiangguanzhu" v-else-if="item.follow === 'eachOther'"
-               @click.prevent.stop="follow(item)"/>
+               @click.prevent.stop="follow(item)"></span>
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
             if (res.data.code === 5002) {
-              this.$route.push('/login');
+              this.$router.push('/login');
             }
           }, 2000);
         }
@@ -66,7 +66,7 @@
               setTimeout(() => {
                 this.$store.dispatch('close');
                 if (res.data.code === 5002) {
-                  this.$route.push('/login');
+                  this.$router.push('/login');
                 }
               }, 2000);
             }
@@ -91,7 +91,7 @@
               setTimeout(() => {
                 this.$store.dispatch('close');
                 if (res.data.code === 5002) {
-                  this.$route.push('/login');
+                  this.$router.push('/login');
                 }
               }, 2000);
             }

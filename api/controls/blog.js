@@ -126,9 +126,9 @@ export async function getList(req, res) {
          * 推荐列表里的用户的微博
          *
          */
-            // 首先得是第二页，然后有很多微博才推荐
+            // 很多微博才推荐
         let cardsRecommend = [];
-        if (+req.query.page >= 1 && cards.length === 10) {
+        if (cards.length === 10) {
             const userRecommend = await recommend(user);
             cardsRecommend = await Post.find({user: {$in: userRecommend}})
                 .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')

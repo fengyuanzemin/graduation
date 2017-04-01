@@ -124,12 +124,12 @@
             setTimeout(() => {
               this.$store.dispatch('close');
               if (res.data.code === 5002) {
-                this.$route.push('/login');
+                this.$router.push('/login');
               }
             }, 2000);
           }
         }).catch((err) => {
-          console.log(res);
+          console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
           });

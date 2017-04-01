@@ -23,7 +23,7 @@
     created() {
       if (this.$route.query.component) {
         this.selectItem = this.selectItem.map((item) => {
-          item.active = !!(item.component === this.$route.query.component);
+          item.active = item.component === this.$route.query.component;
           return item;
         });
         this.currentView = this.$route.query.component;
@@ -39,7 +39,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
             if (res.data.code === 5002) {
-              this.$route.push('/login');
+              this.$router.push('/login');
             }
           }, 2000);
         }
@@ -86,7 +86,7 @@
           if (data.id === item.id) {
             this.currentView = data.component;
           }
-          item.active = !!(item.id === data.id);
+          item.active = item.id === data.id;
           return item;
         });
       },

@@ -18,27 +18,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: resolve => require(['../views/Index/Layout'], resolve),
-      beforeEnter: (to, from, next) => {
-        const token = localStorage.getItem('f-token');
-        if (!token) {
-          next('/un-login');
-        }
-        checkToken(token).then((res) => {
-          if (res.data.code === 200) {
-            const loggedIn = res.data.loggedIn;
-            if (loggedIn) {
-              next();
-            } else {
-              next('/un-login');
-            }
-          } else {
-            next('/un-login');
-          }
-        }).catch(() => {
-          next('/un-login');
-        });
-      }
+      component: resolve => require(['../views/Index/Layout'], resolve)
     },
     {
       path: '/un-login',
@@ -63,77 +43,17 @@ export default new Router({
     },
     {
       path: '/post',
-      component: resolve => require(['../views/Post'], resolve),
-      beforeEnter: (to, from, next) => {
-        const token = localStorage.getItem('f-token');
-        if (!token) {
-          next('/un-login');
-        }
-        checkToken(token).then((res) => {
-          if (res.data.code === 200) {
-            const loggedIn = res.data.loggedIn;
-            if (loggedIn) {
-              next();
-            } else {
-              next('/un-login');
-            }
-          } else {
-            next('/un-login');
-          }
-        }).catch(() => {
-          next('/un-login');
-        });
-      }
+      component: resolve => require(['../views/Post'], resolve)
     },
     {
       path: '/repost/:postId',
       name: 'repost',
-      component: resolve => require(['../views/Repost'], resolve),
-      beforeEnter: (to, from, next) => {
-        const token = localStorage.getItem('f-token');
-        if (!token) {
-          next('/un-login');
-        }
-        checkToken(token).then((res) => {
-          if (res.data.code === 200) {
-            const loggedIn = res.data.loggedIn;
-            if (loggedIn) {
-              next();
-            } else {
-              next('/un-login');
-            }
-          } else {
-            next('/un-login');
-          }
-        }).catch(() => {
-          next('/un-login');
-        });
-      }
+      component: resolve => require(['../views/Repost'], resolve)
     },
     {
       path: '/comment/:postId',
       name: 'comment',
-      component: resolve => require(['../views/Comment'], resolve),
-      beforeEnter: (to, from, next) => {
-        const token = localStorage.getItem('f-token');
-        if (!token) {
-          next('/un-login');
-        }
-        checkToken(token).then((res) => {
-          if (res.data.code === 200) {
-            const loggedIn = res.data.loggedIn;
-            if (loggedIn) {
-              next();
-            } else {
-              next('/un-login');
-            }
-          } else {
-            next('/un-login');
-          }
-        }).catch(() => {
-          next('/un-login');
-        });
-      }
+      component: resolve => require(['../views/Comment'], resolve)
     },
     {
       path: '/status/:postId',
@@ -148,51 +68,11 @@ export default new Router({
     {
       path: '/follow/:userId',
       name: 'follow',
-      component: resolve => require(['../views/Follow/Layout'], resolve),
-      beforeEnter: (to, from, next) => {
-        const token = localStorage.getItem('f-token');
-        if (!token) {
-          next('/un-login');
-        }
-        checkToken(token).then((res) => {
-          if (res.data.code === 200) {
-            const loggedIn = res.data.loggedIn;
-            if (loggedIn) {
-              next();
-            } else {
-              next('/un-login');
-            }
-          } else {
-            next('/un-login');
-          }
-        }).catch(() => {
-          next('/un-login');
-        });
-      }
+      component: resolve => require(['../views/Follow/Layout'], resolve)
     },
     {
       path: '/userUpdate',
-      component: resolve => require(['../views/UserUpdate'], resolve),
-      beforeEnter: (to, from, next) => {
-        const token = localStorage.getItem('f-token');
-        if (!token) {
-          next('/un-login');
-        }
-        checkToken(token).then((res) => {
-          if (res.data.code === 200) {
-            const loggedIn = res.data.loggedIn;
-            if (loggedIn) {
-              next();
-            } else {
-              next('/un-login');
-            }
-          } else {
-            next('/un-login');
-          }
-        }).catch(() => {
-          next('/un-login');
-        });
-      }
+      component: resolve => require(['../views/UserUpdate'], resolve)
     },
     {
       path: '/login',

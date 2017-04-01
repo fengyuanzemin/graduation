@@ -29,7 +29,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
             if (res.data.code === 5002) {
-              this.$route.push('/login');
+              this.$router.push('/login');
             }
           }, 2000);
         }
@@ -66,7 +66,7 @@
               setTimeout(() => {
                 this.$store.dispatch('close');
                 if (res.data.code === 5002) {
-                  this.$route.push('/login');
+                  this.$router.push('/login');
                 }
               }, 2000);
             }
@@ -91,7 +91,7 @@
               setTimeout(() => {
                 this.$store.dispatch('close');
                 if (res.data.code === 5002) {
-                  this.$route.push('/login');
+                  this.$router.push('/login');
                 }
               }, 2000);
             }

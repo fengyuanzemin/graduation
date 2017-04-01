@@ -2,12 +2,12 @@
   <div class="sign-up">
     <div class="input">
       <div class="input-group">
-        <span class="iconfont icon-yonghu left-icon"/><input type="text" placeholder="请输入用户名" maxlength="20"
+        <span class="iconfont icon-yonghu left-icon"></span><input type="text" placeholder="请输入用户名" maxlength="20"
                                                              v-model="name" v-focus-parent>
         <!-- <span class="warning">{{phoneMsg}}</span> -->
       </div>
       <div class="input-group bottom">
-        <span class="iconfont icon-mima left-icon"/><input type="password" placeholder="请输入密码" v-model="password"
+        <span class="iconfont icon-mima left-icon"></span><input type="password" placeholder="请输入密码" v-model="password"
                                                            v-focus-parent>
         <!-- <span class="warning">{{verifyErrorMsg}}</span> -->
       </div>
@@ -15,7 +15,7 @@
     <div class="button-group">
       <button :disabled="buttonDisabled" :class="{active: !buttonDisabled}" @click="signUp"><span
         v-show="!submitLoading">注册</span>
-        <f-fade-spinner v-show="submitLoading"/>
+        <f-fade-spinner v-show="submitLoading"></f-fade-spinner>
       </button>
     </div>
     <div class="button-group">
@@ -24,70 +24,70 @@
   </div>
 </template>
 <script>
-import FadeSpinner from 'components/FadeSpinner';
-import { signUp } from 'src/api/index';
+  import FadeSpinner from 'components/FadeSpinner';
+  import {signUp} from 'src/api/index';
 
-export default {
-  data() {
-    return {
-    	name: '',
-    	password: '',
-    	buttonDisabled: true,
-    	submitLoading: false
-    };
-  },
-  methods: {
-  	signUp() {
-  	  this.$store.dispatch('show', {
-        msg: '登录中，请等待'
-  	  });
-      signUp(this.name, this.password).then((res) => {
-        if(res.data.code === 200) {
-          localStorage.setItem('f-token', res.data.token);
-          this.$store.dispatch('checkoutMsg', {
-            msg: '注册成功'
-  	      });
-  	      setTimeout(() => {
-            this.$store.dispatch('close');
-            this.$router.push('/');
-  	      }, 1200);
-        } else {
-          this.$store.dispatch('checkoutMsg', {
-            msg: res.data.message
-  	      });
-  	      setTimeout(() => {
-            this.$store.dispatch('close');
-  	      }, 2000);
-        }
-      }).catch((err) => {
-        console.log(err)
+  export default {
+    data() {
+      return {
+        name: '',
+        password: '',
+        buttonDisabled: true,
+        submitLoading: false
+      };
+    },
+    methods: {
+      signUp() {
         this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
-  	    });
-  	    setTimeout(() => {
-          this.$store.dispatch('close');
-  	    }, 2000);
-      });
-  	},
-  	toLogin() {
-  		this.$emit('checkout', 'f-login');
-  	},
-  	checkNameAndPassword(name, password) {
-  		return (name && password && password.length >= 6 && password.length <= 14);
-  	}
-  },
-  watch: {
-  	name() {
-  		this.buttonDisabled = !this.checkNameAndPassword(this.name, this.password);
-  	},
-  	password() {
-  		this.buttonDisabled = !this.checkNameAndPassword(this.name, this.password);
-  	}
-  },
-  components: {
-  	'f-fade-spinner': FadeSpinner
-  }
-};
+          msg: '登录中，请等待'
+        });
+        signUp(this.name, this.password).then((res) => {
+          if (res.data.code === 200) {
+            localStorage.setItem('f-token', res.data.token);
+            this.$store.dispatch('checkoutMsg', {
+              msg: '注册成功'
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              this.$router.push('/');
+            }, 1200);
+          } else {
+            this.$store.dispatch('checkoutMsg', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(err)
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        });
+      },
+      toLogin() {
+        this.$emit('checkout', 'f-login');
+      },
+      checkNameAndPassword(name, password) {
+        return (name && password && password.length >= 6 && password.length <= 14);
+      }
+    },
+    watch: {
+      name() {
+        this.buttonDisabled = !this.checkNameAndPassword(this.name, this.password);
+      },
+      password() {
+        this.buttonDisabled = !this.checkNameAndPassword(this.name, this.password);
+      }
+    },
+    components: {
+      'f-fade-spinner': FadeSpinner
+    }
+  };
 </script>
 <style lang="scss" scoped>
   .sign-up {

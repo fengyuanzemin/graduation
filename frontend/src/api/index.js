@@ -34,7 +34,7 @@ export function post(text, token) {
 }
 
 // 拉取热门微博
-export function getHotList(page) {
+export function getHotList(page = 0) {
   return axios.get('/getHotList', {
     params: {
       page
@@ -43,7 +43,7 @@ export function getHotList(page) {
 }
 
 // 拉取用户微博
-export function getList(token, page, size) {
+export function getList(token, page = 0, size = 10) {
   return axios.get('/getList', {
     params: {
       size, page
@@ -55,7 +55,7 @@ export function getList(token, page, size) {
 }
 
 // 拉取某一用户微博
-export function getUserPostList(uId, token, page, size) {
+export function getUserPostList(uId, token, page = 0, size = 10) {
   return axios.get('/getUserPostList', {
     params: {
       uId, page, size

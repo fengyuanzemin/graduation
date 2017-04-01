@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <f-msg-with-loading/>
+    <f-msg-with-loading></f-msg-with-loading>
   </div>
 </template>
 

@@ -1,24 +1,24 @@
 <template>
   <div class="container">
     <header>
-      <span class="iconfont icon-houtui header-left"/>
-      <span class="clickBoard clickBoard-left" @click="back"/>
+      <span class="iconfont icon-houtui header-left"></span>
+      <span class="clickBoard clickBoard-left" @click="back"></span>
       <div class="header-title">个人中心</div>
       <span class="header-right">回首页</span>
-      <span class="clickBoard clickBoard-right" @click="toIndex"/>
+      <span class="clickBoard clickBoard-right" @click="toIndex"></span>
     </header>
     <div class="user-header">
       <div class="name">{{userInfo.name}}</div>
       <div class="brief" v-if="userInfo.brief">简介：{{userInfo.brief}}</div>
       <div class="brief" v-else>暂无简介</div>
       <div class="follow-btn" v-if="userInfo.follow === 'none'" @click="followIt(userInfo)"><span
-        class="iconfont icon-jia"/>关注
+        class="iconfont icon-jia"></span>关注
       </div>
       <div class="follow-btn" v-else-if="userInfo.follow === 'following'" @click="followIt(userInfo)"><span
-        class="iconfont icon-chenggong"/>已关注
+        class="iconfont icon-chenggong"></span>已关注
       </div>
       <div class="follow-btn" v-else-if="userInfo.follow === 'eachOther'" @click="followIt(userInfo)"><span
-        class="iconfont icon-huxiangguanzhu"/>相互关注
+        class="iconfont icon-huxiangguanzhu"></span>相互关注
       </div>
       <div class="info">
         <div class="info-container">
@@ -42,17 +42,17 @@
       --><span class="user-recommend-brief" v-if="item.brief">{{item.brief}}</span><!--
       --><span class="user-recommend-brief" v-else>暂无简介</span><!--
       --><span class="iconfont user-recommend-icon icon-guanzhu" v-if="item.follow === 'none'"
-               @click.prevent.stop="followIt(item)"/><!--
+               @click.prevent.stop="followIt(item)"></span><!--
       --><span class="iconfont user-recommend-icon icon-icon-yiguanzhu" v-else-if="item.follow === 'following'"
-               @click.prevent.stop="followIt(item)"/><!--
+               @click.prevent.stop="followIt(item)"></span><!--
       --><span class="iconfont user-recommend-icon icon-huxiangguanzhu" v-else-if="item.follow === 'eachOther'"
-               @click.prevent.stop="followIt(item)"/>
+               @click.prevent.stop="followIt(item)"></span>
       </div>
     </div>
-    <f-post-item v-for="item in items" :item="item"/>
+    <f-post-item v-for="item in items" :item="item"></f-post-item>
     <div class="loading" v-show="loading">
       <span class="loading-text">{{loadingText}}</span>
-      <f-fade-spinner size="middle"/>
+      <f-fade-spinner size="middle"></f-fade-spinner>
     </div>
   </div>
 </template>
@@ -88,6 +88,9 @@ export default {
   },
   mounted() {
     document.addEventListener('scroll', this.judgeBottom);
+  },
+  beforeDestroy() {
+    document.removeEventListener('scroll', this.judgeBottom);
   },
   data() {
     return {
@@ -242,7 +245,7 @@ export default {
             this.disabled = true;
             setTimeout(() => {
               this.loading = false;
-            }, 2000);
+            }, 1500);
           }
         } else {
           this.loading = false;

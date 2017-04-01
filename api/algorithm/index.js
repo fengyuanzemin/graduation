@@ -13,7 +13,7 @@ db.on('error', console.error.bind(console, '连接错误:'));
 
 mongoose.Promise = global.Promise;
 // setInterval(() => {
-calculate.calculateSimilar().then(() => {
+calculate.similar().then(() => {
 
 }).catch(err => {
     console.log(err)

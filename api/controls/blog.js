@@ -8,6 +8,7 @@ import RelationShip from '../models/relationship';
 import Similar from '../models/similar';
 import {errCode} from '../utils/codeTransfer';
 import {PAGE_OPTION} from '../utils/const';
+import {recommend} from '../algorithm/calculate';
 
 // 发送原创微博
 export async function post(req, res) {
@@ -107,7 +108,7 @@ export async function getList(req, res) {
             userArr.push(item.following);
         });
         // 找到所有的数据
-        const cards = await Post.find({user: {$in: userArr}})
+        let cards = await Post.find({user: {$in: userArr}})
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
             .sort({_id: -1})
             .limit(size)
@@ -121,7 +122,38 @@ export async function getList(req, res) {
                     select: 'name'
                 }
             });
-        // // 用户并没有发过微博的情况下
+        /**
+         * 推荐列表里的用户的微博
+         *
+         */
+            // 首先得是第二页，然后有很多微博才推荐
+        let cardsRecommend = [];
+        if (+req.query.page >= 1 && cards.length === 10) {
+            const userRecommend = await recommend(user);
+            cardsRecommend = await Post.find({user: {$in: userRecommend}})
+                .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
+                .sort({_id: -1})
+                .limit(1).skip(+req.query.page)
+                .populate('user', ['name'])
+                .populate('retweeted_post')
+                .populate({
+                    path: 'retweeted_post',
+                    populate: {
+                        path: 'user',
+                        select: 'name'
+                    }
+                });
+            cardsRecommend = JSON.parse(JSON.stringify(cardsRecommend)).map(item => {
+                item.recommend = true;
+                return item;
+            });
+        }
+        if (cardsRecommend.length > 0) {
+            cards.splice(Math.floor(Math.random() * cards.length), 0, cardsRecommend[0])
+        }
+
+        // cards = cards.concat(cardsRecommend);
+        // 用户并没有发过微博的情况下
         // // 没关注的情况下，热门微博
         // // 有关注的情况下，但是关注的人并没有发送微博
         // if (cards.length === 0) {

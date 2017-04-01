@@ -7,15 +7,15 @@
       </div>
       <div class="comment-content">{{item.content}}</div>
     </div>
-    <div v-if="items.length==0">
+    <div v-if="items.length===0">
       <div class="comment-empty">暂无评论</div>
     </div>
   </div>
 </template>
 <script>
-export default {
-  props: ['items']
-};
+  export default {
+    props: ['items']
+  };
 </script>
 <style lang="scss" scoped>
   .comment-container {

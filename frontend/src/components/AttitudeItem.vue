@@ -4,15 +4,15 @@
       <span class="attitude-name">{{item.user.name}}</span>
       <span class="attitude-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}} 点赞</span>
     </div>
-    <div v-if="items.length==0">
+    <div v-if="items.length===0">
       <div class="attitude-empty">暂无点赞</div>
     </div>
   </div>
 </template>
 <script>
-export default {
-  props: ['items']
-};
+  export default {
+    props: ['items']
+  };
 </script>
 <style lang="scss" scoped>
   .attitude {

@@ -6,7 +6,7 @@
       <div class="brief" v-else>暂无简介</div>
     </div>
     <span class="change-btn">更改</span>
-    <span class="clickBoard clickBoard-right" @click="update"/>
+    <span class="clickBoard clickBoard-right" @click="update"></span>
     <div class="info">
       <div class="info-container" @click="toList">
         <div class="info-number">{{userInfo.posts_count}}</div>
@@ -25,62 +25,62 @@
   </div>
 </template>
 <script>
-import {getUserInfo} from 'src/api';
+  import {getUserInfo} from 'src/api';
 
-export default {
-  created() {
-    getUserInfo(this.token).then((res) => {
-      if(res.data.code === 200) {
-        this.userInfo = res.data.userInfo;
-      } else {
+  export default {
+    created() {
+      getUserInfo(this.token).then((res) => {
+        if (res.data.code === 200) {
+          this.userInfo = res.data.userInfo;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if (res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
+        }
+      }).catch((err) => {
+        console.log(err);
         this.$store.dispatch('show', {
-          msg: res.data.message
+          msg: '服务器错误啦，请稍后再试'
         });
         setTimeout(() => {
           this.$store.dispatch('close');
-          if(res.data.code === 5002) {
-            this.$route.push('/login');
-          }
         }, 2000);
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.$store.dispatch('show', {
-        msg: '服务器错误啦，请稍后再试'
-      });
-      setTimeout(() => {
-        this.$store.dispatch('close');
-      }, 2000);
-    })
-  },
-  data() {
-    return {
-      userInfo: {
-        name: '',
-        posts_count: 0,
-        following_count: 0,
-        followers_count: 0,
-        brief: ''
+      })
+    },
+    data() {
+      return {
+        userInfo: {
+          name: '',
+          posts_count: 0,
+          following_count: 0,
+          followers_count: 0,
+          brief: ''
+        },
+        token: localStorage.getItem('f-token')
+      };
+    },
+    methods: {
+      logout() {
+        localStorage.removeItem('f-token');
+        this.$router.push('/login');
       },
-      token: localStorage.getItem('f-token')
-    };
-  },
-  methods: {
-    logout() {
-      localStorage.removeItem('f-token');
-      this.$router.push('/login');
-    },
-    toList() {
-      this.$router.push({name: 'user', params: {userId: this.userInfo._id}});
-    },
-    toFollow() {
-      this.$router.push({name: 'follow', params: {userId: this.userInfo._id}});
-    },
-    update() {
-      this.$router.push('/userUpdate');
+      toList() {
+        this.$router.push({name: 'user', params: {userId: this.userInfo._id}});
+      },
+      toFollow() {
+        this.$router.push({name: 'follow', params: {userId: this.userInfo._id}});
+      },
+      update() {
+        this.$router.push('/userUpdate');
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
   .home {

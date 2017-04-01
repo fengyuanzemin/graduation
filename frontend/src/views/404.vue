@@ -5,13 +5,13 @@
   </div>
 </template>
 <script>
-export default {
-  methods:{
-    back() {
-      this.$router.push('/');
+  export default {
+    methods: {
+      back() {
+        this.$router.push('/');
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
   .not-found {

@@ -1,59 +1,59 @@
 <template>
   <div class="container">
     <header>
-      <span class="header-left iconfont icon-houtui"/>
-      <span class="clickBoard clickBoard-left" @click="back"/>
+      <span class="header-left iconfont icon-houtui"></span>
+      <span class="clickBoard clickBoard-left" @click="back"></span>
       <div class="header-title">发微博</div>
-      <span class="iconfont icon-fasong1" :class="{active: text}"/>
-      <span class="clickBoard clickBoard-right" @click="post"/>
+      <span class="iconfont icon-fasong1" :class="{active: text}"></span>
+      <span class="clickBoard clickBoard-right" @click="post"></span>
     </header>
-    <textarea placeholder="请输入您的内容" class="post-textarea" v-model.trim="text" autofocus="on"/>
+    <textarea placeholder="请输入您的内容" class="post-textarea" v-model.trim="text" autofocus="on"></textarea>
   </div>
 </template>
 <script>
-import {post} from 'src/api/';
+  import {post} from 'src/api/';
 
-export default {
-  data() {
-    return {
-      text: '',
-      token: localStorage.getItem('f-token')
-    };
-  },
-  methods: {
-    back() {
-      this.$router.back();
+  export default {
+    data() {
+      return {
+        text: '',
+        token: localStorage.getItem('f-token')
+      };
     },
-    post() {
-      if(!this.text) {
-        return;
-      }
-      post(this.text, this.token).then((res) => {
-        if(res.data.code === 200) {
-          this.$router.push('/');
-        } else {
+    methods: {
+      back() {
+        this.$router.back();
+      },
+      post() {
+        if (!this.text) {
+          return;
+        }
+        post(this.text, this.token).then((res) => {
+          if (res.data.code === 200) {
+            this.$router.push('/');
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(err);
           this.$store.dispatch('show', {
-            msg: res.data.message
+            msg: '服务器错误啦，请稍后再试'
           });
           setTimeout(() => {
             this.$store.dispatch('close');
-            if(res.data.code === 5002) {
-              this.$route.push('/login');
-            }
           }, 2000);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
-        });
-        setTimeout(() => {
-          this.$store.dispatch('close');
-        }, 2000);
-      })
+        })
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
   .container {

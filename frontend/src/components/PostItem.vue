@@ -9,27 +9,32 @@
     <div class="card-content">{{item.post.content}}</div>
     <div class="card-retweeted" v-if="item.post.retweeted_post" @click.stop.prevent="detail(item.post.retweeted_post)">
       <div class="card-retweeted-header">
-        <span class="card-retweeted-name" @click.stop.prevent="toUser(item.post.retweeted_post)">@{{item.post.retweeted_post.user.name}}</span>
+        <span class="card-retweeted-name"
+              @click.stop.prevent="toUser(item.post.retweeted_post)">@{{item.post.retweeted_post.user.name}}</span>
         <span class="card-retweeted-time">{{item.post.retweeted_post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
       </div>
       <div class="card-retweeted-content">{{item.post.retweeted_post.content}}</div>
     </div>
     <div class="card-footer">
       <div class="card-footer-container" @click.stop.prevent="repost(item.post)">
-        <span class="iconfont icon-zhuanfa1"/><span v-if="item.post.reposts_count" class="card-footer-text">{{item.post.reposts_count}}</span><span
+        <span class="iconfont icon-zhuanfa1"></span><span v-if="item.post.reposts_count"
+                                                          class="card-footer-text">{{item.post.reposts_count}}</span><span
         class="card-footer-text" v-else>转发</span>
       </div>
       <div class="card-footer-container" @click.stop.prevent="comment(item.post)">
-        <span class="iconfont icon-pinglun"/><span v-if="item.post.comments_count" class="card-footer-text">{{item.post.comments_count}}</span><span
+        <span class="iconfont icon-pinglun"></span><span v-if="item.post.comments_count"
+                                                         class="card-footer-text">{{item.post.comments_count}}</span><span
         class="card-footer-text" v-else>评论</span>
       </div>
       <div class="card-footer-container" @click.stop.prevent="attitude(item.post)" :class="{attituded: item.attituded}">
-        <span class="iconfont icon-unie60e"/><span v-if="item.post.attitudes_count" class="card-footer-text">{{item.post.attitudes_count}}</span><span
+        <span class="iconfont icon-unie60e"></span><span v-if="item.post.attitudes_count"
+                                                         class="card-footer-text">{{item.post.attitudes_count}}</span><span
         class="card-footer-text" v-else>点赞</span>
       </div>
     </div>
   </div>
   <div class="card" v-else-if="item.attitudes_count >= 0" @click.stop.prevent="detail(item)">
+    <div class="card-attitude" v-if="item.recommend">你可能感兴趣的微博</div>
     <!--用户自己的微博-->
     <div class="card-header">
       <span class="card-name" @click.stop.prevent="toUser(item)">{{item.user.name}}</span>
@@ -39,110 +44,114 @@
     <!--若不是原创-->
     <div class="card-retweeted" v-if="item.retweeted_post" @click.stop.prevent="detail(item.retweeted_post)">
       <div class="card-retweeted-header">
-        <span class="card-retweeted-name" @click.stop.prevent="toUser(item.retweeted_post)">@{{item.retweeted_post.user.name}}</span>
+        <span class="card-retweeted-name"
+              @click.stop.prevent="toUser(item.retweeted_post)">@{{item.retweeted_post.user.name}}</span>
         <span class="card-retweeted-time">{{item.retweeted_post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
       </div>
       <div class="card-retweeted-content">{{item.retweeted_post.content}}</div>
     </div>
     <div class="card-footer">
       <div class="card-footer-container" @click.stop.prevent="repost(item)">
-        <span class="iconfont icon-zhuanfa1"/><span v-if="item.reposts_count" class="card-footer-text">{{item.reposts_count}}</span><span
+        <span class="iconfont icon-zhuanfa1"></span><span v-if="item.reposts_count"
+                                                          class="card-footer-text">{{item.reposts_count}}</span><span
         class="card-footer-text" v-else>转发</span>
       </div>
       <div class="card-footer-container" @click.stop.prevent="comment(item)">
-        <span class="iconfont icon-pinglun"/><span v-if="item.comments_count" class="card-footer-text">{{item.comments_count}}</span><span
+        <span class="iconfont icon-pinglun"></span><span v-if="item.comments_count"
+                                                         class="card-footer-text">{{item.comments_count}}</span><span
         class="card-footer-text" v-else>评论</span>
       </div>
       <div class="card-footer-container" @click.stop.prevent="attitude(item)" :class="{attituded: item.attituded}">
-        <span class="iconfont icon-unie60e"/><span v-if="item.attitudes_count" class="card-footer-text">{{item.attitudes_count}}</span><span
+        <span class="iconfont icon-unie60e"></span><span v-if="item.attitudes_count"
+                                                         class="card-footer-text">{{item.attitudes_count}}</span><span
         class="card-footer-text" v-else>点赞</span>
       </div>
     </div>
   </div>
 </template>
 <script>
-import {attitude, clickIn} from 'src/api';
-export default {
-  props: ['item'],
-  data() {
-    return {
-      token: localStorage.getItem('f-token')
-    }
-  },
-  methods: {
-    detail(data) {
-      if(/^\/un-login/.test(this.$route.path)) {
-        this.$router.push('/login')
-        return;
-      }
-      clickIn(data._id, this.token);
-      this.$router.push({name: 'status', params: { postId: data._id }});
-    },
-    repost(data) {
-      if(/^\/un-login/.test(this.$route.path)) {
-        this.$router.push('/login')
-        return;
-      }
-      this.$router.push({name: 'repost', params: { postId: data._id }});
-    },
-    comment(data) {
-      if(/^\/un-login/.test(this.$route.path)) {
-        this.$router.push('/login')
-        return;
-      }
-      if (data.comments_count) {
-        this.$router.push({name: 'status', params: { postId: data._id }});
-      } else {
-        this.$router.push({name: 'comment', params: { postId: data._id }});
+  import {attitude, clickIn} from 'src/api';
+  export default {
+    props: ['item'],
+    data() {
+      return {
+        token: localStorage.getItem('f-token')
       }
     },
-    attitude(data) {
-      if(/^\/un-login/.test(this.$route.path)) {
-        this.$router.push('/login')
-        return;
-      }
-      attitude(data._id, this.token).then((res) => {
-        if (res.data.code === 200) {
-          data.attitudes_count += 1;
-          data.attituded = true;
-        } else if (res.data.code === 5007) {
-          data.attitudes_count -= 1;
-          data.attituded = false;
-        } else {
-          this.$store.dispatch('show', {
-            msg: res.data.message
-  	      });
-  	      setTimeout(() => {
-            this.$store.dispatch('close');
-            if(res.data.code === 5002) {
-              this.$route.push('/login');
-            }
-          }, 2000);
+    methods: {
+      detail(data) {
+        if (/^\/un-login/.test(this.$route.path)) {
+          this.$router.push('/login')
+          return;
         }
-      }).catch((err) => {
-        console.log(res);
-        this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
+        clickIn(data._id, this.token);
+        this.$router.push({name: 'status', params: {postId: data._id}});
+      },
+      repost(data) {
+        if (/^\/un-login/.test(this.$route.path)) {
+          this.$router.push('/login')
+          return;
+        }
+        this.$router.push({name: 'repost', params: {postId: data._id}});
+      },
+      comment(data) {
+        if (/^\/un-login/.test(this.$route.path)) {
+          this.$router.push('/login')
+          return;
+        }
+        if (data.comments_count) {
+          this.$router.push({name: 'status', params: {postId: data._id}});
+        } else {
+          this.$router.push({name: 'comment', params: {postId: data._id}});
+        }
+      },
+      attitude(data) {
+        if (/^\/un-login/.test(this.$route.path)) {
+          this.$router.push('/login')
+          return;
+        }
+        attitude(data._id, this.token).then((res) => {
+          if (res.data.code === 200) {
+            data.attitudes_count += 1;
+            data.attituded = true;
+          } else if (res.data.code === 5007) {
+            data.attitudes_count -= 1;
+            data.attituded = false;
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(res);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         });
-        setTimeout(() => {
-          this.$store.dispatch('close');
-        }, 2000);
-      });
-    },
-    toUser(data) {
-      // 在user页面不用跳转
-      if(/^\/user/.test(this.$route.path) && (data.user._id === this.$route.params.userId)) {
-        return;
+      },
+      toUser(data) {
+        // 在user页面不用跳转
+        if (/^\/user/.test(this.$route.path) && (data.user._id === this.$route.params.userId)) {
+          return;
+        }
+        // 在未登录页面，要去登录
+        if (/^\/un-login/.test(this.$route.path)) {
+          this.$router.push('/login');
+          return;
+        }
+        this.$router.push({name: 'user', params: {userId: data.user._id}});
       }
-      // 在未登录页面，要去登录
-      if(/^\/un-login/.test(this.$route.path)) {
-        this.$router.push('/login');
-        return;
-      }
-      this.$router.push({name: 'user', params: {userId: data.user._id}});
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
   .card {

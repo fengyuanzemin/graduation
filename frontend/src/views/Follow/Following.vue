@@ -1,114 +1,114 @@
 <template>
   <div class="container">
-    <div class="follow-empty" v-if="items.length == 0">暂无关注</div>
+    <div class="follow-empty" v-if="items.length === 0">暂无关注</div>
     <div class="follow-container" v-for="item in items" @click.prevent.stop="toUser(item.following)">
       <span class="follow-name">{{item.following.name}}</span><!--
       --><span class="follow-brief" v-if="item.following.brief">{{item.following.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
       --><span class="iconfont follow-icon icon-guanzhu" v-if="item.following.follow === 'none'"
-               @click.prevent.stop="follow(item.following)"/><!--
+               @click.prevent.stop="follow(item.following)"></span><!--
       --><span class="iconfont follow-icon icon-icon-yiguanzhu" v-else-if="item.following.follow === 'following'"
-               @click.prevent.stop="follow(item.following)"/><!--
+               @click.prevent.stop="follow(item.following)"></span><!--
       --><span class="iconfont follow-icon icon-huxiangguanzhu" v-else-if="item.following.follow === 'eachOther'"
-               @click.prevent.stop="follow(item.following)"/>
+               @click.prevent.stop="follow(item.following)"></span>
 
     </div>
   </div>
 </template>
 <script>
-import {getFollowList, follow} from 'src/api';
+  import {getFollowList, follow} from 'src/api';
 
-export default {
-  created() {
-    getFollowList(1, this.$route.params.userId, this.token).then((res) => {
-      if(res.data.code === 200) {
-        this.items = res.data.followList;
-      } else {
+  export default {
+    created() {
+      getFollowList(1, this.$route.params.userId, this.token).then((res) => {
+        if (res.data.code === 200) {
+          this.items = res.data.followList;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if (res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
+        }
+      }).catch((err) => {
+        console.log(err);
         this.$store.dispatch('show', {
-          msg: res.data.message
-  	    });
-  	    setTimeout(() => {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
           this.$store.dispatch('close');
-          if(res.data.code === 5002) {
-            this.$route.push('/login');
-          }
         }, 2000);
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.$store.dispatch('show', {
-        msg: '服务器错误啦，请稍后再试'
-  	  });
-  	  setTimeout(() => {
-        this.$store.dispatch('close');
-  	  }, 2000);
-    });
-  },
-  data() {
-    return {
-      items: [],
-      token: localStorage.getItem('f-token')
-    };
-  },
-  methods: {
-    toUser(data) {
-      this.$router.push({name: 'user', params: {userId: data._id}});
+      });
     },
-    follow(data) {
-      if(data.follow === 'none') {
-        // 关注
-        follow(data._id, this.token, true).then((res) => {
-          if(res.data.code === 200) {
-            data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
-          } else {
+    data() {
+      return {
+        items: [],
+        token: localStorage.getItem('f-token')
+      };
+    },
+    methods: {
+      toUser(data) {
+        this.$router.push({name: 'user', params: {userId: data._id}});
+      },
+      follow(data) {
+        if (data.follow === 'none') {
+          // 关注
+          follow(data._id, this.token, true).then((res) => {
+            if (res.data.code === 200) {
+              data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+            } else {
+              this.$store.dispatch('show', {
+                msg: res.data.message
+              });
+              setTimeout(() => {
+                this.$store.dispatch('close');
+                if (res.data.code === 5002) {
+                  this.$route.push('/login');
+                }
+              }, 2000);
+            }
+          }).catch((err) => {
+            console.log(err);
             this.$store.dispatch('show', {
-              msg: res.data.message
-  	        });
-  	        setTimeout(() => {
+              msg: '服务器错误啦，请稍后再试'
+            });
+            setTimeout(() => {
               this.$store.dispatch('close');
-              if(res.data.code === 5002) {
-                this.$route.push('/login');
-              }
             }, 2000);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$store.dispatch('show', {
-            msg: '服务器错误啦，请稍后再试'
           });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-          }, 2000);
-        });
-      } else {
-        // 取关
-        follow(data._id, this.token, false).then((res) => {
-          if(res.data.code === 200) {
-            data.follow = 'none';
-          } else {
+        } else {
+          // 取关
+          follow(data._id, this.token, false).then((res) => {
+            if (res.data.code === 200) {
+              data.follow = 'none';
+            } else {
+              this.$store.dispatch('show', {
+                msg: res.data.message
+              });
+              setTimeout(() => {
+                this.$store.dispatch('close');
+                if (res.data.code === 5002) {
+                  this.$route.push('/login');
+                }
+              }, 2000);
+            }
+          }).catch((err) => {
+            console.log(err);
             this.$store.dispatch('show', {
-              msg: res.data.message
-  	        });
-  	        setTimeout(() => {
+              msg: '服务器错误啦，请稍后再试'
+            });
+            setTimeout(() => {
               this.$store.dispatch('close');
-              if(res.data.code === 5002) {
-                this.$route.push('/login');
-              }
             }, 2000);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$store.dispatch('show', {
-            msg: '服务器错误啦，请稍后再试'
           });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-          }, 2000);
-        });
+        }
       }
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
   .container {

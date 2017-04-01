@@ -3,14 +3,14 @@
     <header>
       <div class="header-title">{{title}}</div>
       <span class="header-right">登录</span>
-      <span class="clickBoard clickBoard-right" @click="toLogin"/>
+      <span class="clickBoard clickBoard-right" @click="toLogin"></span>
     </header>
     <keep-alive>
-      <component :is="currentView"/>
+      <component :is="currentView"></component>
     </keep-alive>
     <footer>
       <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
-        <span class="iconfont" :class="item.icon"/>
+        <span class="iconfont" :class="item.icon"></span>
         <span class="footer-text">{{item.text}}</span>
       </div>
     </footer>
@@ -24,13 +24,13 @@
       if (this.$route.query.component) {
         let i = 0;
         this.footerItem.forEach((item) => {
-          if(item.showItem === this.$route.query.component) {
+          if (item.showItem === this.$route.query.component) {
             this.currentView = this.$route.query.component;
           } else {
             i += 1;
           }
         });
-        if(i === this.footerItem.length) {
+        if (i === this.footerItem.length) {
           this.$router.push('/404');
         }
       }
@@ -63,7 +63,7 @@
         this.$router.push({path: '/un-login', query: {component: item.showItem}});
       },
       toLogin() {
-      	this.$router.push('/login');
+        this.$router.push('/login');
       }
     },
     components: {

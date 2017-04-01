@@ -147,10 +147,10 @@
   }
 </style>
 <script>
-export default {
-  name: 'fade-spinner',
-  // 传下来一个尺寸的值
-  props: ['size']
-};
+  export default {
+    name: 'fade-spinner',
+    // 传下来一个尺寸的值
+    props: ['size']
+  };
 
 </script>

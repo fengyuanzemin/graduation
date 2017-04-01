@@ -15,99 +15,99 @@
   </div>
 </template>
 <script>
-import {recommend, follow} from 'src/api';
+  import {recommend, follow} from 'src/api';
 
-export default {
-  created() {
-    recommend(this.token).then((res) => {
-      if(res.data.code === 200) {
-        this.items = res.data.recommend;
-      } else {
+  export default {
+    created() {
+      recommend(this.token).then((res) => {
+        if (res.data.code === 200) {
+          this.items = res.data.recommend;
+        } else {
+          this.$store.dispatch('show', {
+            msg: res.data.message
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+            if (res.data.code === 5002) {
+              this.$route.push('/login');
+            }
+          }, 2000);
+        }
+      }).catch((err) => {
+        console.log(err);
         this.$store.dispatch('show', {
-          msg: res.data.message
-  	    });
-  	    setTimeout(() => {
+          msg: '服务器错误啦，请稍后再试'
+        });
+        setTimeout(() => {
           this.$store.dispatch('close');
-          if(res.data.code === 5002) {
-            this.$route.push('/login');
-          }
         }, 2000);
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.$store.dispatch('show', {
-        msg: '服务器错误啦，请稍后再试'
       });
-      setTimeout(() => {
-        this.$store.dispatch('close');
-      }, 2000);
-    });
-  },
-  data() {
-    return {
-       items: [],
-       token: localStorage.getItem('f-token')
-    };
-  },
-  methods: {
-    toUser(data) {
-      this.$router.push({name: 'user', params: {userId: data._id}});
     },
-    follow(data) {
-      if(data.follow === 'none') {
-        // 关注
-        follow(data._id, this.token, true).then((res) => {
-          if(res.data.code === 200) {
-            data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
-          } else {
+    data() {
+      return {
+        items: [],
+        token: localStorage.getItem('f-token')
+      };
+    },
+    methods: {
+      toUser(data) {
+        this.$router.push({name: 'user', params: {userId: data._id}});
+      },
+      follow(data) {
+        if (data.follow === 'none') {
+          // 关注
+          follow(data._id, this.token, true).then((res) => {
+            if (res.data.code === 200) {
+              data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
+            } else {
+              this.$store.dispatch('show', {
+                msg: res.data.message
+              });
+              setTimeout(() => {
+                this.$store.dispatch('close');
+                if (res.data.code === 5002) {
+                  this.$route.push('/login');
+                }
+              }, 2000);
+            }
+          }).catch((err) => {
+            console.log(err);
             this.$store.dispatch('show', {
-              msg: res.data.message
-  	        });
-  	        setTimeout(() => {
+              msg: '服务器错误啦，请稍后再试'
+            });
+            setTimeout(() => {
               this.$store.dispatch('close');
-              if(res.data.code === 5002) {
-                this.$route.push('/login');
-              }
             }, 2000);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$store.dispatch('show', {
-            msg: '服务器错误啦，请稍后再试'
           });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-          }, 2000);
-        });
-      } else {
-        // 取关
-        follow(data._id, this.token, false).then((res) => {
-          if(res.data.code === 200) {
-            data.follow = 'none';
-          } else {
+        } else {
+          // 取关
+          follow(data._id, this.token, false).then((res) => {
+            if (res.data.code === 200) {
+              data.follow = 'none';
+            } else {
+              this.$store.dispatch('show', {
+                msg: res.data.message
+              });
+              setTimeout(() => {
+                this.$store.dispatch('close');
+                if (res.data.code === 5002) {
+                  this.$route.push('/login');
+                }
+              }, 2000);
+            }
+          }).catch((err) => {
+            console.log(err);
             this.$store.dispatch('show', {
-              msg: res.data.message
-  	        });
-  	        setTimeout(() => {
+              msg: '服务器错误啦，请稍后再试'
+            });
+            setTimeout(() => {
               this.$store.dispatch('close');
-              if(res.data.code === 5002) {
-                this.$route.push('/login');
-              }
             }, 2000);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$store.dispatch('show', {
-            msg: '服务器错误啦，请稍后再试'
           });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-          }, 2000);
-        });
+        }
       }
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
   .container {

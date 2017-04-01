@@ -8,7 +8,40 @@ import Post from '../models/post';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
 
-export async function calculateSimilar() {
+// 只返回推荐人id
+export async function recommend(user) {
+    try {
+        let recommend = [];
+        // 查找是谁的推荐人
+        let recommendFollow = [];
+        const sim = await Similar.find({$or: [{userA: user._id}, {userB: user._id}]})
+            .sort('-similar');
+        for (let s of sim) {
+            const re = await RelationShip.findOne({
+                $or: [{
+                    follower: user._id,
+                    following: s.userA
+                }, {
+                    follower: user._id,
+                    following: s.userB
+                }]
+            });
+            // 没有关注过
+            if (!re) {
+                recommendFollow.push(s);
+            }
+        }
+        for (let i of recommendFollow) {
+            const id = String(i.userA) === String(user._id) ? i.userB : i.userA;
+            recommend.push(id);
+        }
+        return recommend;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export async function similar() {
     try {
         // 将Weight清空
         await Weight.remove({});

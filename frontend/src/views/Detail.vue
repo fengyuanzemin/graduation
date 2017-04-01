@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <header>
-      <span class="header-left iconfont icon-houtui"/>
-      <span class="clickBoard clickBoard-left" @click="back"/>
+      <span class="header-left iconfont icon-houtui"></span>
+      <span class="clickBoard clickBoard-left" @click="back"></span>
       <div class="header-title">正文</div>
       <span class="header-right">回首页</span>
-      <span class="clickBoard clickBoard-right clickBoard-right-big" @click="toIndex"/>
+      <span class="clickBoard clickBoard-right clickBoard-right-big" @click="toIndex"></span>
     </header>
     <div class="card" v-if="item">
       <div class="card-header">
@@ -16,7 +16,8 @@
       <!--若不是原创-->
       <div class="card-retweeted" v-if="item.retweeted_post" @click.stop.prevent="detail(item.retweeted_post)">
         <div class="card-retweeted-header">
-          <span class="card-retweeted-name" @click.stop.prevent="toUser(item.retweeted_post)">@{{item.retweeted_post.user.name}}</span>
+          <span class="card-retweeted-name"
+                @click.stop.prevent="toUser(item.retweeted_post)">@{{item.retweeted_post.user.name}}</span>
           <span class="card-retweeted-time">{{item.retweeted_post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
         </div>
         <div class="card-retweeted-content">{{item.retweeted_post.content}}</div>
@@ -33,90 +34,32 @@
         </div>
       </div>
     </div>
-    <component :is="currentView" :items="actionItem"/>
+    <component :is="currentView" :items="actionItem"></component>
     <footer>
       <div class="footer-container" @click.stop.prevent="repost">
-        <span class="iconfont icon-zhuanfa1"/><span class="footer-text">转发</span>
+        <span class="iconfont icon-zhuanfa1"></span><span class="footer-text">转发</span>
       </div>
       <div class="footer-container" @click.stop.prevent="comment">
-        <span class="iconfont icon-pinglun"/><span class="footer-text">评论</span>
+        <span class="iconfont icon-pinglun"></span><span class="footer-text">评论</span>
       </div>
       <div class="footer-container" @click.stop.prevent="attitude">
-        <span class="iconfont icon-unie60e" :class="{active: item && item.attituded}"/><span class="footer-text">点赞</span>
+        <span class="iconfont icon-unie60e" :class="{active: item && item.attituded}"></span><span
+        class="footer-text">点赞</span>
       </div>
     </footer>
   </div>
 </template>
 <script>
-import AttitudeItem from 'src/components/AttitudeItem';
-import CommentItem from 'src/components/CommentItem';
-import RepostItem from 'src/components/RepostItem';
-import {getPostItem, attitude, getActionInfo, clickIn} from 'src/api';
+  import AttitudeItem from 'src/components/AttitudeItem';
+  import CommentItem from 'src/components/CommentItem';
+  import RepostItem from 'src/components/RepostItem';
+  import {getPostItem, attitude, getActionInfo, clickIn} from 'src/api';
 
-export default {
-  created() {
-    // 拉取主要信息
-    getPostItem(this.$route.params.postId, this.token).then((res) => {
-      if (res.data.code === 200) {
-          this.item = res.data.detail;
-      } else {
-        this.$store.dispatch('show', {
-          msg: res.data.message
-  	    });
-  	    setTimeout(() => {
-          this.$store.dispatch('close');
-          if(res.data.code === 5002) {
-            this.$route.push('/login');
-          }
-        }, 2000);
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.$store.dispatch('show', {
-        msg: '服务器错误啦，请稍后再试'
-      });
-      setTimeout(() => {
-        this.$store.dispatch('close');
-      }, 2000);
-    });
-    // 拉取评论点赞
-    getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
-      if(res.data.code === 200) {
-        this.actionItem = res.data.items;
-      } else {
-        this.$store.dispatch('show', {
-          msg: res.data.message
-  	    });
-  	    setTimeout(() => {
-          this.$store.dispatch('close');
-          if(res.data.code === 5002) {
-            this.$route.push('/login');
-          }
-        }, 2000);
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.$store.dispatch('show', {
-        msg: '服务器错误啦，请稍后再试'
-      });
-      setTimeout(() => {
-        this.$store.dispatch('close');
-      }, 2000);
-    });
-  },
-  data() {
-    return {
-      item: null,
-      currentView: 'f-comment-item',
-      actionItem: [],
-      token: localStorage.getItem('f-token')
-    };
-  },
-  watch: {
-    '$route'(route) {
+  export default {
+    created() {
       // 拉取主要信息
       getPostItem(this.$route.params.postId, this.token).then((res) => {
-        if(res.data.code === 200) {
+        if (res.data.code === 200) {
           this.item = res.data.detail;
         } else {
           this.$store.dispatch('show', {
@@ -124,7 +67,7 @@ export default {
           });
           setTimeout(() => {
             this.$store.dispatch('close');
-            if(res.data.code === 5002) {
+            if (res.data.code === 5002) {
               this.$route.push('/login');
             }
           }, 2000);
@@ -140,62 +83,15 @@ export default {
       });
       // 拉取评论点赞
       getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
-        if(res.data.code === 200) {
-          this.actionItem = res.data.items;
-        } else {
-          this.$store.dispatch('show', {
-            msg: res.data.message
-          });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-            if(res.data.code === 5002) {
-              this.$route.push('/login');
-            }
-          }, 2000);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
-        });
-        setTimeout(() => {
-          this.$store.dispatch('close');
-        }, 2000);
-      });
-    }
-  },
-  methods: {
-    back() {
-      this.$router.back();
-    },
-    toIndex() {
-      this.$router.push('/');
-    },
-    repost() {
-      this.$router.push({name: 'repost', params:{ postId: this.$route.params.postId }});
-    },
-    comment() {
-      this.$router.push({name: 'comment', params: { postId: this.$route.params.postId }});
-    },
-    attitude() {
-      if(!this.token) {
-        this.$router.push('/login');
-        return;
-      }
-      attitude(this.$route.params.postId, this.token).then((res) => {
         if (res.data.code === 200) {
-          this.item.attituded = true;
-          this.item.attitudes_count += 1;
-        } else if (res.data.code === 5007){
-          this.item.attituded = false;
-          this.item.attitudes_count -= 1;
+          this.actionItem = res.data.items;
         } else {
           this.$store.dispatch('show', {
             msg: res.data.message
           });
           setTimeout(() => {
             this.$store.dispatch('close');
-            if(res.data.code === 5002) {
+            if (res.data.code === 5002) {
               this.$route.push('/login');
             }
           }, 2000);
@@ -210,47 +106,153 @@ export default {
         }, 2000);
       });
     },
-    toUser(data) {
-      this.$router.push({name: 'user', params: {userId: data.user._id}});
+    data() {
+      return {
+        item: null,
+        currentView: 'f-comment-item',
+        actionItem: [],
+        token: localStorage.getItem('f-token')
+      };
     },
-    // 切换组件
-    checkout(component) {
-      this.currentView = `f-${component}-item`;
-      getActionInfo(this.$route.params.postId, component, this.token).then((res) => {
-        if(res.data.code === 200) {
-          this.actionItem = res.data.items;
-        } else {
+    watch: {
+      '$route'(route) {
+        // 拉取主要信息
+        getPostItem(this.$route.params.postId, this.token).then((res) => {
+          if (res.data.code === 200) {
+            this.item = res.data.detail;
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(err);
           this.$store.dispatch('show', {
-            msg: res.data.message
+            msg: '服务器错误啦，请稍后再试'
           });
           setTimeout(() => {
             this.$store.dispatch('close');
-            if(res.data.code === 5002) {
-              this.$route.push('/login');
-            }
           }, 2000);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
         });
-        setTimeout(() => {
-          this.$store.dispatch('close');
-        }, 2000);
-      })
+        // 拉取评论点赞
+        getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
+          if (res.data.code === 200) {
+            this.actionItem = res.data.items;
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        });
+      }
     },
-    detail(data) {
-      clickIn(data._id, this.token);
-      this.$router.push({name: 'status', params: { postId: data._id }});
+    methods: {
+      back() {
+        this.$router.back();
+      },
+      toIndex() {
+        this.$router.push('/');
+      },
+      repost() {
+        this.$router.push({name: 'repost', params: {postId: this.$route.params.postId}});
+      },
+      comment() {
+        this.$router.push({name: 'comment', params: {postId: this.$route.params.postId}});
+      },
+      attitude() {
+        if (!this.token) {
+          this.$router.push('/login');
+          return;
+        }
+        attitude(this.$route.params.postId, this.token).then((res) => {
+          if (res.data.code === 200) {
+            this.item.attituded = true;
+            this.item.attitudes_count += 1;
+          } else if (res.data.code === 5007) {
+            this.item.attituded = false;
+            this.item.attitudes_count -= 1;
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        });
+      },
+      toUser(data) {
+        this.$router.push({name: 'user', params: {userId: data.user._id}});
+      },
+      // 切换组件
+      checkout(component) {
+        this.currentView = `f-${component}-item`;
+        getActionInfo(this.$route.params.postId, component, this.token).then((res) => {
+          if (res.data.code === 200) {
+            this.actionItem = res.data.items;
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$route.push('/login');
+              }
+            }, 2000);
+          }
+        }).catch((err) => {
+          console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        })
+      },
+      detail(data) {
+        clickIn(data._id, this.token);
+        this.$router.push({name: 'status', params: {postId: data._id}});
+      },
     },
-  },
-  components: {
-    'f-attitude-item': AttitudeItem,
-    'f-comment-item': CommentItem,
-    'f-repost-item': RepostItem
-  }
-};
+    components: {
+      'f-attitude-item': AttitudeItem,
+      'f-comment-item': CommentItem,
+      'f-repost-item': RepostItem
+    }
+  };
 </script>
 <style lang="scss" scoped>
   .container {

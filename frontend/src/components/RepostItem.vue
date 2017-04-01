@@ -7,15 +7,15 @@
       </div>
       <div class="repost-content">{{item.content}}</div>
     </div>
-    <div v-if="items.length==0">
+    <div v-if="items.length===0">
       <div class="repost-empty">暂无转发</div>
     </div>
   </div>
 </template>
 <script>
-export default {
-  props: ['items']
-};
+  export default {
+    props: ['items']
+  };
 </script>
 <style lang="scss" scoped>
   .repost {

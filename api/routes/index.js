@@ -3,7 +3,7 @@ const router = express.Router();
 
 import * as user from '../controls/user';
 import * as action from '../controls/action';
-import * as algorithm from '../controls/algorithm';
+import * as recommend from '../controls/recommend';
 import * as blog from '../controls/blog';
 
 // 空请求
@@ -87,9 +87,9 @@ router.post('/follow', action.follow);
 router.post('/clickIn', action.clickIn);
 
 /**
- * algorithm route
+ * recommend route
  */
 // 推荐用户
-router.get('/recommend', algorithm.getUserRecommend);
+router.get('/recommend', recommend.getUserRecommend);
 
 export default router;

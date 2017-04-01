@@ -10,15 +10,15 @@
   </transition>
 </template>
 <script>
-import {mapState} from 'vuex';
+  import {mapState} from 'vuex';
 
-export default {
-  computed: mapState({
-    show : state => state.isShow,
-    msg : state => state.msg,
-    isBig : state => state.isBig
-  })
-};
+  export default {
+    computed: mapState({
+      show: state => state.isShow,
+      msg: state => state.msg,
+      isBig: state => state.isBig
+    })
+  };
 </script>
 <style lang="scss" scoped>
   $width: 200px;

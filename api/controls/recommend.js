@@ -11,12 +11,12 @@ export async function getUserRecommend(req, res) {
         // 查找是谁的推荐人
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
-            let userArr = await recommend(user);
-            for (let i of userArr) {
-                const follow = await User.findOne({_id: i}, 'name brief');
-                const parseFollow = JSON.parse(JSON.stringify(follow));
-                parseFollow.follow = 'none';
-                recommendArr.push(parseFollow);
+            const userArr = await recommend(user);
+            const follow = await User.find({_id: {$in: userArr}}, 'name brief');
+            const parseFollow = JSON.parse(JSON.stringify(follow));
+            for (let i of parseFollow) {
+                i.follow = 'none';
+                recommendArr.push(i);
             }
             res.json({
                 code: 200,

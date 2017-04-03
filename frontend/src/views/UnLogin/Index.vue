@@ -78,7 +78,7 @@
               this.page += 1;
               this.loading = false;
             } else {
-              this.loadingText = '没数据了喔';
+              this.loadingText = '没数据了喔，要不要登录看看呢';
               this.disabled = true;
               setTimeout(() => {
                 this.loading = false;

@@ -1,7 +1,7 @@
 const superAgent = require('superagent');
 const mongoose = require('mongoose');
 
-const Spider = require('../models/weibo');
+const Spider = require('../models/weiboSpider');
 const uaArr = require('./ua');
 // 数据库连接
 mongoose.connect('mongodb://localhost/weibo');

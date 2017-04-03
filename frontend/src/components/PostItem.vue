@@ -26,7 +26,8 @@
                                                          class="card-footer-text">{{item.post.comments_count}}</span><span
         class="card-footer-text" v-else>评论</span>
       </div>
-      <div class="card-footer-container" @click.stop.prevent="attitude(item.post)" :class="{attituded: item.attituded}">
+      <div class="card-footer-container" @click.stop.prevent="attitude(item, true)"
+           :class="{attituded: item.attituded}">
         <span class="iconfont icon-unie60e"></span><span v-if="item.post.attitudes_count"
                                                          class="card-footer-text">{{item.post.attitudes_count}}</span><span
         class="card-footer-text" v-else>点赞</span>
@@ -68,6 +69,40 @@
       </div>
     </div>
   </div>
+  <div class="card" v-else-if="item.point" @click.stop.prevent="detail(item.post)" :key="item._id">
+    <!--如果是用户点赞的，别人的微博-->
+    <div class="card-header">
+      <span class="card-name" @click.stop.prevent="toUser(item.post)">{{item.post.user.name}}</span>
+      <span class="card-time">{{item.post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
+    </div>
+    <div class="card-content">{{item.post.content}}</div>
+    <div class="card-retweeted" v-if="item.post.retweeted_post" @click.stop.prevent="detail(item.post.retweeted_post)">
+      <div class="card-retweeted-header">
+        <span class="card-retweeted-name"
+              @click.stop.prevent="toUser(item.post.retweeted_post)">@{{item.post.retweeted_post.user.name}}</span>
+        <span class="card-retweeted-time">{{item.post.retweeted_post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>
+      </div>
+      <div class="card-retweeted-content">{{item.post.retweeted_post.content}}</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-footer-container" @click.stop.prevent="repost(item.post)">
+        <span class="iconfont icon-zhuanfa1"></span><span v-if="item.post.reposts_count"
+                                                          class="card-footer-text">{{item.post.reposts_count}}</span><span
+        class="card-footer-text" v-else>转发</span>
+      </div>
+      <div class="card-footer-container" @click.stop.prevent="comment(item.post)">
+        <span class="iconfont icon-pinglun"></span><span v-if="item.post.comments_count"
+                                                         class="card-footer-text">{{item.post.comments_count}}</span><span
+        class="card-footer-text" v-else>评论</span>
+      </div>
+      <div class="card-footer-container" @click.stop.prevent="attitude(item, true)"
+           :class="{attituded: item.attituded}">
+        <span class="iconfont icon-unie60e"></span><span v-if="item.post.attitudes_count"
+                                                         class="card-footer-text">{{item.post.attitudes_count}}</span><span
+        class="card-footer-text" v-else>点赞</span>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
   import {attitude, clickIn} from 'src/api';
@@ -81,7 +116,7 @@
     methods: {
       detail(data) {
         if (/^\/un-login/.test(this.$route.path)) {
-          this.$router.push('/login')
+          this.$router.push('/login');
           return;
         }
         clickIn(data._id, this.token);
@@ -89,14 +124,14 @@
       },
       repost(data) {
         if (/^\/un-login/.test(this.$route.path)) {
-          this.$router.push('/login')
+          this.$router.push('/login');
           return;
         }
         this.$router.push({name: 'repost', params: {postId: data._id}});
       },
       comment(data) {
         if (/^\/un-login/.test(this.$route.path)) {
-          this.$router.push('/login')
+          this.$router.push('/login');
           return;
         }
         if (data.comments_count) {
@@ -105,17 +140,18 @@
           this.$router.push({name: 'comment', params: {postId: data._id}});
         }
       },
-      attitude(data) {
+      attitude(data, populate = false) {
+        // populate 表示的是这个数据是通过mongoose关联查询过来的，所以真正的post在data.post
         if (/^\/un-login/.test(this.$route.path)) {
-          this.$router.push('/login')
+          this.$router.push('/login');
           return;
         }
-        attitude(data._id, this.token).then((res) => {
+        attitude(populate ? data.post._id : data._id, this.token).then((res) => {
           if (res.data.code === 200) {
-            data.attitudes_count += 1;
+            populate ? data.post.attitudes_count += 1 : data.attitudes_count += 1;
             data.attituded = true;
           } else if (res.data.code === 5007) {
-            data.attitudes_count -= 1;
+            populate ? data.post.attitudes_count -= 1 : data.attitudes_count -= 1;
             data.attituded = false;
           } else {
             this.$store.dispatch('show', {

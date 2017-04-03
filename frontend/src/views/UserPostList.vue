@@ -50,6 +50,7 @@
       </div>
     </div>
     <f-post-item v-for="item in items" :item="item"></f-post-item>
+    <p v-if="items.length === 0" class="follow-empty">暂无数据</p>
     <div class="loading" v-show="loading">
       <span class="loading-text">{{loadingText}}</span>
       <f-fade-spinner size="middle"></f-fade-spinner>

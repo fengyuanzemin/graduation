@@ -1,11 +1,12 @@
 {
   "name": "graduation-api",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "curl": "node ./spiders/weibo.js",
-    "calculate": "node ./algorithm/index.js"
+    "similar": "node ./algorithm/index.js",
+    "hot": "node ./algorithm/hot.js"
   },
   "dependencies": {
     "async": "^2.1.5",

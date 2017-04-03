@@ -6,6 +6,7 @@ import Post from '../models/post';
 import Action from '../models/action';
 import RelationShip from '../models/relationship';
 import Similar from '../models/similar';
+import HotWeibo from '../models/hotWeibo';
 import {errCode} from '../utils/codeTransfer';
 import {PAGE_OPTION} from '../utils/const';
 import {recommend} from '../algorithm/calculate';
@@ -57,18 +58,25 @@ export async function getHotList(req, res) {
         const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
         // 跳过前面多少条
         const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
-        const cardList = await Post.find()
-            .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
-            .sort({_id: -1})
+        const cardList = await HotWeibo.find({})
+            .sort({point: -1,_id: -1})
             .limit(size)
             .skip(skip)
-            .populate('user', ['name'])
-            .populate('retweeted_post')
             .populate({
-                path: 'retweeted_post',
+                path: 'post',
                 populate: {
                     path: 'user',
                     select: 'name'
+                }
+            })
+            .populate({
+                path: 'post',
+                populate: {
+                    path: 'retweeted_post',
+                    populate: {
+                        path: 'user',
+                        select: 'name'
+                    }
                 }
             });
         res.json({
@@ -124,9 +132,8 @@ export async function getList(req, res) {
             });
         /**
          * 推荐列表里的用户的微博
-         *
+         * 很多微博才推荐
          */
-            // 很多微博才推荐
         let cardsRecommend = [];
         if (cards.length === 10) {
             const userRecommend = await recommend(user);
@@ -147,66 +154,43 @@ export async function getList(req, res) {
                 item.recommend = true;
                 return item;
             });
+            if (cardsRecommend.length > 0) {
+                cards.splice(Math.floor(Math.random() * cards.length), 0, cardsRecommend[0])
+            }
         }
-        if (cardsRecommend.length > 0) {
-            cards.splice(Math.floor(Math.random() * cards.length), 0, cardsRecommend[0])
+        /**
+         * 用户首页为空的情况下
+         */
+        // 这是热门微博的标志位
+        let hot = false;
+        if (cards.length === 0 && +req.query.page === 0) {
+            hot = true;
+            // 直接展示热门微博
+            cards = await HotWeibo.find({})
+                .sort({point: -1})
+                .populate({
+                    path: 'post',
+                    populate: {
+                        path: 'user',
+                        select: 'name'
+                    }
+                })
+                .populate({
+                    path: 'post',
+                    populate: {
+                        path: 'retweeted_post',
+                        populate: {
+                            path: 'user',
+                            select: 'name'
+                        }
+                    }
+                });
         }
-
-        // cards = cards.concat(cardsRecommend);
-        // 用户并没有发过微博的情况下
-        // // 没关注的情况下，热门微博
-        // // 有关注的情况下，但是关注的人并没有发送微博
-        // if (cards.length === 0) {
-        //     // 查看是否有关注
-        //     const follow = await RelationShip.find({follower: user._id});
-        //     const followList = follow.map(item => item.following);
-        //     if (follow.length === 0) {
-        //         const followCards = await Post.find({}).sort({_id: -1})
-        //             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
-        //             .sort({_id: -1})
-        //             .populate('user', ['name'])
-        //             .populate('retweeted_post')
-        //             .populate({
-        //                 path: 'retweeted_post',
-        //                 populate: {
-        //                     path: 'user',
-        //                     select: 'name'
-        //                 }
-        //             });
-        //         res.json({
-        //             code: 200,
-        //             cardList: followCards
-        //         });
-        //         return;
-        //     } else {
-        //         // 有关注，但是关注的人并没有发微博
-        //         const followCards = await Post.find({user: {$in: followList}});
-        //         if (followCards.length === 0) {
-        //             const hotCards = await Post.find({}).sort({_id: -1})
-        //                 .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
-        //                 .sort({_id: -1})
-        //                 .populate('user', ['name'])
-        //                 .populate('retweeted_post')
-        //                 .populate({
-        //                     path: 'retweeted_post',
-        //                     populate: {
-        //                         path: 'user',
-        //                         select: 'name'
-        //                     }
-        //                 });
-        //             res.json({
-        //                 code: 200,
-        //                 cardList: hotCards
-        //             });
-        //             return;
-        //         }
-        //     }
-        // }
         let cardList = [];
         // 判断用户在当前数据是否点过赞
         for (let card of cards) {
             const c = JSON.parse(JSON.stringify(card));
-            c.attituded = !!await Action.findOne({user: user._id, post: c._id, action: 'attitude'});
+            c.attituded = !!await Action.findOne({user: user._id, post: hot ? c.post._id : c._id, action: 'attitude'});
             cardList.push(c);
         }
         res.json({

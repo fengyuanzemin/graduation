@@ -4,7 +4,6 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-import {getCookie} from 'src/utils';
 import {checkToken} from 'src/api';
 
 Vue.use(Router);
@@ -78,6 +77,8 @@ export default new Router({
       path: '/login',
       component: resolve => require(['../views/Login/Layout'], resolve)
     },
-    {path: '*', component: resolve => require(['../views/404'], resolve)}
+    {
+      path: '*', component: resolve => require(['../views/404'], resolve)
+    }
   ]
 })

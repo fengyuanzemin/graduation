@@ -7,6 +7,8 @@ import User from '../models/user';
 import Post from '../models/post';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
+import HotWeibo from '../models/hotWeibo';
+import {pointComputed} from '../utils';
 
 // 只返回推荐人id
 export async function recommend(user) {
@@ -41,6 +43,39 @@ export async function recommend(user) {
     }
 }
 
+export async function hot() {
+    try {
+        /**
+         * 热门度
+         * 点赞 0.2
+         * 转发 0.8
+         * 查看 0.1
+         * 评论 0.7
+         */
+        const action = await Action.find({}).sort('post');
+        // 把post相同的加起来
+        for (let i = 0; i < action.length; i += 1) {
+            let hotPoint = pointComputed(action[i].action);
+            // 后面放置i的下一个循环的值
+            let n = i;
+            for (let j = i + 1; j < action.length; j += 1) {
+                if (String(action[i].post) === String(action[j].post)) {
+                    hotPoint += pointComputed(action[j].action);
+                    n = j;
+                }
+            }
+            await new HotWeibo({
+                post: action[i].post,
+                point: hotPoint
+            }).save();
+            i = n;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// 计算相似度，并保存在similar表和weight表
 export async function similar() {
     try {
         // 将Weight清空
@@ -75,40 +110,10 @@ export async function similar() {
                 for (let i = j; i < action.length; i += 1) {
                     if (!flag) {
                         postId = action[i].post;
-                        switch (action[i].action) {
-                            case 'repost':
-                                actionSum += 0.8;
-                                break;
-                            case 'comment':
-                                actionSum += 0.7;
-                                break;
-                            case 'attitude':
-                                actionSum += 0.2;
-                                break;
-                            case 'click':
-                                actionSum += 0.1;
-                                break;
-                            default:
-                                break;
-                        }
+                        actionSum += pointComputed(action[i].action);
                         flag += 1;
                     } else if (String(action[i].post) === String(postId)) {
-                        switch (action[i].action) {
-                            case 'repost':
-                                actionSum += 0.8;
-                                break;
-                            case 'comment':
-                                actionSum += 0.7;
-                                break;
-                            case 'attitude':
-                                actionSum += 0.2;
-                                break;
-                            case 'click':
-                                actionSum += 0.1;
-                                break;
-                            default:
-                                break;
-                        }
+                        actionSum += pointComputed(action[i].action);
                         j = i;
                     }
                     // 循环到最后面就存进weight

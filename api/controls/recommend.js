@@ -2,7 +2,7 @@
  * Created by fengyuanzemin on 2017/3/17.
  */
 import User from '../models/user';
-import {errCode} from '../utils/codeTransfer';
+import errCode from '../utils/codeTransfer';
 import {recommend} from '../algorithm/calculate';
 
 export async function getUserRecommend(req, res) {

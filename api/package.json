@@ -1,12 +1,13 @@
 {
   "name": "graduation-api",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "curl": "node ./spiders/weibo.js",
+    "curl": "node ./spiders/weibo",
     "similar": "node ./algorithm/index.js",
-    "hot": "node ./algorithm/hot.js"
+    "hot": "node ./algorithm/hot.js",
+    "douban": "node ./spiders/douban"
   },
   "dependencies": {
     "async": "^2.1.5",
@@ -19,6 +20,7 @@
     "express": "~4.14.0",
     "mongoose": "^4.9.0",
     "morgan": "~1.7.0",
+    "request": "^2.81.0",
     "serve-favicon": "~2.3.0",
     "superagent": "^3.4.1",
     "superagent-charset": "^1.1.1"

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
     id: {
@@ -68,4 +68,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('WeiboSpider', Schema);
+export default mongoose.model('WeiboSpider', Schema);

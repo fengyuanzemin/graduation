@@ -6,7 +6,7 @@ import Post from '../models/post';
 import Action from '../models/action';
 import RelationShip from '../models/relationship';
 
-import {errCode} from '../utils/codeTransfer';
+import errCode from '../utils/codeTransfer';
 
 // 转发
 export async function repost(req, res) {

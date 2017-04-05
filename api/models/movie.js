@@ -4,12 +4,20 @@
 import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
-    name: {
+    title: {
         type: String,
         require: true,
         trim: true
     },
-    img: {
+    actors: {
+        type: Array,
+        default: []
+    },
+    directors: {
+        type: Array,
+        default: []
+    },
+    imgUrl: {
         type: String,
         default: ''
     },

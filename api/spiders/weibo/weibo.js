@@ -1,8 +1,8 @@
-const superAgent = require('superagent');
-const mongoose = require('mongoose');
+import superAgent from 'superagent';
+import mongoose from 'mongoose';
 
-const Spider = require('../models/weiboSpider');
-const uaArr = require('./ua');
+import Spider from '../../models/weiboSpider';
+import {UA} from './../utils';
 // 数据库连接
 mongoose.connect('mongodb://localhost/weibo');
 const db = mongoose.connection;
@@ -17,7 +17,7 @@ const updateTime = 0.2 * 60 * 1000;
 // 爬数据函数
 function curl(value, containerid, page, callback) {
     superAgent('GET', baseUrl)
-        .set('User-Agent', uaArr[Math.floor(Math.random() % uaArr.length)])
+        .set('User-Agent', UA[Math.floor(Math.random() % UA.length)])
         .query({value, containerid, page})
         .then(callback)
         .catch((err) => {
@@ -25,7 +25,7 @@ function curl(value, containerid, page, callback) {
         });
 }
 // 爬
-const timer = setInterval(() => {
+export const timer = setInterval(() => {
     // 前面一个是微博的id，后面的是containerid，不知道啥
     curl(5597518371, 1076035597518371, page, (res) => {
         if (res) {

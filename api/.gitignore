@@ -6,3 +6,5 @@ test/e2e/reports
 selenium-debug.log
 .idea/
 config/salt.js
+config/cookie.js
+temp/

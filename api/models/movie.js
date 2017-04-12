@@ -4,6 +4,11 @@
 import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
+    url: {
+        type: String,
+        default: '',
+        unique: true
+    },
     title: {
         type: String,
         require: true,
@@ -30,8 +35,8 @@ const Schema = mongoose.Schema({
         default: 0
     },
     brief: {
-        type: String,
-        default: ''
+        type: Array,
+        default: []
     },
     tags: {
         type: Array,

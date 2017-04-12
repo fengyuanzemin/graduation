@@ -266,3 +266,14 @@ export function movieComment(mId, token) {
     }
   })
 }
+
+// 发布电影评价
+export function moviePostComment(mId, content, rating, token) {
+  return axios.post('/moviePostComment', {
+    mId, content, rating
+  }, {
+    headers: {
+      'f-token': token
+    }
+  })
+}

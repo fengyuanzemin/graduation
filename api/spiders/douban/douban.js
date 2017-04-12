@@ -38,6 +38,14 @@ async function spider(start) {
         for (let next of nextArr) {
             console.log('--------start----------');
             console.log(next);
+
+            const exist = await Movie.findOne({url: next});
+            // 如果存在就不存入数据库了
+            if (exist) {
+                console.log('---continue---');
+                continue;
+            }
+
             const response = await superAgent.get(next)
                 .set('User-Agent', UA[Math.floor(Math.random() % UA.length)])
                 .set('Cookie', Cookie)
@@ -51,12 +59,19 @@ async function spider(start) {
 
             // 简介
             const hidden = $$('.all.hidden').text();
-            let brief = '';
+            let briefArr = [];
             if (hidden) {
-                brief = hidden
+                briefArr = [...hidden.split('\n')];
             } else {
-                brief = $$('[property="v:summary"]').text();
+                briefArr = [...$$('[property="v:summary"]').text().split('\n')];
             }
+            let brief = [];
+            briefArr.forEach(item => {
+                const trim = item.trim();
+                if (trim !== '') {
+                    brief.push(trim)
+                }
+            });
             console.log(brief);
 
             // 导演
@@ -90,6 +105,7 @@ async function spider(start) {
             console.log(tags);
 
             await new Movie({
+                url: next,
                 title,
                 directors,
                 actors,

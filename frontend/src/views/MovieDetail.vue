@@ -29,7 +29,8 @@
         <span>{{item.rating}}分</span>
       </div>
       <div class="card-brief-container">
-        <div class="card-brief" :class="{'card-brief-long': briefMore}">{{item.brief}}</div>
+        <div class="card-brief" :class="{'card-brief-long': briefMore}" v-html="item.brief">
+        </div>
         <span class="card-brief-more" @click="more" ref="more">{{briefText}}</span>
       </div>
       <div class="card-footer">
@@ -56,6 +57,7 @@
         if (res.data.code === 200) {
           this.item = res.data.movie;
           this.item.actors = this.item.actors.slice(0, 3);
+          this.item.brief = this.item.brief.join('<br>');
         } else {
           this.$store.dispatch('show', {
             msg: res.data.message

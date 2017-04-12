@@ -103,6 +103,9 @@ router.get('/movieDetail', movie.movieDetail);
 // 电影详情关联的评价
 router.get('/movieComment', movie.movieComment);
 
+// 发布电影评价
+router.post('/moviePostComment', movie.moviePostComment);
+
 /**
  * recommend route
  */

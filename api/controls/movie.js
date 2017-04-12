@@ -109,3 +109,19 @@ export async function movieComment(req, res) {
         });
     }
 }
+
+// 发布电影评价
+export async function moviePostComment(req, res) {
+    try {
+        res.json({
+            code: 200,
+            message: '233333'
+        })
+    } catch (err) {
+        console.log(err);
+        res.json({
+            message: errCode[5001],
+            code: 5001
+        });
+    }
+}

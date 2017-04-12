@@ -12,11 +12,13 @@ import cheerio from 'cheerio';
 
 export async function douban() {
     try {
+        console.log('--------start start--------');
         let start = 0;
         while (start < 250) {
             await spider(start);
             start += 25;
         }
+        console.log('--------end end----------');
     } catch (err) {
         console.log(err);
     }
@@ -34,7 +36,8 @@ async function spider(start) {
             nextArr.push($(elem).find('.hd a').attr('href'));
         });
         for (let next of nextArr) {
-            console.log(next)
+            console.log('--------start----------');
+            console.log(next);
             const response = await superAgent.get(next)
                 .set('User-Agent', UA[Math.floor(Math.random() % UA.length)])
                 .set('Cookie', Cookie)
@@ -100,6 +103,7 @@ async function spider(start) {
                     resolve()
                 }, Math.ceil(Math.random()) * 10 * 1000);
             });
+            console.log('--------end----------');
         }
     } catch (err) {
         console.log(err);

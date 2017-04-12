@@ -48,3 +48,7 @@ function parseTime(time, format = '{y}-{m}-{d} {h}:{i}:{s}') {
     return value || 0;
   });
 }
+
+export function imgAttend(url) {
+  return `http://7xn2lr.com1.z0.glb.clouddn.com/movie${url}`;
+}

@@ -60,6 +60,11 @@ export default new Router({
       component: resolve => require(['../views/Detail'], resolve)
     },
     {
+      path: '/movie/:movieId',
+      name: 'movie',
+      component: resolve =>require(['../views/MovieDetail'], resolve)
+    },
+    {
       path: '/user/:userId',
       name: 'user',
       component: resolve => require(['../views/UserPostList'], resolve)

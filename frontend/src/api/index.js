@@ -2,8 +2,10 @@
  * Created by fengyuanzemin on 17/2/17.
  */
 import axios from 'axios';
+import baseURL from '../../config/axiosDefaultsBaseURL';
+
 if (process.env.NODE_ENV === 'production') {
-  axios.defaults.baseURL = 'http://192.168.1.13:3000';
+  axios.defaults.baseURL = baseURL.axiosDefaultsBaseURL;
 } else {
   axios.defaults.baseURL = 'http://localhost:3000';
 }
@@ -214,6 +216,51 @@ export function clickIn(pId, token) {
 // 推荐
 export function recommend(token) {
   return axios.get('/recommend', {
+    headers: {
+      'f-token': token
+    }
+  })
+}
+
+// 热门电影
+export function hotMovieList(page = 0, size = 10) {
+  return axios.get('/hotMovieList', {
+    params: {
+      page, size
+    }
+  })
+}
+
+// 已登录电影列表
+export function movieList(token, page = 0, size = 10) {
+  return axios.get('/movieList', {
+    params: {
+      page, size
+    },
+    headers: {
+      'f-token': token
+    }
+  })
+}
+
+// 电影详情
+export function movieDetail(mId, token) {
+  return axios.get('/movieDetail', {
+    params: {
+      mId
+    },
+    headers: {
+      'f-token': token
+    }
+  })
+}
+
+// 电影详情关联的评价
+export function movieComment(mId, token) {
+  return axios.get('/movieComment', {
+    params: {
+      mId
+    },
     headers: {
       'f-token': token
     }

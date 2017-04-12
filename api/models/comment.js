@@ -1,5 +1,5 @@
 /**
- * Created by fengyuanzemin on 17/2/22.
+ * Created by fengyuanzemin on 2017/4/9.
  */
 import mongoose from 'mongoose';
 
@@ -9,9 +9,9 @@ const Schema = mongoose.Schema({
         ref: 'User',
         require: true
     },
-    post: {
+    movie: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post',
+        ref: 'Movie',
         require: true
     },
     content: {
@@ -19,10 +19,9 @@ const Schema = mongoose.Schema({
         default: '',
         trim: true
     },
-    // 点赞attitude 转发repost 评论comment 查看click
-    action: {
+    rating: {
         type: String,
-        require: true
+        default: 0
     },
     createdAt: {
         type: Date,
@@ -30,4 +29,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('Action', Schema);
+export default mongoose.model('Comment', Schema);

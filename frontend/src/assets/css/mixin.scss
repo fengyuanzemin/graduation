@@ -1,0 +1,13 @@
+@mixin hidden-line-clamp($limeClamp) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $limeClamp;
+  -webkit-box-orient: vertical;
+}
+
+@mixin text-overflow {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import store from './store';
-import {dateFormat} from './utils';
+import {dateFormat, imgAttend} from './utils';
 
 Vue.directive('focus-parent', {
   // 当绑定元素插入到 DOM 中。
@@ -16,7 +16,10 @@ Vue.directive('focus-parent', {
     };
   }
 });
+
 Vue.filter('timeFormat', dateFormat);
+
+Vue.filter('imgAttend', imgAttend);
 
 /* eslint-disable no-new */
 new Vue({

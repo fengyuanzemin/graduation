@@ -5,6 +5,7 @@ import * as user from '../controls/user';
 import * as action from '../controls/action';
 import * as recommend from '../controls/recommend';
 import * as blog from '../controls/blog';
+import * as movie from '../controls/movie';
 
 // 空请求
 router.get('/', (req, res) => {
@@ -85,6 +86,22 @@ router.post('/follow', action.follow);
 
 // 记录用户查看微博的行为
 router.post('/clickIn', action.clickIn);
+
+/**
+ * movie route
+ */
+
+// 热门电影
+router.get('/hotMovieList', movie.hotMovieList);
+
+// 已登录电影列表
+router.get('/movieList', movie.movieList);
+
+// 电影详情
+router.get('/movieDetail', movie.movieDetail);
+
+// 电影详情关联的评价
+router.get('/movieComment', movie.movieComment);
 
 /**
  * recommend route

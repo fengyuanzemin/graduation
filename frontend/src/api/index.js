@@ -36,10 +36,10 @@ export function post(text, token) {
 }
 
 // 拉取热门微博
-export function getHotList(page = 0) {
+export function getHotList(page = 0, size = 10) {
   return axios.get('/getHotList', {
     params: {
-      page
+      page, size
     }
   })
 }
@@ -131,10 +131,10 @@ export function attitude(pId, token) {
 }
 
 // 拉取转发、评论、点赞
-export function getActionInfo(pId, action, token) {
+export function getActionInfo(pId, action, token, page = 0, size = 10) {
   return axios.get('/getActionInfo', {
     params: {
-      pId, action
+      pId, action, page, size
     },
     headers: {
       'f-token': token
@@ -256,10 +256,10 @@ export function movieDetail(mId, token) {
 }
 
 // 电影详情关联的评价
-export function movieComment(mId, token) {
+export function movieComment(mId, token, page = 0, size = 10) {
   return axios.get('/movieComment', {
     params: {
-      mId
+      mId, page, size
     },
     headers: {
       'f-token': token
@@ -268,7 +268,7 @@ export function movieComment(mId, token) {
 }
 
 // 发布电影评价
-export function moviePostComment(mId, content, rating, token) {
+export function moviePostComment(mId, content, rating = 0, token) {
   return axios.post('/moviePostComment', {
     mId, content, rating
   }, {

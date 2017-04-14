@@ -4,6 +4,7 @@
       <span class="header-left iconfont icon-houtui"></span>
       <span class="clickBoard clickBoard-left" @click="back"></span>
       <div class="header-title">评价</div>
+      <f-star size="rating" :isRate="isRate" @change="change"></f-star>
       <span class="iconfont icon-fasong1" :class="{active: text}"></span>
       <span class="clickBoard clickBoard-right" @click="post"></span>
     </header>
@@ -11,25 +12,30 @@
   </div>
 </template>
 <script>
-  import {movieComment} from 'src/api/';
+  import Star from 'src/components/Star';
+  import {moviePostComment} from 'src/api/';
 
   export default {
     data() {
       return {
         text: '',
         rating: 0,
-        token: localStorage.getItem('f-token')
+        token: localStorage.getItem('f-token'),
+        isRate: true
       };
     },
     methods: {
       back() {
         this.$router.back();
       },
+      change(rating) {
+          this.rating = rating;
+      },
       post() {
         if (!this.text) {
           return;
         }
-        movieComment(this.$route.params.movieId, this.text, this.rating, this.token).then((res) => {
+        moviePostComment(this.$route.params.movieId, this.text, this.rating, this.token).then((res) => {
           if (res.data.code === 200) {
             this.$router.push({name: 'movie', params: {movieId: this.$route.params.movieId}});
           } else {
@@ -53,11 +59,17 @@
           }, 2000);
         })
       }
+    },
+    components: {
+      'f-star': Star
     }
   };
 </script>
 <style lang="scss" scoped>
   .container {
+    .star {
+      margin:10px 0;
+    }
     .icon-fasong1 {
       position: absolute;
       top: 13px;
@@ -69,7 +81,7 @@
       }
     }
     .post-textarea {
-      margin-top: 45px;
+      margin-top: 65px;
       width: 100%;
       outline: none;
       border: none;

@@ -2,6 +2,7 @@
  * Created by fengyuanzemin on 2017/4/6.
  */
 import Movie from '../models/movie';
+import Comment from '../models/comment';
 import User from '../models/user';
 import errCode from '../utils/codeTransfer';
 import {PAGE_OPTION} from '../utils/const';
@@ -96,11 +97,15 @@ export async function movieComment(req, res) {
             });
             return;
         }
+        const commentList = await Comment.find({movie: req.query.mId})
+            .populate({
+                path: 'user',
+                select: 'name'
+            });
         res.json({
             code: 200,
-            message: '22'
-        })
-
+            commentList
+        });
     } catch (err) {
         console.log(err);
         res.json({
@@ -112,10 +117,61 @@ export async function movieComment(req, res) {
 
 // 发布电影评价
 export async function moviePostComment(req, res) {
+    if (!req.body.content) {
+        res.json({
+            code: 5004,
+            message: errCode[5004]
+        });
+        return;
+    }
+    if (typeof req.body.content !== 'string' ||
+        typeof req.body.mId !== 'string' ||
+        typeof req.body.rating !== 'number') {
+        res.json({
+            code: 5012,
+            message: errCode[5012]
+        });
+        return;
+    }
     try {
+        const user = await User.findOne({token: req.headers['f-token']});
+        if (!user) {
+            res.json({
+                code: 5002,
+                message: errCode[5002]
+            });
+            return;
+        }
+        const movie = await Movie.findOne({_id: req.body.mId});
+        if (!movie) {
+            res.json({
+                code: 5005,
+                message: errCode[5005]
+            });
+            return;
+        }
+        await new Comment({
+            user: user._id,
+            movie: req.body.mId,
+            content: req.body.content,
+            rating: req.body.rating
+        }).save();
+
+        // 查询所有的，该电影的评分，更新movie
+        const commentArr = await Comment.find({movie: req.body.mId});
+        let ratingSum = 0;
+        let count = 0;
+        commentArr.forEach(item => {
+            count += 1;
+            ratingSum += item.rating;
+        });
+
+        const rating = ratingSum / count;
+        await Movie.update({_id: req.body.mId}, {rating, $inc: {comments_count: 1}});
+
         res.json({
             code: 200,
-            message: '233333'
+            message: '发布成功'
         })
     } catch (err) {
         console.log(err);

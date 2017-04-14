@@ -20,7 +20,7 @@ const Schema = mongoose.Schema({
         trim: true
     },
     rating: {
-        type: Number,
+        type: String,
         default: 0
     },
     createdAt: {

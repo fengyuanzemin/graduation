@@ -3,10 +3,7 @@
     <img :src="item.imgUrl | imgAttend" :alt="item.title" class="card-img">
     <div class="card-wrapper">
       <div class="card-title">{{item.title}}</div>
-      <div class="card-rating-container">
-        <f-star :rating="item.rating"></f-star>
-        <span class="card-rating">{{item.rating}}分</span>
-      </div>
+      <div class="card-rating">{{item.rating}}分</div>
       <div class="card-brief">
         <span v-for="d in item.brief">{{d}}</span>
       </div>
@@ -14,8 +11,6 @@
   </div>
 </template>
 <script>
-  import Star from 'src/components/Star';
-
   export default {
     props: ['item'],
     data() {
@@ -29,9 +24,6 @@
         }
         this.$router.push({name: 'movie', params: {movieId: item._id}});
       }
-    },
-    components: {
-      'f-star': Star
     }
   };
 </script>
@@ -55,20 +47,10 @@
         color: #333;
         text-align: center;
       }
-      .card-rating-container {
-        margin-bottom: 8px;
+      .card-rating {
         text-align: center;
-        .star {
-          display: inline-block;
-          margin-right: 8px;
-        }
-        .card-rating {
-          text-align: center;
-          font-size: 13px;
-          line-height: 13px;
-          position: relative;
-          top: 1px;
-        }
+        font-size: 14px;
+        margin-bottom: 8px;
       }
       .card-brief {
         @include hidden-line-clamp(5);

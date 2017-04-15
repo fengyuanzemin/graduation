@@ -2,7 +2,7 @@
  * Created by fengyuanzemin on 2017/4/6.
  */
 import Movie from '../models/movie';
-import Comment from '../models/comment';
+import MovieComment from '../models/movieAction';
 import User from '../models/user';
 import errCode from '../utils/codeTransfer';
 import {PAGE_OPTION} from '../utils/const';
@@ -97,7 +97,7 @@ export async function movieComment(req, res) {
             });
             return;
         }
-        const commentList = await Comment.find({movie: req.query.mId})
+        const commentList = await MovieComment.find({movie: req.query.mId, action: 'comment'})
             .populate({
                 path: 'user',
                 select: 'name'
@@ -150,15 +150,16 @@ export async function moviePostComment(req, res) {
             });
             return;
         }
-        await new Comment({
+        await new MovieComment({
             user: user._id,
             movie: req.body.mId,
             content: req.body.content,
-            rating: req.body.rating
+            rating: req.body.rating,
+            action: 'comment'
         }).save();
 
         // 查询所有的，该电影的评分，更新movie
-        const commentArr = await Comment.find({movie: req.body.mId});
+        const commentArr = await MovieComment.find({movie: req.body.mId, action: 'comment'});
         let ratingSum = 0;
         let count = 0;
         commentArr.forEach(item => {

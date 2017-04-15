@@ -15,18 +15,23 @@
 </template>
 <script>
   import Star from 'src/components/Star';
+  import {clickIn} from 'src/api';
 
   export default {
     props: ['item'],
     data() {
-      return {};
+      return {
+        token: localStorage.getItem('f-token')
+      };
     },
     methods: {
       detail(item) {
+        console.log(item)
         if (/^\/un-login/.test(this.$route.path)) {
           this.$router.push('/login');
           return;
         }
+        clickIn(item._id, this.token, 'movie');
         this.$router.push({name: 'movie', params: {movieId: item._id}});
       }
     },

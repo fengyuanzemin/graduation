@@ -59,7 +59,7 @@ export async function getHotList(req, res) {
         // 跳过前面多少条
         const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
         const cardList = await HotWeibo.find({})
-            .sort({point: -1,_id: -1})
+            .sort({point: -1, _id: -1})
             .limit(size)
             .skip(skip)
             .populate({
@@ -161,7 +161,7 @@ export async function getList(req, res) {
         /**
          * 用户首页为空的情况下
          */
-        // 这是热门微博的标志位
+            // 这是热门微博的标志位
         let hot = false;
         if (cards.length === 0 && +req.query.page === 0) {
             hot = true;

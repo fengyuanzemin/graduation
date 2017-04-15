@@ -19,6 +19,12 @@ const Schema = mongoose.Schema({
         default: '',
         trim: true
     },
+    // comment是评价  click是查看
+    action: {
+        type: String,
+        default: ''
+    },
+    // 只有评价的时候
     rating: {
         type: Number,
         default: 0
@@ -29,4 +35,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('Comment', Schema);
+export default mongoose.model('MovieAction', Schema);

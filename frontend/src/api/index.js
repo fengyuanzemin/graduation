@@ -202,10 +202,10 @@ export function judgeUser(uId, token) {
   })
 }
 
-// 记录查看微博的点击事件
-export function clickIn(pId, token) {
+// 记录查看微博/电影的点击事件
+export function clickIn(id, token, type = 'weibo') {
   return axios.post('/clickIn', {
-    pId
+    id, type
   }, {
     headers: {
       'f-token': token

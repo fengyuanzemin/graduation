@@ -4,6 +4,8 @@
 import User from '../models/user';
 import Post from '../models/post';
 import Action from '../models/action';
+import Movie from '../models/movie';
+import MovieAction from '../models/movieAction';
 import RelationShip from '../models/relationship';
 
 import errCode from '../utils/codeTransfer';
@@ -235,30 +237,53 @@ export async function follow(req, res) {
 // 记录用户查看微博的行为
 export async function clickIn(req, res) {
     try {
-        const post = await Post.findOne({_id: req.body.pId});
         const user = await User.findOne({token: req.headers['f-token']});
-        if (user && post) {
-            if (String(user._id) === String(post.user)) {
-                res.json({
-                    code: 5011,
-                    message: errCode[5011]
-                });
+        if (req.body.type === 'weibo') {
+            const post = await Post.findOne({_id: req.body.id});
+            if (user && post) {
+                // 如果是自己的微博，就不记录行为
+                if (String(user._id) === String(post.user)) {
+                    res.json({
+                        code: 5011,
+                        message: errCode[5011]
+                    });
+                } else {
+                    await new Action({
+                        user: user._id,
+                        post: req.body.id,
+                        action: 'click'
+                    }).save();
+                    res.json({
+                        code: 200,
+                        message: '成功记录'
+                    });
+                }
             } else {
-                await new Action({
-                    user: user._id,
-                    post: req.body.pId,
-                    action: 'click'
-                }).save();
                 res.json({
-                    code: 200,
-                    message: '成功记录'
+                    code: 5002,
+                    message: errCode[5002]
                 });
             }
-        } else {
+        } else if (req.body.type === 'movie') {
+            const movie = await Movie.findOne({_id: req.body.id});
+            if (!user || !movie) {
+                res.json({
+                    code: 5002,
+                    message: errCode[5002]
+                });
+                return;
+            }
+            await new MovieAction({
+                user: user._id,
+                movie: req.body.id,
+                action: 'click'
+            }).save();
+
             res.json({
-                code: 5002,
-                message: errCode[5002]
+                code: 200,
+                message: '成功记录'
             });
+
         }
     } catch (err) {
         console.log(err);

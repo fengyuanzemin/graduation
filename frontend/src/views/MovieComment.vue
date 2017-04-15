@@ -29,7 +29,7 @@
         this.$router.back();
       },
       change(rating) {
-          this.rating = rating;
+        this.rating = rating;
       },
       post() {
         if (!this.text) {
@@ -68,7 +68,7 @@
 <style lang="scss" scoped>
   .container {
     .star {
-      margin:10px 0;
+      margin: 20px 0;
     }
     .icon-fasong1 {
       position: absolute;
@@ -81,7 +81,7 @@
       }
     }
     .post-textarea {
-      margin-top: 65px;
+      margin-top: 85px;
       width: 100%;
       outline: none;
       border: none;

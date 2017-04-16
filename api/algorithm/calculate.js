@@ -2,13 +2,16 @@
  * Created by fengyuanzemin on 2017/3/14.
  */
 import Weight from '../models/weight';
+import MovieWeight from '../models/movieWeight';
 import Action from '../models/action';
+import MovieAction from '../models/movieAction';
 import User from '../models/user';
 import Post from '../models/post';
+import Movie from '../models/movie';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
 import HotWeibo from '../models/hotWeibo';
-import {pointComputed} from '../utils';
+import {pointComputed, moviePointComputed} from '../utils';
 
 // 只返回推荐人id
 export async function recommend(user) {
@@ -75,11 +78,13 @@ export async function hot() {
     }
 }
 
-// 计算相似度，并保存在similar表和weight表
+// 根据用户微博/电影的行为计算相似度，并保存在similar表和weight表
 export async function similar() {
     try {
         // 将Weight清空
         await Weight.remove({});
+        // 将MovieWeight清空
+        await MovieWeight.remove({});
         // 将Similar清空
         await Similar.remove({});
 
@@ -126,12 +131,44 @@ export async function similar() {
                     }
                 }
             }
+            // 电影
+            let movieAction = await MovieAction.find({user: item}).sort('movie');
+            for (let j = 0; j < movieAction.length; j += 1) {
+                let flag = 0;
+                let movieId = '';
+                let actionSum = 0;
+                for (let i = j; i < movieAction.length; i += 1) {
+                    if (!flag) {
+                        movieId = movieAction[i].movie;
+                        actionSum += moviePointComputed(movieAction[i].action, movieAction[i].rating);
+                        flag += 1;
+                    } else if (String(movieAction[i].movie) === String(movieId)) {
+                        actionSum += moviePointComputed(movieAction[i].action, movieAction[i].rating);
+                        j = i;
+                    }
+                    // 循环到最后面就存进weight
+                    if (i === movieAction.length - 1) {
+                        await new MovieWeight({
+                            user: item,
+                            movie: movieId,
+                            maxSum: actionSum
+                        }).save();
+                    }
+                }
+            }
         }
         // 找到最大值
         let weightMax = await Weight.findOne({}).sort('-maxSum');
         let weightArr = await Weight.find({});
         for (let i of weightArr) {
             i.point = i.maxSum / weightMax.maxSum;
+            await i.save();
+        }
+        // 找到电影最大值
+        let movieWeightMax = await MovieWeight.findOne({}).sort('-maxSum');
+        let movieWeightArr = await MovieWeight.find({});
+        for (let i of movieWeightArr) {
+            i.point = i.maxSum / movieWeightMax.maxSum;
             await i.save();
         }
 
@@ -141,6 +178,7 @@ export async function similar() {
          * 计算InterAction
          *
          */
+        // 微博
         weightArr = await Weight.find({}).sort('user').populate('post');
         for (let i = 0; i < weightArr.length; i += 1) {
             // A -> B
@@ -182,6 +220,7 @@ export async function similar() {
                 }).save();
             }
         }
+        // 电影的话，A对B没有直接交互，都是通过电影间接交互的
 
         /*
          * 第三步：
@@ -189,6 +228,7 @@ export async function similar() {
          * 计算Coupling
          *
          */
+        // 微博
         weightArr = await Weight.find({}).sort('user');
         let combination = [];
         let combinationUser = '';
@@ -234,6 +274,67 @@ export async function similar() {
                     });
                     if (s) {
                         s.coupling = interactionSum / interactionMax;
+                        await s.save();
+                    } else {
+                        await new Similar({
+                            userA: intersectionA[0].user,
+                            userB: intersectionB[0].user,
+                            coupling: interactionSum / interactionMax
+                        }).save();
+                    }
+                }
+            }
+        }
+
+        // 电影
+        weightArr = await MovieWeight.find({}).sort('user');
+        combination = [];
+        combinationUser = '';
+        for (let i = 0; i < weightArr.length - 1; i += 1) {
+            if (!i) {
+                combinationUser = weightArr[i].user;
+                if (String(weightArr[i].user) !== String(weightArr[i + 1].user)) {
+                    combination.push(weightArr.splice(0, i + 1));
+                    i = -1;
+                }
+            } else if (String(weightArr[i].user) !== String(weightArr[i + 1].user) &&
+                String(weightArr[i].user) === String(weightArr[i - 1].user)) {
+                combination.push(weightArr.splice(0, i + 1));
+                i = -1;
+            }
+        }
+        combination.push(weightArr);
+        // 求交集
+        for (let i = 0; i < combination.length; i += 1) {
+            for (let j = i + 1; j < combination.length; j += 1) {
+                let intersectionA = operation(combination[i], combination[j]);
+                let intersectionB = operation(combination[j], combination[i]);
+                if (intersectionA.length > 0) {
+                    let interactionSum = 0;
+                    let interactionSumA = 0;
+                    let interactionSumB = 0;
+                    let interactionMax = 0;
+                    for (let m = 0; m < intersectionA.length; m += 1) {
+                        interactionSum += intersectionA[m].point > intersectionB[m].point ? intersectionB[m].point : intersectionA[m].point;
+                        interactionSumA += intersectionA[m].point;
+                        interactionSumB += intersectionB[m].point;
+                    }
+                    interactionMax = interactionSumA > interactionSumB ? interactionSumA : interactionSumB;
+                    // 查找是否存在Similar
+                    const s = await Similar.findOne({
+                        $or: [{
+                            userA: intersectionA[0].user,
+                            userB: intersectionB[0].user
+                        }, {
+                            userA: intersectionB[0].user,
+                            userB: intersectionA[0].user
+                        }]
+                    });
+                    if (s) {
+                        // 如果之前在微博上已经有间接交互度了
+                        const newCoupling = interactionSum / interactionMax;
+                        s.coupling = (newCoupling + s.coupling) /
+                            (s.coupling > newCoupling ? 2 * s.coupling : 2 * newCoupling);
                         await s.save();
                     } else {
                         await new Similar({

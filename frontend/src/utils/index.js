@@ -51,7 +51,7 @@ function parseTime(time, format = '{y}-{m}-{d} {h}:{i}:{s}') {
 
 // 添加图片前缀
 export function imgAttend(url) {
-  return `http://7xn2lr.com1.z0.glb.clouddn.com/movie${url}`;
+  return `http://7xn2lr.com1.z0.glb.clouddn.com/movie/${url}`;
 }
 
 // 数字处理，省两位小数

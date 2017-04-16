@@ -5,7 +5,7 @@
       <div class="card-title">{{item.title}}</div>
       <div class="card-rating-container">
         <f-star :rating="item.rating"></f-star>
-        <span class="card-rating">{{item.rating}}分</span>
+        <span class="card-rating">{{item.rating | toFixed}}分</span>
       </div>
       <div class="card-brief">
         <span v-for="d in item.brief">{{d}}</span>
@@ -26,7 +26,6 @@
     },
     methods: {
       detail(item) {
-        console.log(item)
         if (/^\/un-login/.test(this.$route.path)) {
           this.$router.push('/login');
           return;

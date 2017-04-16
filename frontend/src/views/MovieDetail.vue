@@ -174,7 +174,7 @@
         this.$router.back();
       },
       toIndex() {
-        this.$router.push('/');
+        this.$router.push('/?component=f-movie');
       },
       update() {
 

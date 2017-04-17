@@ -21,10 +21,12 @@
     </div>
     <div class="search-title" v-if="items.length > 0">相关搜索</div>
     <f-post-item v-for="item in items" :item="item"></f-post-item>
+    <f-movie-item v-for="movie in movies" :item="movie"></f-movie-item>
   </div>
 </template>
 <script>
   import {search, follow} from 'src/api';
+  import MovieItem from 'src/components/MovieItem';
   import PostItem from 'src/components/PostItem';
 
   export default {
@@ -33,6 +35,7 @@
         text: '',
         items: [],
         users: [],
+        movies: [],
         token: localStorage.getItem('f-token')
       };
     },
@@ -46,6 +49,7 @@
           if (res.data.code === 200) {
             this.items = res.data.post;
             this.users = res.data.user;
+            this.movies = res.data.movie;
           } else {
             this.$store.dispatch('show', {
               msg: res.data.message
@@ -125,7 +129,8 @@
       }
     },
     components: {
-      'f-post-item': PostItem
+      'f-post-item': PostItem,
+      'f-movie-item': MovieItem
     }
   };
 </script>

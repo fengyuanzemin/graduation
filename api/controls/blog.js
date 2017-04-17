@@ -1,15 +1,16 @@
 /**
  * Created by fengyuanzemin on 2017/3/17.
  */
-import User from '../models/user';
-import Post from '../models/post';
-import Action from '../models/action';
-import RelationShip from '../models/relationship';
-import Similar from '../models/similar';
-import HotWeibo from '../models/hotWeibo';
-import errCode from '../utils/codeTransfer';
-import {PAGE_OPTION} from '../utils/const';
-import {recommend} from '../algorithm/calculate';
+import User from "../models/user";
+import Post from "../models/post";
+import Action from "../models/action";
+import Movie from "../models/movie";
+import RelationShip from "../models/relationship";
+import Similar from "../models/similar";
+import HotWeibo from "../models/hotWeibo";
+import errCode from "../utils/codeTransfer";
+import {PAGE_OPTION} from "../utils/const";
+import {recommend} from "../algorithm/calculate";
 
 // 发送原创微博
 export async function post(req, res) {
@@ -470,7 +471,7 @@ export async function search(req, res) {
             });
             return;
         }
-        let post = await Post.find({content: {'$regex': req.query.text}})
+        const post = await Post.find({content: {'$regex': req.query.text}})
             .sort({_id: -1})
             .select('attitudes_count comments_count content createdAt reposts_count user retweeted_post')
             .populate('user', ['name'])
@@ -482,7 +483,7 @@ export async function search(req, res) {
                     select: 'name'
                 }
             });
-        let userSearch = await User.find({name: {'$regex': req.query.text}})
+        const userSearch = await User.find({name: {'$regex': req.query.text}})
             .limit(3)
             .select('name brief');
         // 找到搜出来的用户是否已经关注
@@ -509,9 +510,20 @@ export async function search(req, res) {
             }
             userArr.push(parseU);
         }
+        // 搜索电影
+        const movie = await Movie.find({
+            $or: [
+                {brief: {'$regex': req.query.text}},
+                {title: {'$regex': req.query.text}},
+                {tags: {'$regex': req.query.text}},
+                {directors: {'$regex': req.query.text}},
+                {actors: {'$regex': req.query.text}}
+            ]
+        }).limit(3);
         res.json({
             user: userArr,
-            post: post,
+            post,
+            movie,
             code: 200
         });
     } catch (err) {
@@ -607,6 +619,3 @@ export async function getFollowList(req, res) {
         });
     }
 }
-
-// 转发时，取得转发的微博的数据
-

@@ -25,7 +25,7 @@
     },
     methods: {
       back() {
-        this.$router.push('/un-login');
+        this.$router.back();
       },
       checkout(component) {
         this.currentView = component;

@@ -42,6 +42,7 @@
       </div>
     </div>
     <f-movie-rating-item :items="commentItems"></f-movie-rating-item>
+    <div class="card-rating-more" @click="ratingMore">更多</div>
     <footer>
       <div class="footer-container" @click.stop.prevent="comment">
         <span class="iconfont icon-xieyingping"></span><span class="footer-text">评价</span>
@@ -52,39 +53,16 @@
 <script>
   import MovieRatingItem from 'src/components/MovieRatingItem';
   import Star from 'src/components/Star';
-  import {movieDetail, movieComment} from 'src/api';
+  import {movieComment} from 'src/api';
 
   export default {
     created() {
-      // 拉取主要信息
-      movieDetail(this.$route.params.movieId, this.token).then((res) => {
+      // 拉取影评
+      movieComment(this.$route.params.movieId, this.token, 0, 3).then((res) => {
         if (res.data.code === 200) {
-          this.item = res.data.movie;
+          this.item = res.data.movieInfo;
           this.item.brief = this.item.brief.join('<br>');
           this.rating = this.item.rating;
-        } else {
-          this.$store.dispatch('show', {
-            msg: res.data.message
-          });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-            if (res.data.code === 5002) {
-              this.$router.push('/login');
-            }
-          }, 2000);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$store.dispatch('show', {
-          msg: '服务器错误啦，请稍后再试'
-        });
-        setTimeout(() => {
-          this.$store.dispatch('close');
-        }, 2000);
-      });
-      // 拉取影评
-      movieComment(this.$route.params.movieId, this.token).then((res) => {
-        if (res.data.code === 200) {
           this.commentItems = res.data.commentList;
         } else {
           this.$store.dispatch('show', {
@@ -93,7 +71,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
             if (res.data.code === 5002) {
-              this.$route.push('/login');
+              this.$router.push('/login');
             }
           }, 2000);
         }
@@ -120,32 +98,11 @@
     watch: {
       '$route'() {
         // 拉取主要信息
-        movieDetail(this.$route.params.movieId, this.token).then((res) => {
+        movieComment(this.$route.params.movieId, this.token, 0, 3).then((res) => {
           if (res.data.code === 200) {
-            this.item = res.data.movie;
-          } else {
-            this.$store.dispatch('show', {
-              msg: res.data.message
-            });
-            setTimeout(() => {
-              this.$store.dispatch('close');
-              if (res.data.code === 5002) {
-                this.$route.push('/login');
-              }
-            }, 2000);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$store.dispatch('show', {
-            msg: '服务器错误啦，请稍后再试'
-          });
-          setTimeout(() => {
-            this.$store.dispatch('close');
-          }, 2000);
-        });
-        // 拉取影评
-        movieComment(this.$route.params.movieId, this.token).then((res) => {
-          if (res.data.code === 200) {
+            this.item = res.data.movieInfo;
+            this.item.brief = this.item.brief.join('<br>');
+            this.rating = this.item.rating;
             this.commentItems = res.data.commentList;
           } else {
             this.$store.dispatch('show', {
@@ -154,7 +111,7 @@
             setTimeout(() => {
               this.$store.dispatch('close');
               if (res.data.code === 5002) {
-                this.$route.push('/login');
+                this.$router.push('/login');
               }
             }, 2000);
           }
@@ -176,15 +133,15 @@
       toIndex() {
         this.$router.push('/?component=f-movie');
       },
-      update() {
-
-      },
       comment() {
         this.$router.push({name: 'movieComment', params: {movieId: this.$route.params.movieId}});
       },
       more() {
         this.briefText = this.briefMore ? '更多' : '收起';
         this.briefMore = !this.briefMore;
+      },
+      ratingMore() {
+        this.$router.push({name: 'movieCommentDetail', params: {movieId: this.$route.params.movieId}})
       }
     },
     components: {
@@ -194,7 +151,7 @@
   };
 </script>
 <style lang="scss" scoped>
-  @import '../assets/css/mixin';
+  @import '../../assets/css/mixin';
 
   .container {
     padding-top: 45px;
@@ -306,6 +263,12 @@
           }
         }
       }
+    }
+    .card-rating-more {
+      color: #1478f0;
+      cursor: pointer;
+      text-align: center;
+      margin: 10px 0;
     }
     footer {
       border-top: 1px solid #dcdcdc;

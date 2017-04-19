@@ -305,8 +305,12 @@ export async function getActionInfo(req, res) {
             });
             return;
         }
+        // 分页，一页多少条数据
+        const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
+        // 跳过前面多少条
+        const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
         const items = await Action.find({post: req.query.pId, action: req.query.action})
-            .populate('user', ['name']).sort({_id: -1});
+            .populate('user', ['name']).sort({_id: -1}).skip(skip).limit(size);
         res.json({
             items,
             code: 200

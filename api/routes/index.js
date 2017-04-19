@@ -97,9 +97,6 @@ router.get('/hotMovieList', movie.hotMovieList);
 // 已登录电影列表
 router.get('/movieList', movie.movieList);
 
-// 电影详情
-router.get('/movieDetail', movie.movieDetail);
-
 // 电影详情关联的评价
 router.get('/movieComment', movie.movieComment);
 

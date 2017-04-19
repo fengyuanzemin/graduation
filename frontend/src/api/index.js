@@ -179,10 +179,10 @@ export function follow(uId, token, follow) {
 
 // 关注列表和粉丝列表
 // follow为1是关注列表，为0是粉丝列表
-export function getFollowList(follow, uId, token) {
+export function getFollowList(follow, uId, token, page = 0, size = 10) {
   return axios.get('/getFollowList', {
     params: {
-      follow, uId
+      follow, uId, page, size
     },
     headers: {
       'f-token': token
@@ -236,18 +236,6 @@ export function movieList(token, page = 0, size = 10) {
   return axios.get('/movieList', {
     params: {
       page, size
-    },
-    headers: {
-      'f-token': token
-    }
-  })
-}
-
-// 电影详情
-export function movieDetail(mId, token) {
-  return axios.get('/movieDetail', {
-    params: {
-      mId
     },
     headers: {
       'f-token': token

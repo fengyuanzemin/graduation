@@ -547,11 +547,15 @@ export async function getFollowList(req, res) {
             });
             return;
         }
+        // 分页，一页多少条数据
+        const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
+        // 跳过前面多少条
+        const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
         // 观看的用户的微博，可能是自己
         const user = await User.findOne({_id: req.query.uId});
         if (Number(req.query.follow)) {
             let relationShip = await RelationShip.find({follower: user._id})
-                .populate('following', ['name', 'brief']);
+                .populate('following', ['name', 'brief']).limit(size).skip(skip);
             let followList = [];
             for (let u of relationShip) {
                 let parseU = JSON.parse(JSON.stringify(u));

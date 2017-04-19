@@ -62,12 +62,17 @@ export default new Router({
     {
       path: '/movie/:movieId',
       name: 'movie',
-      component: resolve =>require(['../views/MovieDetail'], resolve)
+      component: resolve =>require(['../views/Movie/MovieDetail'], resolve)
     },
     {
-      path: '/movieComment/:movieId',
+      path: '/movie-comment/:movieId',
       name: 'movieComment',
-      component: resolve => require(['../views/MovieComment'], resolve)
+      component: resolve => require(['../views/Movie/MovieComment'], resolve)
+    },
+    {
+      path: '/movie-comment-detail/:movieId',
+      name: 'movieCommentDetail',
+      component: resolve => require(['../views/Movie/MovieCommentDetail'], resolve)
     },
     {
       path: '/user/:userId',

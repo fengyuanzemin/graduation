@@ -61,31 +61,6 @@ export async function movieList(req, res) {
     }
 }
 
-// 电影详情
-export async function movieDetail(req, res) {
-    try {
-        const user = await User.findOne({token: req.headers['f-token']});
-        if (!user) {
-            res.json({
-                code: 5002,
-                message: errCode[5002]
-            });
-            return;
-        }
-        const movie = await Movie.findOne({_id: req.query.mId});
-        res.json({
-            code: 200,
-            movie
-        })
-    } catch (err) {
-        console.log(err);
-        res.json({
-            message: errCode[5001],
-            code: 5001
-        });
-    }
-}
-
 // 电影详情关联的评价
 export async function movieComment(req, res) {
     try {
@@ -97,13 +72,22 @@ export async function movieComment(req, res) {
             });
             return;
         }
+        // 分页，一页多少条数据
+        const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
+        // 跳过前面多少条
+        const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
+        let movieInfo = [];
+        if (Number(req.query.page) === 0) {
+            movieInfo = await Movie.findOne({_id: req.query.mId});
+        }
         const commentList = await MovieComment.find({movie: req.query.mId, action: 'comment'})
             .populate({
                 path: 'user',
                 select: 'name'
-            });
+            }).skip(skip).limit(size);
         res.json({
             code: 200,
+            movieInfo,
             commentList
         });
     } catch (err) {

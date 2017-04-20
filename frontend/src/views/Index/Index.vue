@@ -13,8 +13,9 @@
   import PostItem from 'components/PostItem';
 
   export default {
-    created() {
-      getList(this.token).then((res) => {
+    async created() {
+      try {
+        const res = await getList(this.$store.state.token);
         if (res.data.code === 200) {
           this.cardList = res.data.cardList;
         } else {
@@ -28,7 +29,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -36,7 +37,7 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     activated() {
       document.addEventListener('scroll', this.judgeBottom);
@@ -47,7 +48,6 @@
     data() {
       return {
         cardList: [],
-        token: localStorage.getItem('f-token'),
         page: 0,
         loading: false,
         loadingText: '加载中',
@@ -66,7 +66,7 @@
           this.loadMore();
         }
       },
-      loadMore() {
+      async loadMore() {
         if (this.disabled) {
           return;
         }
@@ -75,7 +75,9 @@
         }
         this.loadingText = '加载中';
         this.loading = true;
-        getList(this.token, this.page + 1).then((res) => {
+
+        try {
+          const res = await getList(this.$store.state.token, this.page + 1);
           if (res.data.code === 200) {
             if (res.data.cardList.length !== 0) {
               this.cardList = this.cardList.concat(res.data.cardList);
@@ -100,7 +102,7 @@
               }
             }, 2000);
           }
-        }).catch((error) => {
+        } catch (err) {
           console.log(error);
           this.loading = false;
           this.$store.dispatch('show', {
@@ -109,7 +111,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       }
     },
     components: {

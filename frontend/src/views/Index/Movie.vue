@@ -13,8 +13,9 @@
   import FadeSpinner from 'components/FadeSpinner';
 
   export default {
-    created() {
-      movieList(this.token).then((res) => {
+    async created() {
+      try {
+        const res = await movieList(this.token);
         if (res.data.code === 200) {
           this.items = res.data.cardList;
         } else {
@@ -28,7 +29,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -36,7 +37,7 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     data() {
       return {
@@ -66,7 +67,7 @@
           this.loadMore();
         }
       },
-      loadMore() {
+      async loadMore() {
         if (this.disabled) {
           return;
         }
@@ -75,7 +76,9 @@
         }
         this.loadingText = '加载中';
         this.loading = true;
-        movieList(this.token, this.page + 1).then((res) => {
+
+        try {
+          const res = await movieList(this.token, this.page + 1);
           if (res.data.code === 200) {
             if (res.data.cardList.length !== 0) {
               this.items = this.items.concat(res.data.cardList);
@@ -100,7 +103,7 @@
               }
             }, 2000);
           }
-        }).catch((error) => {
+        } catch (err) {
           console.log(error);
           this.loading = false;
           this.$store.dispatch('show', {
@@ -109,7 +112,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       }
     },
     components: {

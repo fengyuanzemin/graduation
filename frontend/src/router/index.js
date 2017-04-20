@@ -24,6 +24,7 @@ export default new Router({
       component: resolve => require(['../views/UnLogin/Layout'], resolve),
       beforeEnter: (to, from, next) => {
         const token = localStorage.getItem('f-token');
+        console.log(token)
         checkToken(token).then((res) => {
           if (res.data.code === 200) {
             const loggedIn = res.data.loggedIn;

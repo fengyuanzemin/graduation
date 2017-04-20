@@ -21,8 +21,9 @@
   import {updateUserInfo, getUserInfo} from 'src/api/';
 
   export default {
-    created() {
-      getUserInfo(this.token).then((res) => {
+    async created() {
+      try {
+        const res = await getUserInfo(this.$store.state.token);
         if (res.data.code === 200) {
           this.name = res.data.userInfo.name;
           this.text = res.data.userInfo.brief;
@@ -37,7 +38,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -45,24 +46,24 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     data() {
       return {
         name: '',
-        text: '',
-        token: localStorage.getItem('f-token')
+        text: ''
       };
     },
     methods: {
       back() {
         this.$router.back();
       },
-      post() {
+      async post() {
         if (!(this.text || this.name)) {
           return;
         }
-        updateUserInfo(this.name, this.text, this.token).then((res) => {
+        try {
+          const res = await updateUserInfo(this.name, this.text, this.$store.state.token);
           if (res.data.code === 200) {
             this.$router.push('/');
           } else {
@@ -76,7 +77,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -84,7 +85,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        })
+        }
       }
     }
   };

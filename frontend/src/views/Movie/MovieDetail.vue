@@ -56,9 +56,9 @@
   import {movieComment} from 'src/api';
 
   export default {
-    created() {
-      // 拉取影评
-      movieComment(this.$route.params.movieId, this.token, 0, 3).then((res) => {
+    async created() {
+      try {
+        const res = await movieComment(this.$route.params.movieId, this.$store.state.token, 0, 3);
         if (res.data.code === 200) {
           this.item = res.data.movieInfo;
           this.item.brief = this.item.brief.join('<br>');
@@ -75,7 +75,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -83,22 +83,22 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     data() {
       return {
         item: null,
         commentItems: [],
-        token: localStorage.getItem('f-token'),
         briefMore: false,
         briefText: '更多',
         rating: 0
       };
     },
     watch: {
-      '$route'() {
+      async '$route'() {
         // 拉取主要信息
-        movieComment(this.$route.params.movieId, this.token, 0, 3).then((res) => {
+        try {
+          const res = await movieComment(this.$route.params.movieId, this.$store.state.token, 0, 3);
           if (res.data.code === 200) {
             this.item = res.data.movieInfo;
             this.item.brief = this.item.brief.join('<br>');
@@ -115,7 +115,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -123,7 +123,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       }
     },
     methods: {

@@ -20,7 +20,7 @@
   import Recommend from './Recommend';
 
   export default {
-    created() {
+    async created() {
       if (this.$route.query.component) {
         this.selectItem = this.selectItem.map((item) => {
           item.active = item.component === this.$route.query.component;
@@ -28,8 +28,9 @@
         });
         this.currentView = this.$route.query.component;
       }
-      // 判断是否为自己的主页
-      judgeUser(this.$route.params.userId, this.token).then((res) => {
+      try {
+        // 判断是否为自己的主页
+        const res = await judgeUser(this.$route.params.userId, this.$store.state.token);
         if (res.data.code === 200) {
           this.name = res.data.self ? '我的好友' : '他的好友';
         } else {
@@ -43,7 +44,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -51,7 +52,8 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      })
+      }
+
     },
     data() {
       return {
@@ -76,8 +78,7 @@
             component: 'f-follower',
             active: false
           }
-        ],
-        token: localStorage.getItem('f-token')
+        ]
       };
     },
     methods: {

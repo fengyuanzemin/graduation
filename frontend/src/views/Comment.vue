@@ -16,19 +16,19 @@
   export default {
     data() {
       return {
-        text: '',
-        token: localStorage.getItem('f-token')
+        text: ''
       };
     },
     methods: {
       back() {
         this.$router.back();
       },
-      post() {
+      async post() {
         if (!this.text) {
           return;
         }
-        comment(this.$route.params.postId, this.text, this.token).then((res) => {
+        try {
+          const res = await comment(this.$route.params.postId, this.text, this.$store.state.token);
           if (res.data.code === 200) {
             this.$router.push({name: 'status', params: {postId: this.$route.params.postId}});
           } else {
@@ -42,7 +42,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -50,7 +50,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        })
+        }
       }
     }
   };

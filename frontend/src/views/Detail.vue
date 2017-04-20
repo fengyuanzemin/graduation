@@ -56,9 +56,9 @@
   import {getPostItem, attitude, getActionInfo, clickIn} from 'src/api';
 
   export default {
-    created() {
-      // 拉取主要信息
-      getPostItem(this.$route.params.postId, this.token).then((res) => {
+    async created() {
+      try {
+        const res = await getPostItem(this.$route.params.postId, this.$store.state.token);
         if (res.data.code === 200) {
           this.item = res.data.detail;
         } else {
@@ -72,7 +72,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -80,9 +80,10 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
-      // 拉取评论点赞
-      getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
+      }
+      try {
+        // 拉取评论点赞
+        const res = await getActionInfo(this.$route.params.postId, 'comment', this.$store.state.token);
         if (res.data.code === 200) {
           this.actionItem = res.data.items;
         } else {
@@ -92,11 +93,11 @@
           setTimeout(() => {
             this.$store.dispatch('close');
             if (res.data.code === 5002) {
-              this.$route.push('/login');
+              this.$router.push('/login');
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -104,20 +105,20 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     data() {
       return {
         item: null,
         currentView: 'f-comment-item',
-        actionItem: [],
-        token: localStorage.getItem('f-token')
+        actionItem: []
       };
     },
     watch: {
-      '$route'(route) {
+      async '$route'() {
         // 拉取主要信息
-        getPostItem(this.$route.params.postId, this.token).then((res) => {
+        try {
+          const res = await getPostItem(this.$route.params.postId, this.$store.state.token);
           if (res.data.code === 200) {
             this.item = res.data.detail;
           } else {
@@ -127,11 +128,11 @@
             setTimeout(() => {
               this.$store.dispatch('close');
               if (res.data.code === 5002) {
-                this.$route.push('/login');
+                this.$router.push('/login');
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -139,9 +140,10 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
-        // 拉取评论点赞
-        getActionInfo(this.$route.params.postId, 'comment', this.token).then((res) => {
+        }
+        try {
+          // 拉取评论点赞
+          const res = await getActionInfo(this.$route.params.postId, 'comment', this.$store.state.token);
           if (res.data.code === 200) {
             this.actionItem = res.data.items;
           } else {
@@ -151,11 +153,11 @@
             setTimeout(() => {
               this.$store.dispatch('close');
               if (res.data.code === 5002) {
-                this.$route.push('/login');
+                this.$router.push('/login');
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -163,7 +165,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       }
     },
     methods: {
@@ -179,12 +181,9 @@
       comment() {
         this.$router.push({name: 'comment', params: {postId: this.$route.params.postId}});
       },
-      attitude() {
-        if (!this.token) {
-          this.$router.push('/login');
-          return;
-        }
-        attitude(this.$route.params.postId, this.token).then((res) => {
+      async attitude() {
+        try {
+          const res = await attitude(this.$route.params.postId, this.$store.state.token);
           if (res.data.code === 200) {
             this.item.attituded = true;
             this.item.attitudes_count += 1;
@@ -202,7 +201,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -210,15 +209,16 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       },
       toUser(data) {
         this.$router.push({name: 'user', params: {userId: data.user._id}});
       },
       // 切换组件
-      checkout(component) {
+      async checkout(component) {
         this.currentView = `f-${component}-item`;
-        getActionInfo(this.$route.params.postId, component, this.token).then((res) => {
+        try {
+          const res = await getActionInfo(this.$route.params.postId, component, this.$store.state.token);
           if (res.data.code === 200) {
             this.actionItem = res.data.items;
           } else {
@@ -232,7 +232,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -240,10 +240,10 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        })
+        }
       },
       detail(data) {
-        clickIn(data._id, this.token);
+        clickIn(data._id, this.$store.state.token);
         this.$router.push({name: 'status', params: {postId: data._id}});
       },
     },

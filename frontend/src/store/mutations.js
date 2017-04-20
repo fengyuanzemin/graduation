@@ -11,3 +11,9 @@ export const checkoutMsg = (state, data) => {
 };
 
 export const close = state => state.isShow = false;
+
+export const login = (state, data) => {
+  state.token = data.token;
+};
+
+export const logout = state => state.token = '';

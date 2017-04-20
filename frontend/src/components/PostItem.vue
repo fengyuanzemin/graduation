@@ -109,9 +109,7 @@
   export default {
     props: ['item'],
     data() {
-      return {
-        token: localStorage.getItem('f-token')
-      }
+      return {}
     },
     methods: {
       detail(data) {
@@ -119,7 +117,7 @@
           this.$router.push('/login');
           return;
         }
-        clickIn(data._id, this.token);
+        clickIn(data._id, this.$store.state.token);
         this.$router.push({name: 'status', params: {postId: data._id}});
       },
       repost(data) {
@@ -140,13 +138,14 @@
           this.$router.push({name: 'comment', params: {postId: data._id}});
         }
       },
-      attitude(data, populate = false) {
+      async attitude(data, populate = false) {
         // populate 表示的是这个数据是通过mongoose关联查询过来的，所以真正的post在data.post
         if (/^\/un-login/.test(this.$route.path)) {
           this.$router.push('/login');
           return;
         }
-        attitude(populate ? data.post._id : data._id, this.token).then((res) => {
+        try {
+          const res = await attitude(populate ? data.post._id : data._id, this.$store.state.token);
           if (res.data.code === 200) {
             populate ? data.post.attitudes_count += 1 : data.attitudes_count += 1;
             data.attituded = true;
@@ -164,7 +163,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -172,7 +171,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       },
       toUser(data) {
         // 在user页面不用跳转

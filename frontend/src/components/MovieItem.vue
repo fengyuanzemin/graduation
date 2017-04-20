@@ -19,18 +19,13 @@
 
   export default {
     props: ['item'],
-    data() {
-      return {
-        token: localStorage.getItem('f-token')
-      };
-    },
     methods: {
       detail(item) {
         if (/^\/un-login/.test(this.$route.path)) {
           this.$router.push('/login');
           return;
         }
-        clickIn(item._id, this.token, 'movie');
+        clickIn(item._id, this.$store.state.token, 'movie');
         this.$router.push({name: 'movie', params: {movieId: item._id}});
       }
     },

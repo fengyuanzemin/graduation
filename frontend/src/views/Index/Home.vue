@@ -28,8 +28,9 @@
   import {getUserInfo} from 'src/api';
 
   export default {
-    created() {
-      getUserInfo(this.token).then((res) => {
+    async created() {
+      try {
+        const res = await getUserInfo(this.$store.state.token);
         if (res.data.code === 200) {
           this.userInfo = res.data.userInfo;
         } else {
@@ -43,7 +44,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -51,7 +52,7 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      })
+      }
     },
     data() {
       return {
@@ -61,12 +62,12 @@
           following_count: 0,
           followers_count: 0,
           brief: ''
-        },
-        token: localStorage.getItem('f-token')
+        }
       };
     },
     methods: {
       logout() {
+        this.$store.dispatch('logout');
         localStorage.removeItem('f-token');
         this.$router.push('/login');
       },

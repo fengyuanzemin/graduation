@@ -18,8 +18,9 @@
   import {getFollowList, follow} from 'src/api';
 
   export default {
-    created() {
-      getFollowList(0, this.$route.params.userId, this.token).then((res) => {
+    async created() {
+      try {
+        const res = await getFollowList(0, this.$route.params.userId, this.$store.state.token);
         if (res.data.code === 200) {
           this.items = res.data.followList;
         } else {
@@ -33,7 +34,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -41,69 +42,48 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     data() {
       return {
-        items: [],
-        token: localStorage.getItem('f-token')
+        items: []
       };
     },
     methods: {
       toUser(data) {
         this.$router.push({name: 'user', params: {userId: data._id}});
       },
-      follow(data) {
-        if (data.follow === 'none') {
-          // 关注
-          follow(data._id, this.token, true).then((res) => {
-            if (res.data.code === 200) {
+      async follow(data) {
+        const doFollow = data.follow === 'none';
+        try {
+          const res = await follow(data._id, this.$store.state.token, doFollow);
+          if (res.data.code === 200) {
+            if (doFollow) {
+              // 关注
               data.follow = res.data.eachOtherFollow ? 'eachOther' : 'following';
             } else {
-              this.$store.dispatch('show', {
-                msg: res.data.message
-              });
-              setTimeout(() => {
-                this.$store.dispatch('close');
-                if (res.data.code === 5002) {
-                  this.$router.push('/login');
-                }
-              }, 2000);
-            }
-          }).catch((err) => {
-            console.log(err);
-            this.$store.dispatch('show', {
-              msg: '服务器错误啦，请稍后再试'
-            });
-            setTimeout(() => {
-              this.$store.dispatch('close');
-            }, 2000);
-          });
-        } else {
-          // 取关
-          follow(data._id, this.token, false).then((res) => {
-            if (res.data.code === 200) {
+              //  取关
               data.follow = 'none';
-            } else {
-              this.$store.dispatch('show', {
-                msg: res.data.message
-              });
-              setTimeout(() => {
-                this.$store.dispatch('close');
-                if (res.data.code === 5002) {
-                  this.$router.push('/login');
-                }
-              }, 2000);
             }
-          }).catch((err) => {
-            console.log(err);
+          } else {
             this.$store.dispatch('show', {
-              msg: '服务器错误啦，请稍后再试'
+              msg: res.data.message
             });
             setTimeout(() => {
               this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$router.push('/login');
+              }
             }, 2000);
+          }
+        } catch (err) {
+          console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
           });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
         }
       }
     }

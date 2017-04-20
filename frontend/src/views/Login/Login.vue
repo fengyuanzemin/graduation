@@ -3,12 +3,12 @@
     <div class="input">
       <div class="input-group">
         <span class="iconfont icon-yonghu left-icon"></span><input type="text" placeholder="请输入用户名" maxlength="20"
-                                                             v-model="name" v-focus-parent autofocus="on">
+                                                                   v-model="name" v-focus-parent autofocus="on">
         <!-- <span class="warning">{{phoneMsg}}</span> -->
       </div>
       <div class="input-group bottom">
         <span class="iconfont icon-mima left-icon"></span><input type="password" placeholder="请输入密码" v-model="password"
-                                                           v-focus-parent>
+                                                                 v-focus-parent>
         <!-- <span class="warning">{{verifyErrorMsg}}</span> -->
       </div>
     </div>
@@ -37,13 +37,17 @@
       };
     },
     methods: {
-      login() {
+      async login() {
         this.$store.dispatch('show', {
           msg: '登录中，请等待'
         });
-        login(this.name, this.password).then((res) => {
+        try {
+          const res = await login(this.name, this.password);
           if (res.data.code === 200) {
             localStorage.setItem('f-token', res.data.token);
+            this.$store.dispatch('login',{
+                token: res.data.token
+            });
             this.$store.dispatch('checkoutMsg', {
               msg: '登录成功'
             });
@@ -59,15 +63,15 @@
               this.$store.dispatch('close');
             }, 2000);
           }
-        }).catch((err) => {
-          console.log(err)
+        } catch (err) {
+          console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
           });
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        })
+        }
       },
       toSignUp() {
         this.$emit('checkout', 'f-sign-up');
@@ -133,14 +137,6 @@
           border-bottom: 1px solid #1478f0;
           transition: border-bottom .3s;
         }
-        // .warning {
-        //   font-size: 12px;
-        //   color: #fc5400;
-        //   line-height: 12px;
-        //   position: absolute;
-        //   top: 31px;
-        //   left: 4.5px;
-        // }
         input {
           border: none;
           color: #333333;
@@ -160,30 +156,6 @@
             background-color: #ffffff;
           }
         }
-        // .line {
-        //   display: inline-block;
-        //   width:1px;
-        //   height:14px;
-        //   background-color: #e6e6e6;
-        //   position: absolute;
-        //   top:4px;
-        //   right: 97.5px;
-        // }
-        // .verify {
-        //   display: inline-block;
-        //   vertical-align: top;
-        //   font-size: 15px;
-        //   line-height: 22px;
-        //   text-align: right;
-        //   position: absolute;
-        //   top: 0;
-        //   right: 7.5px;
-        //   color: #999;
-        //   font-weight: 300;
-        //   &.active {
-        //     color: #1478f0;
-        //   }
-        // }
       }
       @media screen and (max-width: 340px) and (min-width: 319px) {
         .input-group {

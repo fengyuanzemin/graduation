@@ -15,8 +15,9 @@
   import {movieComment} from 'src/api';
 
   export default {
-    created(){
-      movieComment(this.$route.params.movieId, this.token).then((res) => {
+    async created(){
+      try {
+        const res = await movieComment(this.$route.params.movieId, this.$store.state.token);
         if (res.data.code === 200) {
           if (res.data.movieInfo && res.data.movieInfo.title) {
             this.title = res.data.movieInfo.title.split(' ').shift();
@@ -33,7 +34,7 @@
             }
           }, 2000);
         }
-      }).catch((err) => {
+      } catch (err) {
         console.log(err);
         this.$store.dispatch('show', {
           msg: '服务器错误啦，请稍后再试'
@@ -41,12 +42,11 @@
         setTimeout(() => {
           this.$store.dispatch('close');
         }, 2000);
-      });
+      }
     },
     data() {
       return {
         commentItems: [],
-        token: localStorage.getItem('f-token'),
         title: '电影'
       };
     },

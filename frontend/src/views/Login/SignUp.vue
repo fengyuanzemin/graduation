@@ -3,12 +3,12 @@
     <div class="input">
       <div class="input-group">
         <span class="iconfont icon-yonghu left-icon"></span><input type="text" placeholder="请输入用户名" maxlength="20"
-                                                             v-model="name" v-focus-parent>
+                                                                   v-model="name" v-focus-parent>
         <!-- <span class="warning">{{phoneMsg}}</span> -->
       </div>
       <div class="input-group bottom">
         <span class="iconfont icon-mima left-icon"></span><input type="password" placeholder="请输入密码" v-model="password"
-                                                           v-focus-parent>
+                                                                 v-focus-parent>
         <!-- <span class="warning">{{verifyErrorMsg}}</span> -->
       </div>
     </div>
@@ -37,13 +37,17 @@
       };
     },
     methods: {
-      signUp() {
+      async signUp() {
         this.$store.dispatch('show', {
           msg: '登录中，请等待'
         });
-        signUp(this.name, this.password).then((res) => {
+        try {
+          const res = await signUp(this.name, this.password);
           if (res.data.code === 200) {
             localStorage.setItem('f-token', res.data.token);
+            this.$store.dispatch('login',{
+              token: res.data.token
+            });
             this.$store.dispatch('checkoutMsg', {
               msg: '注册成功'
             });
@@ -59,15 +63,15 @@
               this.$store.dispatch('close');
             }, 2000);
           }
-        }).catch((err) => {
-          console.log(err)
+        } catch (err) {
+          console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
           });
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        });
+        }
       },
       toLogin() {
         this.$emit('checkout', 'f-login');

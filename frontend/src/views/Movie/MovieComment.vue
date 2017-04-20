@@ -20,7 +20,6 @@
       return {
         text: '',
         rating: 0,
-        token: localStorage.getItem('f-token'),
         isRate: true
       };
     },
@@ -31,11 +30,12 @@
       change(rating) {
         this.rating = rating;
       },
-      post() {
+      async post() {
         if (!this.text) {
           return;
         }
-        moviePostComment(this.$route.params.movieId, this.text, this.rating, this.token).then((res) => {
+        try {
+          const res = await moviePostComment(this.$route.params.movieId, this.text, this.rating, this.$store.state.token);
           if (res.data.code === 200) {
             this.$router.push({name: 'movie', params: {movieId: this.$route.params.movieId}});
           } else {
@@ -49,7 +49,7 @@
               }
             }, 2000);
           }
-        }).catch((err) => {
+        } catch (err) {
           console.log(err);
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'
@@ -57,7 +57,7 @@
           setTimeout(() => {
             this.$store.dispatch('close');
           }, 2000);
-        })
+        }
       }
     },
     components: {

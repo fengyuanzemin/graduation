@@ -1,10 +1,11 @@
 <template>
   <div class="container">
     <div class="follow-empty" v-if="items.length === 0">暂无推荐</div>
-    <div class="follow-container" v-for="item in items" @click="toUser(item)">
+    <div class="follow-container" v-for="item in items" @click.stop.prevent="toUser(item)">
       <span class="follow-name">{{item.name}}</span><!--
       --><span class="follow-brief" v-if="item.brief">{{item.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
+      --><span class="follow-why-button" @click.stop.prevent="why">为什么 <span class="iconfont icon-yiwen"></span></span><!--
       --><span class="iconfont follow-icon icon-guanzhu" v-if="item.follow === 'none'"
                @click.prevent.stop="follow(item)"></span><!--
       --><span class="iconfont follow-icon icon-icon-yiguanzhu" v-else-if="item.follow === 'following'"
@@ -52,6 +53,9 @@
     methods: {
       toUser(data) {
         this.$router.push({name: 'user', params: {userId: data._id}});
+      },
+      why() {
+        console.log(1)
       },
       follow(data) {
         if (data.follow === 'none') {
@@ -132,17 +136,27 @@
         color: #666;
         font-size: 12px;
         display: inline-block;
-        width: 200px;
+        width: 140px;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+      }
+      .follow-why-button {
+        font-size: 12px;
+        color: #999;
+        transform: scale(.7);
+        display: inline-block;
+        padding: 5px;
+        position: absolute;
+        top: 17px;
+        right: 44px;
       }
       @media screen and (min-width: 320px) and (max-width: 355px) {
         .follow-name {
           width: 80px;
         }
         .follow-brief {
-          width: 160px;
+          width: 100px;
         }
       }
       .follow-icon {

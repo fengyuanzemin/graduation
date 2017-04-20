@@ -3,7 +3,7 @@
     <header>
       <span class="header-left iconfont icon-houtui"></span>
       <span class="clickBoard clickBoard-left" @click="back"></span>
-      <div class="header-title">正文</div>
+      <div class="header-title">{{title}}</div>
       <span class="header-right">回首页</span>
       <span class="clickBoard clickBoard-right clickBoard-right-big" @click="toIndex"></span>
     </header>
@@ -18,6 +18,9 @@
     created(){
       movieComment(this.$route.params.movieId, this.token).then((res) => {
         if (res.data.code === 200) {
+          if (res.data.movieInfo && res.data.movieInfo.title) {
+            this.title = res.data.movieInfo.title.split(' ').shift();
+          }
           this.commentItems = res.data.commentList;
         } else {
           this.$store.dispatch('show', {
@@ -43,7 +46,8 @@
     data() {
       return {
         commentItems: [],
-        token: localStorage.getItem('f-token')
+        token: localStorage.getItem('f-token'),
+        title: '电影'
       };
     },
     methods: {
@@ -51,7 +55,7 @@
         this.$router.back();
       },
       toIndex(){
-          this.$router.push('/?component=f-movie')
+        this.$router.push('/?component=f-movie')
       }
     },
     components: {
@@ -60,8 +64,8 @@
   };
 </script>
 <style lang="scss" scoped>
-.container {
-  padding-top: 45px;
-}
+  .container {
+    padding-top: 45px;
+  }
 </style>
 

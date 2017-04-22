@@ -51,10 +51,10 @@
         }, 2000);
       }
     },
-    activated() {
+    mounted() {
       document.addEventListener('scroll', this.judgeBottom);
     },
-    deactivated() {
+    beforeDestroy() {
       document.removeEventListener('scroll', this.judgeBottom);
     },
     data() {
@@ -91,8 +91,8 @@
         try {
           const res = await recommend(this.$store.state.token, this.page + 1);
           if (res.data.code === 200) {
-            if (res.data.cardList.length !== 0) {
-              this.cardList = this.cardList.concat(res.data.cardList);
+            if (res.data.recommend.length !== 0) {
+              this.items = this.items.concat(res.data.recommend);
               this.page += 1;
               this.loading = false;
             } else {

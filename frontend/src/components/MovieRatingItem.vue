@@ -5,13 +5,14 @@
         <span class="rating-name">{{item.user.name}}</span><!--
         --><span class="rating-time">{{item.createdAt | timeFormat('{m}-{d} {h}:{m}')}} 评价</span>
       </div>
-      <div class="rating-content">{{item.content}}</div>
+      <div class="rating-content" v-if="item.content">{{item.content}}</div>
+      <div class="rating-content rating-content-not-exist" v-else>该用户没有评价</div>
       <div class="rating-point-container">
         <f-star :rating="item.rating"></f-star>
         <span class="rating-point">{{item.rating}}分</span>
       </div>
     </div>
-    <div v-if="items.length===0">
+    <div v-if="items.length === 0">
       <div class="rating-empty">暂无影评</div>
     </div>
   </div>
@@ -45,6 +46,11 @@
         color: #333;
         margin-right: 10px;
         font-size: 17px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 102px;
+        display: inline-block;
       }
       .rating-time {
         color: #666;
@@ -55,6 +61,9 @@
     .rating-content {
       color: #333;
       margin-right: 75px;
+      &.rating-content-not-exist {
+        color: #999;
+      }
     }
     .rating-point-container {
       position: absolute;

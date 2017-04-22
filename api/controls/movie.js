@@ -81,6 +81,7 @@ export async function movieComment(req, res) {
             movieInfo = await Movie.findOne({_id: req.query.mId});
         }
         const commentList = await MovieComment.find({movie: req.query.mId, action: 'comment'})
+            .sort({_id: -1})
             .populate({
                 path: 'user',
                 select: 'name'
@@ -101,7 +102,7 @@ export async function movieComment(req, res) {
 
 // 发布电影评价
 export async function moviePostComment(req, res) {
-    if (!req.body.content) {
+    if (!req.body.rating) {
         res.json({
             code: 5004,
             message: errCode[5004]

@@ -308,8 +308,8 @@ export async function similar() {
         // 求交集
         for (let i = 0; i < combination.length; i += 1) {
             for (let j = i + 1; j < combination.length; j += 1) {
-                let intersectionA = operation(combination[i], combination[j],'post');
-                let intersectionB = operation(combination[j], combination[i],'post');
+                let intersectionA = operation(combination[i], combination[j], 'movie');
+                let intersectionB = operation(combination[j], combination[i], 'movie');
                 if (intersectionA.length > 0) {
                     let interactionSum = 0;
                     let interactionSumA = 0;

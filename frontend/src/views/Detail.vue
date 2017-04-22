@@ -35,6 +35,10 @@
       </div>
     </div>
     <component :is="currentView" :items="actionItem"></component>
+    <div class="loading" v-show="loading">
+      <span class="loading-text">{{loadingText}}</span>
+      <f-fade-spinner size="middle"></f-fade-spinner>
+    </div>
     <footer>
       <div class="footer-container" @click.stop.prevent="repost">
         <span class="iconfont icon-zhuanfa1"></span><span class="footer-text">转发</span>
@@ -53,6 +57,7 @@
   import AttitudeItem from 'src/components/AttitudeItem';
   import CommentItem from 'src/components/CommentItem';
   import RepostItem from 'src/components/RepostItem';
+  import FadeSpinner from 'components/FadeSpinner';
   import {getPostItem, attitude, getActionInfo, clickIn} from 'src/api';
 
   export default {
@@ -83,7 +88,7 @@
       }
       try {
         // 拉取评论点赞
-        const res = await getActionInfo(this.$route.params.postId, 'comment', this.$store.state.token);
+        const res = await getActionInfo(this.$route.params.postId, this.currComponent, this.$store.state.token);
         if (res.data.code === 200) {
           this.actionItem = res.data.items;
         } else {
@@ -107,11 +112,22 @@
         }, 2000);
       }
     },
+    mounted() {
+      document.addEventListener('scroll', this.judgeBottom);
+    },
+    beforeDestroy() {
+      document.removeEventListener('scroll', this.judgeBottom);
+    },
     data() {
       return {
         item: null,
         currentView: 'f-comment-item',
-        actionItem: []
+        actionItem: [],
+        currComponent: 'comment',
+        page: 0,
+        loading: false,
+        loadingText: '加载中',
+        disabled: false
       };
     },
     watch: {
@@ -169,6 +185,65 @@
       }
     },
     methods: {
+      judgeBottom() {
+        // 滚动高度
+        const sHeight = document.documentElement.scrollTop || document.body.scrollTop;
+        // window
+        const wHeight = document.documentElement.clientHeight;
+        // 整个文档高度
+        const dHeight = document.documentElement.offsetHeight;
+        if (sHeight + wHeight === dHeight) {
+          this.loadMore();
+        }
+      },
+      async loadMore() {
+        if (this.disabled) {
+          return;
+        }
+        if (this.loading) {
+          return;
+        }
+        this.loadingText = '加载中';
+        this.loading = true;
+
+        try {
+          const res = await getActionInfo(this.$route.params.postId, this.currComponent,
+            this.$store.state.token, this.page + 1);
+          if (res.data.code === 200) {
+            if (res.data.items.length !== 0) {
+              this.actionItem = this.actionItem.concat(res.data.items);
+              this.page += 1;
+              this.loading = false;
+            } else {
+              this.loadingText = '没数据了喔';
+              this.disabled = true;
+              setTimeout(() => {
+                this.loading = false;
+              }, 2000);
+            }
+          } else {
+            this.loading = false;
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$router.push('/login');
+              }
+            }, 2000);
+          }
+        } catch (err) {
+          console.log(err);
+          this.loading = false;
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        }
+      },
       back() {
         this.$router.back();
       },
@@ -217,6 +292,9 @@
       // 切换组件
       async checkout(component) {
         this.currentView = `f-${component}-item`;
+        this.currComponent = component;
+        this.disabled = false;
+        this.page = 0;
         try {
           const res = await getActionInfo(this.$route.params.postId, component, this.$store.state.token);
           if (res.data.code === 200) {
@@ -250,13 +328,15 @@
     components: {
       'f-attitude-item': AttitudeItem,
       'f-comment-item': CommentItem,
-      'f-repost-item': RepostItem
+      'f-repost-item': RepostItem,
+      'f-fade-spinner': FadeSpinner
     }
   };
 </script>
 <style lang="scss" scoped>
   .container {
     padding-top: 45px;
+    padding-bottom: 37px;
     .card {
       overflow: auto;
       box-sizing: border-box;
@@ -323,6 +403,18 @@
         }
       }
     }
+    .loading {
+      background-color: #f2f2f2;
+      padding: 10px 0 20px 0;
+      text-align: center;
+      .loading-text {
+        color: #666;
+        font-size: 14px;
+        position: relative;
+        top: -5px;
+        right: 10px;
+      }
+    }
     footer {
       border-top: 1px solid #dcdcdc;
       display: flex;
@@ -330,6 +422,7 @@
       position: fixed;
       bottom: 0;
       width: 100%;
+      background-color: #fff;
       .footer-container {
         flex: 1;
         padding: 10px;

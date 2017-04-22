@@ -12,10 +12,10 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, '连接错误:'));
 
 mongoose.Promise = global.Promise;
-// setInterval(() => {
-calculate.similar().then(() => {
+setInterval(() => {
+    calculate.similar().then(() => {
 
-}).catch(err => {
-    console.log(err)
-});
-// }, 10 * 1000);
+    }).catch(err => {
+        console.log(err)
+    });
+}, 30 * 1000);

@@ -11,12 +11,16 @@
                @click.prevent.stop="follow(item.following)"></span><!--
       --><span class="iconfont follow-icon icon-huxiangguanzhu" v-else-if="item.following.follow === 'eachOther'"
                @click.prevent.stop="follow(item.following)"></span>
-
+    </div>
+    <div class="loading" v-show="loading">
+      <span class="loading-text">{{loadingText}}</span>
+      <f-fade-spinner size="middle"></f-fade-spinner>
     </div>
   </div>
 </template>
 <script>
   import {getFollowList, follow} from 'src/api';
+  import FadeSpinner from 'components/FadeSpinner';
 
   export default {
     async created() {
@@ -45,12 +49,80 @@
         }, 2000);
       }
     },
+    mounted() {
+      document.addEventListener('scroll', this.judgeBottom);
+    },
+    beforeDestroy() {
+      document.removeEventListener('scroll', this.judgeBottom);
+    },
     data() {
       return {
-        items: []
+        items: [],
+        page: 0,
+        loading: false,
+        loadingText: '加载中',
+        disabled: false
       };
     },
     methods: {
+      judgeBottom() {
+        // 滚动高度
+        const sHeight = document.documentElement.scrollTop || document.body.scrollTop;
+        // window
+        const wHeight = document.documentElement.clientHeight;
+        // 整个文档高度
+        const dHeight = document.documentElement.offsetHeight;
+        if (sHeight + wHeight === dHeight) {
+          this.loadMore();
+        }
+      },
+      async loadMore() {
+        if (this.disabled) {
+          return;
+        }
+        if (this.loading) {
+          return;
+        }
+        this.loadingText = '加载中';
+        this.loading = true;
+
+        try {
+          const res = await getFollowList(1, this.$route.params.userId, this.$store.state.token, this.page + 1);
+          if (res.data.code === 200) {
+            if (res.data.followList.length !== 0) {
+              this.items = this.items.concat(res.data.followList);
+              this.page += 1;
+              this.loading = false;
+            } else {
+              this.loadingText = '没数据了喔';
+              this.disabled = true;
+              setTimeout(() => {
+                this.loading = false;
+              }, 2000);
+            }
+          } else {
+            this.loading = false;
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$router.push('/login');
+              }
+            }, 2000);
+          }
+        } catch (err) {
+          console.log(err);
+          this.loading = false;
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        }
+      },
       toUser(data) {
         this.$router.push({name: 'user', params: {userId: data._id}});
       },
@@ -87,6 +159,9 @@
           }, 2000);
         }
       }
+    },
+    components: {
+      'f-fade-spinner': FadeSpinner
     }
   };
 </script>
@@ -133,6 +208,18 @@
         color: #1478f0;
         font-size: 24px;
         padding: 10px;
+      }
+    }
+    .loading {
+      background-color: #f2f2f2;
+      padding: 10px 0 20px 0;
+      text-align: center;
+      .loading-text {
+        color: #666;
+        font-size: 14px;
+        position: relative;
+        top: -5px;
+        right: 10px;
       }
     }
   }

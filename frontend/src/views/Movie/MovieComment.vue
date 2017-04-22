@@ -5,7 +5,7 @@
       <span class="clickBoard clickBoard-left" @click="back"></span>
       <div class="header-title">评价</div>
       <f-star size="rating" :isRate="isRate" @change="change"></f-star>
-      <span class="iconfont icon-fasong1" :class="{active: text}"></span>
+      <span class="iconfont icon-fasong1" :class="{active: rating}"></span>
       <span class="clickBoard clickBoard-right" @click="post"></span>
     </header>
     <textarea placeholder="请输入您的内容" class="post-textarea" v-model.trim="text" autofocus="on"></textarea>
@@ -31,7 +31,7 @@
         this.rating = rating;
       },
       async post() {
-        if (!this.text) {
+        if (!this.rating) {
           return;
         }
         try {

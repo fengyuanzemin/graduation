@@ -57,3 +57,18 @@ export function imgAttend(url) {
 export function toFixed(num) {
   return Number(num).toFixed(2);
 }
+
+export function actionFixed(str) {
+  switch (String(str)) {
+    case 'click':
+      return '查看过';
+    case 'repost':
+      return '转发过';
+    case 'comment':
+      return '评论过';
+    case 'attitude':
+      return '赞过';
+    default:
+      return '感兴趣过'
+  }
+}

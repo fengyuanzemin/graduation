@@ -197,6 +197,7 @@ export async function similar() {
                     } else if (String(weightArr[j].user) === String(tempA) &&
                         String(weightArr[j].post.user) === String(tempB)) {
                         tempSumA += weightArr[j].point;
+                        // 这个是跳过前面user一样的
                         i = j;
                         countA += 1;
                     }

@@ -55,14 +55,18 @@ export function operationCategory(list1, list2, model) {
     return addRecommendFeature(list1.filter(a => true === list2.some(b => String(a[model]._id) === String(b[model]._id))));
 }
 
+export function findIntersection(list, id) {
+    return addRecommendFeature(list.filter(a => String(a.post.user._id) === String(id)), 'intersection');
+}
+
 export function operation(list1, list2, model) {
     return list1.filter(a => true === list2.some(b => String(a[model]) === String(b[model])));
 }
 
-export function addRecommendFeature(list) {
+export function addRecommendFeature(list, recommend = 'recommend') {
     const arr = JSON.parse(JSON.stringify(list));
     return arr.map(item => {
-        item.recommend = true;
+        item[recommend] = true;
         return item;
     });
 }

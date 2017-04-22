@@ -103,7 +103,7 @@
             }, 2000);
           }
         } catch (err) {
-          console.log(error);
+          console.log(err);
           this.loading = false;
           this.$store.dispatch('show', {
             msg: '服务器错误啦，请稍后再试'

@@ -214,8 +214,11 @@ export function clickIn(id, token, type = 'weibo') {
 }
 
 // 推荐
-export function recommend(token) {
+export function recommend(token, page = 0, size = 10) {
   return axios.get('/recommend', {
+    params: {
+      page, size
+    },
     headers: {
       'f-token': token
     }

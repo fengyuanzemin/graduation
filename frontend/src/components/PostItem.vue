@@ -2,7 +2,8 @@
   <div class="card" v-if="item.action" @click.stop.prevent="detail(item.post)" :key="item._id">
     <!--如果是用户点赞的，别人的微博-->
     <div class="card-attitude" v-if="item.recommend">你和{{item.user.name}}都对它感兴趣</div>
-    <div class="card-attitude" v-else>他{{item.createdAt | timeFormat('{m}-{d}')}}赞过的微博</div>
+    <div class="card-attitude" v-else-if="item.intersection">{{item.user.name}}{{item.createdAt | timeFormat('{m}-{d}')}}{{item.action | actionFixed}}它</div>
+    <div class="card-attitude" v-else>他{{item.createdAt | timeFormat('{m}-{d}')}}{{item.action | actionFixed}}的微博</div>
     <div class="card-header">
       <span class="card-name" @click.stop.prevent="toUser(item.post)">{{item.post.user.name}}</span>
       <span class="card-time">{{item.post.createdAt | timeFormat('{m}-{d} {h}:{m}')}}</span>

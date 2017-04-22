@@ -11,7 +11,7 @@ import Movie from '../models/movie';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
 import HotWeibo from '../models/hotWeibo';
-import {pointComputed, moviePointComputed} from '../utils';
+import {pointComputed, moviePointComputed, operation} from '../utils';
 
 // 只返回推荐人id
 export async function recommend(user) {
@@ -249,8 +249,8 @@ export async function similar() {
         // 求交集
         for (let i = 0; i < combination.length; i += 1) {
             for (let j = i + 1; j < combination.length; j += 1) {
-                let intersectionA = operation(combination[i], combination[j]);
-                let intersectionB = operation(combination[j], combination[i]);
+                let intersectionA = operation(combination[i], combination[j], 'post');
+                let intersectionB = operation(combination[j], combination[i], 'post');
                 if (intersectionA.length > 0) {
                     let interactionSum = 0;
                     let interactionSumA = 0;
@@ -307,8 +307,8 @@ export async function similar() {
         // 求交集
         for (let i = 0; i < combination.length; i += 1) {
             for (let j = i + 1; j < combination.length; j += 1) {
-                let intersectionA = operation(combination[i], combination[j]);
-                let intersectionB = operation(combination[j], combination[i]);
+                let intersectionA = operation(combination[i], combination[j],'post');
+                let intersectionB = operation(combination[j], combination[i],'post');
                 if (intersectionA.length > 0) {
                     let interactionSum = 0;
                     let interactionSumA = 0;
@@ -361,9 +361,4 @@ export async function similar() {
     } catch (err) {
         console.log(err)
     }
-}
-
-// 计算combination值的
-function operation(list1, list2) {
-    return list1.filter(a => true === list2.some(b => String(a.post) === String(b.post)));
 }

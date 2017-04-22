@@ -1,5 +1,19 @@
 <template>
-  <div class="card" @click.stop.prevent="detail(item)" :key="item._id">
+  <div class="card" @click.stop.prevent="detail(item.movie)" v-if="item.action">
+    <div class="card-attitude" v-if="item.recommend">你和{{item.user.name}}都对它感兴趣</div>
+    <img :src="item.movie.imgUrl | imgAttend" :alt="item.movie.title" class="card-img card-img-attitude">
+    <div class="card-wrapper">
+      <div class="card-title">{{item.movie.title}}</div>
+      <div class="card-rating-container">
+        <f-star :rating="item.movie.rating"></f-star>
+        <span class="card-rating">{{item.movie.rating | toFixed}}分</span>
+      </div>
+      <div class="card-brief">
+        <span v-for="d in item.movie.brief">{{d}}</span>
+      </div>
+    </div>
+  </div>
+  <div class="card" @click.stop.prevent="detail(item)" :key="item._id" v-else>
     <img :src="item.imgUrl | imgAttend" :alt="item.title" class="card-img">
     <div class="card-wrapper">
       <div class="card-title">{{item.title}}</div>
@@ -38,13 +52,24 @@
   @import '../assets/css/mixin';
 
   .card {
-    padding: 15px 15px 0 15px;
+    padding: 10px 15px 0 15px;
     position: relative;
     border-bottom: 5px solid #f2f2f2;
+    .card-attitude {
+      padding: 0 0 8px;
+      margin-bottom: 8px;
+      color: #1478f0;
+      font-weight: 300;
+      font-size: 13px;
+      border-bottom: 1px solid #dcdcdc;
+    }
     .card-img {
       position: absolute;
       width: 80px;
       top: 19px;
+      &.card-img-attitude {
+        top: 50px;
+      }
     }
     .card-wrapper {
       margin-left: 100px;

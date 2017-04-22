@@ -110,4 +110,7 @@ router.post('/moviePostComment', movie.moviePostComment);
 // 推荐用户
 router.get('/recommend', recommend.getUserRecommend);
 
+// 为什么推荐用户
+router.get('/why', recommend.getWhy);
+
 export default router;

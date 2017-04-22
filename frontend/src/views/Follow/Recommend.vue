@@ -1,11 +1,12 @@
 <template>
   <div class="container">
     <div class="follow-empty" v-if="items.length === 0">暂无推荐</div>
-    <div class="follow-container" v-for="item in items" @click.stop.prevent="toUser(item)">
+    <div class="follow-container" v-for="item in items" @click.stop.prevent="toUser(item)" :key="item._id">
       <span class="follow-name">{{item.name}}</span><!--
       --><span class="follow-brief" v-if="item.brief">{{item.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
-      --><span class="follow-why-button" @click.stop.prevent="why">为什么 <span class="iconfont icon-yiwen"></span></span><!--
+      --><span class="follow-why-button" @click.stop.prevent="why(item)">为什么 <span
+      class="iconfont icon-yiwen"></span></span><!--
       --><span class="iconfont follow-icon icon-guanzhu" v-if="item.follow === 'none'"
                @click.prevent.stop="follow(item)"></span><!--
       --><span class="iconfont follow-icon icon-icon-yiguanzhu" v-else-if="item.follow === 'following'"
@@ -16,7 +17,7 @@
   </div>
 </template>
 <script>
-  import {recommend, follow} from 'src/api';
+  import {recommend, follow, why} from 'src/api';
 
   export default {
     async created() {
@@ -54,8 +55,8 @@
       toUser(data) {
         this.$router.push({name: 'user', params: {userId: data._id}});
       },
-      why() {
-        console.log(1)
+      why(data) {
+        this.$router.push({name: 'why', params: {userId: data._id}});
       },
       async follow(data) {
         const doFollow = data.follow === 'none';

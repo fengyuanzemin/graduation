@@ -90,6 +90,11 @@ export default new Router({
       component: resolve => require(['../views/UserUpdate'], resolve)
     },
     {
+      path: '/why/:userId',
+      name: 'why',
+      component: resolve => require(['../views/Why'], resolve)
+    },
+    {
       path: '/login',
       component: resolve => require(['../views/Login/Layout'], resolve)
     },

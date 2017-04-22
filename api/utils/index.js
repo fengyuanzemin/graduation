@@ -40,3 +40,29 @@ export function moviePointComputed(action, rating) {
             return 0;
     }
 }
+
+export function deleteSameAction(action, model) {
+    for (let i = 0; i < action.length - 1; i += 1) {
+        if (String(action[i][model]['_id']) === String(action[i + 1][model]['_id'])) {
+            action.splice(i, 1);
+            i -= 1;
+        }
+    }
+    return action;
+}
+
+export function operationCategory(list1, list2, model) {
+    return addRecommendFeature(list1.filter(a => true === list2.some(b => String(a[model]._id) === String(b[model]._id))));
+}
+
+export function operation(list1, list2, model) {
+    return list1.filter(a => true === list2.some(b => String(a[model]) === String(b[model])));
+}
+
+export function addRecommendFeature(list) {
+    const arr = JSON.parse(JSON.stringify(list));
+    return arr.map(item => {
+        item.recommend = true;
+        return item;
+    });
+}

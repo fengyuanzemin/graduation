@@ -265,3 +265,15 @@ export function moviePostComment(mId, content, rating = 0, token) {
     }
   })
 }
+
+// 拉取为什么推荐
+export function why(uId, token) {
+  return axios.get('/why', {
+    params: {
+      uId
+    },
+    headers: {
+      'f-token': token
+    }
+  })
+}

@@ -95,6 +95,7 @@
       position: relative;
       .name {
         font-size: 28px;
+        height: 30px;
         color: #333;
         margin-bottom: 10px;
         font-weight: 300;
@@ -102,6 +103,7 @@
       }
       .brief {
         font-size: 14px;
+        height: 16px;
         color: #666;
         font-weight: 300;
         @include text-overflow;

@@ -265,6 +265,7 @@
       text-align: center;
       .name {
         font-size: 28px;
+        height: 30px;
         color: #fff;
         margin-bottom: 20px;
         font-weight: 300;

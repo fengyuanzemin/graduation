@@ -215,6 +215,8 @@
         font-size: 17px;
         color: #333;
         margin-right: 5px;
+        display: inline-block;
+        height: 19px;
       }
       .card-time {
         font-size: 14px;

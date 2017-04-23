@@ -181,6 +181,9 @@
         border-bottom: 1px solid #dcdcdc;
       }
       .follow-name {
+        font-size: 16px;
+        line-height: 16px;
+        height: 18px;
         color: #333;
         margin-right: 10px;
         display: inline-block;
@@ -192,6 +195,7 @@
       .follow-brief {
         color: #666;
         font-size: 12px;
+        height: 14px;
         display: inline-block;
         width: 140px;
         text-overflow: ellipsis;

@@ -192,6 +192,8 @@
   };
 </script>
 <style lang="scss" scoped>
+  @import "../assets/css/mixin";
+
   .card {
     overflow: auto;
     box-sizing: border-box;
@@ -207,6 +209,8 @@
     .card-header {
       margin: 10px 0;
       padding: 0 15px;
+      @include text-overflow;
+      color: #666;
       .card-name {
         font-size: 17px;
         color: #333;
@@ -219,11 +223,11 @@
       }
     }
     .card-content {
-      overflow: hidden;
       font-size: 15px;
       color: #333;
       margin: 0 15px 10px 15px;
       line-height: 24px;
+      @include hidden-line-clamp(5)
     }
     .card-retweeted {
       padding: 8px 15px;

@@ -159,9 +159,13 @@
     .search-user {
       border-bottom: 5px solid #dcdcdc;
       .search-user-container {
-        padding: 20px 15px;
+        padding: 20px 49px 20px 15px;
         border-bottom: 1px solid #dcdcdc;
         position: relative;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #666;
         &:nth-last-child(1) {
           border-bottom: none;
         }

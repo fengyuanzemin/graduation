@@ -84,6 +84,8 @@
   };
 </script>
 <style lang="scss" scoped>
+  @import "../../assets/css/mixin";
+
   .home {
     overflow: auto;
     .home-header {
@@ -96,14 +98,13 @@
         color: #333;
         margin-bottom: 10px;
         font-weight: 300;
+        @include text-overflow;
       }
       .brief {
-        overflow: hidden;
         font-size: 14px;
         color: #666;
         font-weight: 300;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        @include text-overflow;
       }
     }
     .change-btn {

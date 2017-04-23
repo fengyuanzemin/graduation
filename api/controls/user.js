@@ -13,6 +13,20 @@ import Action from '../models/action';
 // 登录
 export async function login(req, res) {
     try {
+        if (req.body.name.length > 14) {
+            res.json({
+                message: errCode[5014],
+                code: 5014
+            });
+            return;
+        }
+        if (req.body.password.length < 6 || req.body.password.length > 14) {
+            res.json({
+                message: errCode[5015],
+                code: 5015
+            });
+            return;
+        }
         const user = await User.findOne({name: req.body.name});
         let doc;
         if (user) {
@@ -48,6 +62,20 @@ export async function login(req, res) {
 // 注册
 export async function signUp(req, res) {
     try {
+        if (req.body.name.length > 14) {
+            res.json({
+                message: errCode[5014],
+                code: 5014
+            });
+            return;
+        }
+        if (req.body.password.length < 6 || req.body.password.length > 14) {
+            res.json({
+                message: errCode[5015],
+                code: 5015
+            });
+            return;
+        }
         let token = randomKey();
         let tokenExist = await User.findOne({token});
         // 检查token是否已经存在了
@@ -122,6 +150,13 @@ export async function updateUserInfo(req, res) {
         res.json({
             code: 5004,
             message: errCode[5004]
+        });
+        return;
+    }
+    if (req.body.name.length > 14) {
+        res.json({
+            message: errCode[5014],
+            code: 5014
         });
         return;
     }

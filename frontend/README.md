@@ -1,29 +1,23 @@
 # 毕设前端
 
-> A Vue.js project
+> 微博、电影推荐
 
-## Build Setup
+## 安装步骤
 
 ``` bash
-# install dependencies
-npm install
+# 安装依赖
+npm i
 
-# serve with hot reload at localhost:8080
+# 开发环境 http://localhost:8080/
 npm run dev
-
-# build for production with minification
+  
+# 生产环境
+  
+## 将 config/axiosDefaultsBaseURL.example.js复制到config/axiosDefaultsBaseURL.js，并根据自己的ip配置
+  
+## 运行
 npm run build
-or
+  
+## 或在后台运行
 forever start build/build.js
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
 ```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

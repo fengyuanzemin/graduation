@@ -45,8 +45,8 @@
           const res = await login(this.name, this.password);
           if (res.data.code === 200) {
             localStorage.setItem('f-token', res.data.token);
-            this.$store.dispatch('login',{
-                token: res.data.token
+            this.$store.dispatch('login', {
+              token: res.data.token
             });
             this.$store.dispatch('checkoutMsg', {
               msg: '登录成功'
@@ -77,7 +77,7 @@
         this.$emit('checkout', 'f-sign-up');
       },
       checkNameAndPassword(name, password) {
-        return (name && password && password.length >= 6 && password.length <= 14);
+        return (name && name.length <= 14 && password && password.length >= 6 && password.length <= 14);
       }
     },
     watch: {

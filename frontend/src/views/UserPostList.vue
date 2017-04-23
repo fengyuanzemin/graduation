@@ -259,7 +259,7 @@
   .container {
     margin-top: 45px;
     .user-header {
-      padding: 25px 0;
+      padding: 47px 0 25px 0;
       background-image: linear-gradient(0deg, #2DB0F9 0%, #1979f0 100%);
       position: relative;
       text-align: center;
@@ -287,7 +287,7 @@
         display: inline-block;
         position: absolute;
         color: #fff;
-        top: 65px;
+        top: 13px;
         right: 15px;
         border: 1px solid #fff;
         border-radius: 5px;

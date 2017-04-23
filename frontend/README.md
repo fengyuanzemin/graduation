@@ -13,6 +13,8 @@ npm run dev
 
 # build for production with minification
 npm run build
+or
+forever start build/build.js
 
 # run unit tests
 npm run unit

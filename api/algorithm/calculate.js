@@ -55,6 +55,7 @@ export async function hot() {
          * 查看 0.1
          * 评论 0.7
          */
+        await HotWeibo.remove({});
         const action = await Action.find({}).sort('post');
         // 把post相同的加起来
         for (let i = 0; i < action.length; i += 1) {

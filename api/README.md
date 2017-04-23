@@ -11,5 +11,9 @@
 4. 运行
     
     npm start
+    
+    forever start ./bin/www
+    
+    forever start /algorithm/index.js
 
 

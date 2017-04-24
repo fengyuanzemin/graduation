@@ -9,7 +9,6 @@ var fs = require('fs');
 var app = require('../app');
 var debug = require('debug')('graduation-api:server');
 var http = require('http');
-var https = require('https');
 
 /**
  * Get port from environment and store in Express.
@@ -17,18 +16,12 @@ var https = require('https');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-app.set('httpsPort', 443);
 
 /**
  * Create HTTP server.
  */
-var options = {
-    key: fs.readFileSync('./ssl/214024143930367.key'),
-    cert: fs.readFileSync('./ssl/214024143930367.pem'),
-};
 
 var server = http.createServer(app);
-var httpsServer = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -37,9 +30,6 @@ var httpsServer = https.createServer(options, app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-httpsServer.listen(443);
-httpsServer.on('error', onError);
-httpsServer.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.

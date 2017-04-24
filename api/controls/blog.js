@@ -55,6 +55,8 @@ export async function post(req, res) {
 // 热门微博
 export async function getHotList(req, res) {
     try {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        console.log(ip)
         // 分页，一页多少条数据
         const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
         // 跳过前面多少条

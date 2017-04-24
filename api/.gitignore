@@ -8,3 +8,4 @@ selenium-debug.log
 config/salt.js
 config/cookie.js
 temp/
+ssl/

@@ -5,7 +5,7 @@
       <span class="follow-name">{{item.name}}</span><!--
       --><span class="follow-brief" v-if="item.brief">{{item.brief}}</span><!--
       --><span class="follow-brief" v-else>暂无简介</span><!--
-      --><span class="follow-why-button" @click.stop.prevent="why(item)">为什么 <span
+      --><span class="follow-why-button" @click.stop.prevent="why(item)">怎么猜到 <span
       class="iconfont icon-yiwen"></span></span><!--
       --><span class="iconfont follow-icon icon-guanzhu" v-if="item.follow === 'none'"
                @click.prevent.stop="follow(item)"></span><!--

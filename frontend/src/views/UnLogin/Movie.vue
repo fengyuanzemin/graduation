@@ -8,7 +8,7 @@
   </div>
 </template>
 <script>
-  import {hotMovieList} from 'src/api';
+  import { hotMovieList } from 'src/api';
   import MovieItem from 'components/MovieItem';
   import FadeSpinner from 'components/FadeSpinner';
 

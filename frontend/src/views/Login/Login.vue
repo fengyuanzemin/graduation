@@ -25,7 +25,7 @@
 </template>
 <script>
   import FadeSpinner from 'components/FadeSpinner';
-  import {login} from 'src/api/index';
+  import { login } from 'src/api/index';
 
   export default {
     data() {

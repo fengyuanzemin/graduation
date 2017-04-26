@@ -9,8 +9,8 @@ import RelationShip from "../models/relationship";
 import Similar from "../models/similar";
 import HotWeibo from "../models/hotWeibo";
 import errCode from "../utils/codeTransfer";
-import {PAGE_OPTION} from "../utils/const";
-import {recommend} from "../algorithm/calculate";
+import { PAGE_OPTION } from "../utils/const";
+import { recommend } from "../algorithm/calculate";
 
 // 发送原创微博
 export async function post(req, res) {

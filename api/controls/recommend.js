@@ -5,9 +5,9 @@ import User from '../models/user';
 import Action from '../models/action';
 import MovieAction from '../models/movieAction';
 import errCode from '../utils/codeTransfer';
-import {PAGE_OPTION} from '../utils/const';
-import {recommend} from '../algorithm/calculate';
-import {operationCategory, deleteSameAction, findIntersection} from '../utils/index';
+import { PAGE_OPTION } from '../utils/const';
+import { recommend } from '../algorithm/calculate';
+import { operationCategory, deleteSameAction, findIntersection } from '../utils/index';
 
 export async function getUserRecommend(req, res) {
     try {

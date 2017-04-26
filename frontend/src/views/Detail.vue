@@ -58,7 +58,7 @@
   import CommentItem from 'src/components/CommentItem';
   import RepostItem from 'src/components/RepostItem';
   import FadeSpinner from 'components/FadeSpinner';
-  import {getPostItem, attitude, getActionInfo, clickIn} from 'src/api';
+  import { getPostItem, attitude, getActionInfo, clickIn } from 'src/api';
 
   export default {
     async created() {

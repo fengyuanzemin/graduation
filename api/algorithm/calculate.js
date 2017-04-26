@@ -11,7 +11,7 @@ import Movie from '../models/movie';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
 import HotWeibo from '../models/hotWeibo';
-import {pointComputed, moviePointComputed, operation} from '../utils';
+import { pointComputed, moviePointComputed, operation } from '../utils';
 
 // 只返回推荐人id
 export async function recommend(user) {

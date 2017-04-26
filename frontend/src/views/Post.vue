@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-  import {post} from 'src/api/';
+  import { post } from 'src/api/';
 
   export default {
     data() {

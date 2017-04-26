@@ -25,7 +25,7 @@
   </div>
 </template>
 <script>
-  import {search, follow} from 'src/api';
+  import { search, follow } from 'src/api';
   import MovieItem from 'src/components/MovieItem';
   import PostItem from 'src/components/PostItem';
 

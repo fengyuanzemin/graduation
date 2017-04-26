@@ -4,7 +4,7 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-import {checkToken} from 'src/api';
+import { checkToken } from 'src/api';
 
 Vue.use(Router);
 
@@ -62,7 +62,7 @@ export default new Router({
     {
       path: '/movie/:movieId',
       name: 'movie',
-      component: resolve =>require(['../views/Movie/MovieDetail'], resolve)
+      component: resolve => require(['../views/Movie/MovieDetail'], resolve)
     },
     {
       path: '/movie-comment/:movieId',

@@ -10,7 +10,7 @@
 <script>
   import PostItem from 'src/components/PostItem';
   import FadeSpinner from 'components/FadeSpinner';
-  import {getHotList} from 'src/api';
+  import { getHotList } from 'src/api';
 
   export default {
     async created() {

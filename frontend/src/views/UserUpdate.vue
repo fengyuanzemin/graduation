@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-  import {updateUserInfo, getUserInfo} from 'src/api/';
+  import { updateUserInfo, getUserInfo } from 'src/api/';
 
   export default {
     async created() {

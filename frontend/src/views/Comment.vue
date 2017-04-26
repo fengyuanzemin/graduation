@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-  import {comment} from 'src/api/';
+  import { comment } from 'src/api/';
 
   export default {
     data() {

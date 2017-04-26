@@ -10,6 +10,7 @@
   import 'assets/css/global.scss';
   import 'assets/fonts/iconfont.css';
   import MsgWithLoading from 'components/MsgWithLoading';
+
   export default {
     name: 'app',
     components: {

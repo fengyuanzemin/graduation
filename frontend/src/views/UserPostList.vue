@@ -60,7 +60,7 @@
 <script>
   import PostItem from 'src/components/PostItem';
   import FadeSpinner from 'components/FadeSpinner';
-  import {getUserPostList, follow} from 'src/api';
+  import { getUserPostList, follow } from 'src/api';
 
   export default {
     async created() {

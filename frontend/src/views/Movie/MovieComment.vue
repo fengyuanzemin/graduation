@@ -13,7 +13,7 @@
 </template>
 <script>
   import Star from 'src/components/Star';
-  import {moviePostComment} from 'src/api/';
+  import { moviePostComment } from 'src/api/';
 
   export default {
     data() {

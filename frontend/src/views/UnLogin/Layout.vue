@@ -19,6 +19,7 @@
 <script>
   import Index from './Index';
   import Movie from './Movie';
+
   export default {
     created() {
       if (this.$route.query.component) {

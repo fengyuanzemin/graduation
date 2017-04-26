@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 import errCode from '../utils/codeTransfer';
 import saltRounds from '../config/salt';
-import {randomKey} from '../utils';
+import { randomKey } from '../utils';
 
 import User from '../models/user';
 import Action from '../models/action';

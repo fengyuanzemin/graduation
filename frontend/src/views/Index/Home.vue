@@ -25,7 +25,7 @@
   </div>
 </template>
 <script>
-  import {getUserInfo} from 'src/api';
+  import { getUserInfo } from 'src/api';
 
   export default {
     async created() {

@@ -53,7 +53,7 @@
 <script>
   import MovieRatingItem from 'src/components/MovieRatingItem';
   import Star from 'src/components/Star';
-  import {movieComment} from 'src/api';
+  import { movieComment } from 'src/api';
 
   export default {
     async created() {

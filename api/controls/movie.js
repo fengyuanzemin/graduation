@@ -5,7 +5,7 @@ import Movie from '../models/movie';
 import MovieComment from '../models/movieAction';
 import User from '../models/user';
 import errCode from '../utils/codeTransfer';
-import {PAGE_OPTION} from '../utils/const';
+import { PAGE_OPTION } from '../utils/const';
 
 // 热门电影列表
 export async function hotMovieList(req, res) {

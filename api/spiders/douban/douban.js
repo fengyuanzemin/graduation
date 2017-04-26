@@ -2,7 +2,7 @@
  * Created by fengyuanzemin on 17/2/22.
  */
 import superAgent from 'superagent';
-import {UA} from '../utils';
+import { UA } from '../utils';
 import Cookie from '../../config/cookie';
 import request from 'request';
 import fs from 'fs';

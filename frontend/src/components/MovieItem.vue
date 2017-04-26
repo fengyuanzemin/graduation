@@ -29,7 +29,7 @@
 </template>
 <script>
   import Star from 'src/components/Star';
-  import {clickIn} from 'src/api';
+  import { clickIn } from 'src/api';
 
   export default {
     props: ['item'],

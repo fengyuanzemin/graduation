@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-  import {repost} from 'src/api/';
+  import { repost } from 'src/api/';
 
   export default {
     data() {

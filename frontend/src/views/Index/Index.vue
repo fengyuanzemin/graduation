@@ -8,7 +8,7 @@
   </div>
 </template>
 <script>
-  import {getList} from 'src/api';
+  import { getList } from 'src/api';
   import FadeSpinner from 'components/FadeSpinner';
   import PostItem from 'components/PostItem';
 

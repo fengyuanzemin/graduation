@@ -108,7 +108,7 @@
   </div>
 </template>
 <script>
-  import {attitude, clickIn} from 'src/api';
+  import { attitude, clickIn } from 'src/api';
   export default {
     props: ['item'],
     data() {

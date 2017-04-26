@@ -12,7 +12,7 @@
   </div>
 </template>
 <script>
-  import {why} from 'src/api';
+  import { why } from 'src/api';
   import PostItem from 'components/PostItem';
   import MovieItem from 'components/MovieItem';
 

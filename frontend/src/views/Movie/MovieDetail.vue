@@ -181,7 +181,6 @@
           .card-directors,
           .card-actors,
           .card-tags {
-            @include hidden-line-clamp(4);
             .card-detail-title {
               font-size: 13px;
             }
@@ -195,6 +194,18 @@
                 content: none;
               }
             }
+          }
+          .card-actors {
+            @include hidden-line-clamp(4);
+          }
+          .card-directors{
+            @include hidden-line-clamp(2);
+            @media screen and (min-width: 320px) and (max-width: 350px){
+              @include hidden-line-clamp(1);
+            }
+          }
+          .card-tags {
+            @include hidden-line-clamp(1);
           }
           .card-directors {
             margin-top: 5px;

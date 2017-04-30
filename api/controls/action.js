@@ -3,9 +3,8 @@
  */
 import User from '../models/user';
 import Post from '../models/post';
-import PostAction from '../models/postAction';
+import Action from '../models/action';
 import Movie from '../models/movie';
-import MovieAction from '../models/movieAction';
 import RelationShip from '../models/relationship';
 
 import errCode from '../utils/codeTransfer';
@@ -17,10 +16,11 @@ export async function repost(req, res) {
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             // 用户转发行为添加
-            await new PostAction({
+            await new Action({
                 post: req.body.pId,
                 user: user._id,
                 content,
+                type: 'post',
                 action: 'repost'
             }).save();
         } else {
@@ -78,9 +78,10 @@ export async function comment(req, res) {
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             // 用户评论行为加一
-            await new PostAction({
+            await new Action({
                 post: req.body.pId,
                 user: user._id,
+                type: 'post',
                 content: req.body.content,
                 action: 'comment'
             }).save();
@@ -120,14 +121,20 @@ export async function attitude(req, res) {
             return;
         }
         // 查找之前是否点过赞
-        const action = await PostAction.findOne({post: req.body.pId, user: user._id, action: 'attitude'});
+        const action = await Action.findOne({
+            post: req.body.pId,
+            user: user._id,
+            type: 'post',
+            action: 'attitude'
+        });
         if (action) {
             count = -1;
             await action.remove();
         } else {
-            await new PostAction({
+            await new Action({
                 post: req.body.pId,
                 user: user._id,
+                type: 'post',
                 action: 'attitude'
             }).save();
         }
@@ -238,7 +245,7 @@ export async function follow(req, res) {
 export async function clickIn(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
-        if (req.body.type === 'weibo') {
+        if (req.body.type === 'post') {
             const post = await Post.findOne({_id: req.body.id});
             if (user && post) {
                 // 如果是自己的微博，就不记录行为
@@ -248,9 +255,10 @@ export async function clickIn(req, res) {
                         message: errCode[5011]
                     });
                 } else {
-                    await new PostAction({
+                    await new Action({
                         user: user._id,
                         post: req.body.id,
+                        type: 'post',
                         action: 'click'
                     }).save();
                     res.json({
@@ -273,9 +281,10 @@ export async function clickIn(req, res) {
                 });
                 return;
             }
-            await new MovieAction({
+            await new Action({
                 user: user._id,
                 movie: req.body.id,
+                type: 'movie',
                 action: 'click'
             }).save();
 
@@ -309,8 +318,11 @@ export async function getActionInfo(req, res) {
         const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
         // 跳过前面多少条
         const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
-        const items = await PostAction.find({post: req.query.pId, action: req.query.action})
-            .populate('user', ['name']).sort({_id: -1}).skip(skip).limit(size);
+        const items = await Action.find({
+            post: req.query.pId,
+            action: req.query.action,
+            type: 'post'
+        }).populate('user', ['name']).sort({_id: -1}).skip(skip).limit(size);
         res.json({
             items,
             code: 200

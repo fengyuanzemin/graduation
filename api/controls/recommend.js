@@ -2,8 +2,7 @@
  * Created by fengyuanzemin on 2017/3/17.
  */
 import User from '../models/user';
-import PostAction from '../models/postAction';
-import MovieAction from '../models/movieAction';
+import Action from '../models/action';
 import errCode from '../utils/codeTransfer';
 import { PAGE_OPTION } from '../utils/const';
 import { recommend } from '../algorithm/calculate';
@@ -65,7 +64,7 @@ export async function getWhy(req, res) {
         }
         // 先查微博上面相似行为的
         const postUserAction = deleteSameAction(
-            await PostAction.find({user: user._id}).sort({post: 1, action: 1, _id: -1})
+            await Action.find({user: user._id, type: 'post'}).sort({post: 1, action: 1, _id: -1})
                 .populate({
                     path: 'user',
                     select: 'name'
@@ -89,7 +88,7 @@ export async function getWhy(req, res) {
                     }
                 }), 'post');
         const postRecommendUserAction = deleteSameAction(
-            await PostAction.find({user: recommendUser._id}).sort({post: 1, action: 1, _id: -1})
+            await Action.find({user: recommendUser._id, type: 'post'}).sort({post: 1, action: 1, _id: -1})
                 .populate({
                     path: 'user',
                     select: 'name'
@@ -122,14 +121,14 @@ export async function getWhy(req, res) {
 
         // 再查电影上面有相似行为的
         const movieUserAction = deleteSameAction(
-            await MovieAction.find({user: user._id}).sort({movie: 1, action: 1, _id: -1})
+            await Action.find({user: user._id, type: 'movie'}).sort({movie: 1, action: 1, _id: -1})
                 .populate({
                     path: 'user',
                     select: 'name'
                 })
                 .populate('movie'), 'movie');
         const movieRecommendUserAction = deleteSameAction(
-            await MovieAction.find({user: recommendUser._id}).sort({movie: 1, action: 1, _id: -1})
+            await Action.find({user: recommendUser._id, type: 'movie'}).sort({movie: 1, action: 1, _id: -1})
                 .populate({
                     path: 'user',
                     select: 'name'

@@ -11,8 +11,14 @@ const Schema = mongoose.Schema({
     },
     post: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post',
-        require: true
+        ref: 'Post'
+    },
+    movie: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Movie'
+    },
+    type: {
+        type: String
     },
     content: {
         type: String,
@@ -24,10 +30,15 @@ const Schema = mongoose.Schema({
         type: String,
         require: true
     },
+    // 只有电影评价的时候
+    rating: {
+        type: Number,
+        default: 0
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
 
-export default mongoose.model('PostAction', Schema);
+export default mongoose.model('Action', Schema);

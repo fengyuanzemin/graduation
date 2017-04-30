@@ -1,16 +1,15 @@
 /**
  * Created by fengyuanzemin on 2017/3/14.
  */
-import Weight from '../models/postWeight';
-import MovieWeight from '../models/movieWeight';
-import Action from '../models/postAction';
-import MovieAction from '../models/movieAction';
+import Weight from '../models/weight';
+import Action from '../models/action';
 import User from '../models/user';
 import Post from '../models/post';
 import Movie from '../models/movie';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
-import HotWeibo from '../models/postHot';
+import Hot from '../models/hot';
+
 import { pointComputed, moviePointComputed, operation } from '../utils';
 
 // 只返回推荐人id
@@ -54,9 +53,10 @@ export async function hot() {
          * 转发 0.8
          * 查看 0.1
          * 评论 0.7
+         * 此处暂时先算文章的热度
          */
-        await HotWeibo.remove({});
-        const action = await Action.find({}).sort('post');
+        await Hot.remove({});
+        const action = await Action.find({type: 'post'}).sort('post');
         // 把post相同的加起来
         for (let i = 0; i < action.length; i += 1) {
             let hotPoint = pointComputed(action[i].action);
@@ -68,9 +68,10 @@ export async function hot() {
                     n = j;
                 }
             }
-            await new HotWeibo({
+            await new Hot({
                 post: action[i].post,
-                point: hotPoint
+                point: hotPoint,
+                type: 'post'
             }).save();
             i = n;
         }
@@ -79,13 +80,11 @@ export async function hot() {
     }
 }
 
-// 根据用户微博/电影的行为计算相似度，并保存在similar表和weight表
+// 根据用户文章/电影的行为计算相似度，并保存在similar表和weight表
 export async function similar() {
     try {
         // 将Weight清空
         await Weight.remove({});
-        // 将MovieWeight清空
-        await MovieWeight.remove({});
         // 将Similar清空
         await Similar.remove({});
 
@@ -107,7 +106,7 @@ export async function similar() {
         for (let item of userId) {
             // 找到用户所有的行为
             // 将相同postID的生成一个weight
-            let action = await Action.find({user: item}).sort('post');
+            let action = await Action.find({user: item, type: 'post'}).sort('post');
             // 每次循环代表不同的用户行为
             for (let j = 0; j < action.length; j += 1) {
                 let flag = 0;
@@ -127,13 +126,14 @@ export async function similar() {
                         await new Weight({
                             user: item,
                             post: postId,
-                            maxSum: actionSum
+                            maxSum: actionSum,
+                            type: 'post'
                         }).save();
                     }
                 }
             }
             // 电影
-            let movieAction = await MovieAction.find({user: item}).sort('movie');
+            let movieAction = await Action.find({user: item, type: 'movie'}).sort('movie');
             for (let j = 0; j < movieAction.length; j += 1) {
                 let flag = 0;
                 let movieId = '';
@@ -149,25 +149,26 @@ export async function similar() {
                     }
                     // 循环到最后面就存进weight
                     if (i === movieAction.length - 1) {
-                        await new MovieWeight({
+                        await new Weight({
                             user: item,
                             movie: movieId,
-                            maxSum: actionSum
+                            maxSum: actionSum,
+                            type: 'movie'
                         }).save();
                     }
                 }
             }
         }
         // 找到最大值
-        let weightMax = await Weight.findOne({}).sort('-maxSum');
-        let weightArr = await Weight.find({});
+        let weightMax = await Weight.findOne({type: 'post'}).sort('-maxSum');
+        let weightArr = await Weight.find({type: 'post'});
         for (let i of weightArr) {
             i.point = i.maxSum / weightMax.maxSum;
             await i.save();
         }
         // 找到电影最大值
-        let movieWeightMax = await MovieWeight.findOne({}).sort('-maxSum');
-        let movieWeightArr = await MovieWeight.find({});
+        let movieWeightMax = await Weight.findOne({type: 'movie'}).sort('-maxSum');
+        let movieWeightArr = await Weight.find({type: 'movie'});
         for (let i of movieWeightArr) {
             i.point = i.maxSum / movieWeightMax.maxSum;
             await i.save();
@@ -180,7 +181,7 @@ export async function similar() {
          *
          */
         // 微博
-        weightArr = await Weight.find({}).sort('user').populate('post');
+        weightArr = await Weight.find({type: 'post'}).sort('user').populate('post');
         for (let i = 0; i < weightArr.length; i += 1) {
             // A -> B
             let tempA = '', tempB = '', tempSumA = 0, countA = 0;
@@ -231,9 +232,9 @@ export async function similar() {
          *
          */
         // 微博
-        weightArr = await Weight.find({}).sort('user');
-        let combination = [];
+        weightArr = await Weight.find({type: 'post'}).sort('user');
         let combinationUser = '';
+        let combination = [];
         for (let i = 0; i < weightArr.length - 1; i += 1) {
             if (!i) {
                 combinationUser = weightArr[i].user;
@@ -289,9 +290,9 @@ export async function similar() {
         }
 
         // 电影
-        weightArr = await MovieWeight.find({}).sort('user');
-        combination = [];
+        weightArr = await Weight.find({type: 'movie'}).sort('user');
         combinationUser = '';
+        combination = [];
         for (let i = 0; i < weightArr.length - 1; i += 1) {
             if (!i) {
                 combinationUser = weightArr[i].user;

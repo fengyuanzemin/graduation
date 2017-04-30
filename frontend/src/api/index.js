@@ -203,7 +203,7 @@ export function judgeUser(uId, token) {
 }
 
 // 记录查看微博/电影的点击事件
-export function clickIn(id, token, type = 'weibo') {
+export function clickIn(id, token, type = 'post') {
   return axios.post('/clickIn', {
     id, type
   }, {

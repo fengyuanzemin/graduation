@@ -2,7 +2,7 @@
  * Created by fengyuanzemin on 2017/4/6.
  */
 import Movie from '../models/movie';
-import MovieAction from '../models/movieAction';
+import Action from '../models/action';
 import User from '../models/user';
 import errCode from '../utils/codeTransfer';
 import { PAGE_OPTION } from '../utils/const';
@@ -80,12 +80,14 @@ export async function movieComment(req, res) {
         if (Number(req.query.page) === 0) {
             movieInfo = await Movie.findOne({_id: req.query.mId});
         }
-        const commentList = await MovieAction.find({movie: req.query.mId, action: 'comment'})
-            .sort({_id: -1})
-            .populate({
-                path: 'user',
-                select: 'name'
-            }).skip(skip).limit(size);
+        const commentList = await Action.find({
+            movie: req.query.mId,
+            type: 'movie',
+            action: 'comment'
+        }).sort({_id: -1}).populate({
+            path: 'user',
+            select: 'name'
+        }).skip(skip).limit(size);
         res.json({
             code: 200,
             movieInfo,
@@ -135,16 +137,17 @@ export async function moviePostComment(req, res) {
             });
             return;
         }
-        await new MovieAction({
+        await new Action({
             user: user._id,
             movie: req.body.mId,
             content: req.body.content,
             rating: req.body.rating,
+            type: 'movie',
             action: 'comment'
         }).save();
 
         // 查询所有的，该电影的评分，更新movie
-        const commentArr = await MovieAction.find({movie: req.body.mId, action: 'comment'});
+        const commentArr = await Action.find({movie: req.body.mId, action: 'comment', type: 'movie'});
         let ratingSum = 0;
         let count = 0;
         commentArr.forEach(item => {

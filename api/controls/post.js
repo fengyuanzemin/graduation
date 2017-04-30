@@ -3,11 +3,12 @@
  */
 import User from "../models/user";
 import Post from "../models/post";
-import PostAction from "../models/postAction";
-import PostHot from "../models/postHot";
+import Action from "../models/action";
+import Hot from "../models/hot";
 import Movie from "../models/movie";
 import RelationShip from "../models/relationship";
 import Similar from "../models/similar";
+
 import errCode from "../utils/codeTransfer";
 import { PAGE_OPTION } from "../utils/const";
 import { recommend } from "../algorithm/calculate";
@@ -59,7 +60,7 @@ export async function getHotList(req, res) {
         const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
         // 跳过前面多少条
         const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
-        const cardList = await PostHot.find({})
+        const cardList = await Hot.find({type: 'post'})
             .sort({point: -1, _id: -1})
             .limit(size)
             .skip(skip)
@@ -167,7 +168,7 @@ export async function getList(req, res) {
         if (cards.length === 0 && +req.query.page === 0) {
             hot = true;
             // 直接展示热门微博
-            cards = await PostHot.find({})
+            cards = await Hot.find({type: 'post'})
                 .sort({point: -1})
                 .populate({
                     path: 'post',
@@ -191,7 +192,12 @@ export async function getList(req, res) {
         // 判断用户在当前数据是否点过赞
         for (let card of cards) {
             const c = JSON.parse(JSON.stringify(card));
-            c.attituded = !!await PostAction.findOne({user: user._id, post: hot ? c.post._id : c._id, action: 'attitude'});
+            c.attituded = !!await Action.findOne({
+                user: user._id,
+                post: hot ? c.post._id : c._id,
+                action: 'attitude',
+                type: 'post'
+            });
             cardList.push(c);
         }
         res.json({
@@ -244,7 +250,12 @@ export async function getUserPostList(req, res) {
             let items = [];
             for (let item of postItems) {
                 const i = JSON.parse(JSON.stringify(item));
-                i.attituded = !!await PostAction.findOne({post: i._id, user: user._id, action: 'attitude'});
+                i.attituded = !!await Action.findOne({
+                    post: i._id,
+                    user: user._id,
+                    type: 'post',
+                    action: 'attitude'
+                });
                 items.push(i);
             }
             res.json({
@@ -273,7 +284,7 @@ export async function getUserPostList(req, res) {
             userInfo.follow = follow;
             // 查找别人点赞的，不属于别人，也不属于自己的微博
             // 先找到别人点赞的所有微博
-            const action = await PostAction.find({action: 'attitude', user: req.query.uId})
+            const action = await Action.find({action: 'attitude', user: req.query.uId, type: 'post'})
                 .sort({_id: -1})
                 .populate({
                     path: 'post',
@@ -338,7 +349,12 @@ export async function getUserPostList(req, res) {
             let items = [];
             for (let item of postItems) {
                 const i = JSON.parse(JSON.stringify(item));
-                i.attituded = !!await PostAction.findOne({post: i._id, user: user._id, action: 'attitude'});
+                i.attituded = !!await Action.findOne({
+                    post: i._id,
+                    user: user._id,
+                    action: 'attitude',
+                    type: 'post'
+                });
                 items.push(i);
             }
             // 拿这里面的分页数据
@@ -440,7 +456,12 @@ export async function getPostItem(req, res) {
             });
         if (post) {
             const detail = JSON.parse(JSON.stringify(post));
-            detail.attituded = !!await PostAction.findOne({user: user._id, post: post._id, action: 'attitude'});
+            detail.attituded = !!await Action.findOne({
+                user: user._id,
+                post: post._id,
+                action: 'attitude',
+                type: 'post'
+            });
             res.json({
                 code: 200,
                 detail

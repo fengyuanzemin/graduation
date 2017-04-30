@@ -1,5 +1,5 @@
 /**
- * Created by fengyuanzemin on 2017/4/16.
+ * Created by fengyuanzemin on 17/3/13.
  */
 import mongoose from 'mongoose';
 
@@ -9,10 +9,16 @@ const Schema = mongoose.Schema({
         ref: 'User',
         require: true
     },
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+    },
     movie: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Movie',
-        require: true
+        ref: 'Movie'
+    },
+    type: {
+        type: String
     },
     maxSum: {
         type: Number,
@@ -24,4 +30,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('MovieWeight', Schema);
+export default mongoose.model('Weight', Schema);

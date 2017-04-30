@@ -4,7 +4,7 @@ const router = express.Router();
 import * as user from '../controls/user';
 import * as action from '../controls/action';
 import * as recommend from '../controls/recommend';
-import * as blog from '../controls/blog';
+import * as post from '../controls/post';
 import * as movie from '../controls/movie';
 
 // 空请求
@@ -41,29 +41,29 @@ router.get('/checkAttitude', user.checkAttitude);
 router.get('/judgeUser', user.judgeUser);
 
 /**
- * blog route
+ * post route
  */
 
 // 发送微博
-router.post('/post', blog.post);
+router.post('/post', post.post);
 
 // 热门微博
-router.get('/getHotList', blog.getHotList);
+router.get('/getHotList', post.getHotList);
 
 // 已登录首页数据
-router.get('/getList', blog.getList);
+router.get('/getList', post.getList);
 
 // 用户的个人微博列表
-router.get('/getUserPostList', blog.getUserPostList);
+router.get('/getUserPostList', post.getUserPostList);
 
 // 只拿一个微博数据
-router.get('/getPostItem', blog.getPostItem);
+router.get('/getPostItem', post.getPostItem);
 
 // 搜索
-router.get('/search', blog.search);
+router.get('/search', post.search);
 
 // 关注列表和粉丝列表
-router.get('/getFollowList', blog.getFollowList);
+router.get('/getFollowList', post.getFollowList);
 
 /**
  * action route

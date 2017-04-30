@@ -1,6 +1,6 @@
 <template>
   <div class="star" :class="size">
-    <span class="iconfont icon-unie61a" v-for="(s,index) in star"
+    <span class="iconfont icon-xingxing" v-for="(s, index) in star"
           :class="{active: s === '$'}" @click="rated(index)"
     ></span>
   </div>
@@ -65,15 +65,16 @@
 </script>
 <style lang="scss" scoped>
   .star {
-    .icon-unie61a {
+    .icon-xingxing {
       font-size: 13px;
       color: #999;
+      padding-left: 1px;
       &.active {
         color: #ffac2d;
       }
     }
     &.rating {
-      .icon-unie61a {
+      .icon-xingxing {
         font-size: 20px;
       }
     }

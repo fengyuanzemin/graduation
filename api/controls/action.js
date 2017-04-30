@@ -3,7 +3,7 @@
  */
 import User from '../models/user';
 import Post from '../models/post';
-import Action from '../models/action';
+import PostAction from '../models/postAction';
 import Movie from '../models/movie';
 import MovieAction from '../models/movieAction';
 import RelationShip from '../models/relationship';
@@ -17,7 +17,7 @@ export async function repost(req, res) {
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             // 用户转发行为添加
-            await new Action({
+            await new PostAction({
                 post: req.body.pId,
                 user: user._id,
                 content,
@@ -78,7 +78,7 @@ export async function comment(req, res) {
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
             // 用户评论行为加一
-            await new Action({
+            await new PostAction({
                 post: req.body.pId,
                 user: user._id,
                 content: req.body.content,
@@ -120,12 +120,12 @@ export async function attitude(req, res) {
             return;
         }
         // 查找之前是否点过赞
-        const action = await Action.findOne({post: req.body.pId, user: user._id, action: 'attitude'});
+        const action = await PostAction.findOne({post: req.body.pId, user: user._id, action: 'attitude'});
         if (action) {
             count = -1;
             await action.remove();
         } else {
-            await new Action({
+            await new PostAction({
                 post: req.body.pId,
                 user: user._id,
                 action: 'attitude'
@@ -248,7 +248,7 @@ export async function clickIn(req, res) {
                         message: errCode[5011]
                     });
                 } else {
-                    await new Action({
+                    await new PostAction({
                         user: user._id,
                         post: req.body.id,
                         action: 'click'
@@ -309,7 +309,7 @@ export async function getActionInfo(req, res) {
         const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
         // 跳过前面多少条
         const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
-        const items = await Action.find({post: req.query.pId, action: req.query.action})
+        const items = await PostAction.find({post: req.query.pId, action: req.query.action})
             .populate('user', ['name']).sort({_id: -1}).skip(skip).limit(size);
         res.json({
             items,

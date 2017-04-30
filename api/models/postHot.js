@@ -1,18 +1,19 @@
 /**
- * Created by fengyuanzemin on 2017/4/9.
+ * Created by fengyuanzemin on 2017/4/3.
  */
+
 import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
-    movie: {
+    post: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Movie',
+        ref: 'Post',
         require: true
     },
     point: {
         type: Number,
-        default: 0
+        require: true
     }
 });
 
-export default mongoose.model('HotMovie', Schema);
+export default mongoose.model('PostHot', Schema);

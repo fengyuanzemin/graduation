@@ -2,7 +2,7 @@
  * Created by fengyuanzemin on 2017/3/17.
  */
 import User from '../models/user';
-import Action from '../models/action';
+import PostAction from '../models/postAction';
 import MovieAction from '../models/movieAction';
 import errCode from '../utils/codeTransfer';
 import { PAGE_OPTION } from '../utils/const';
@@ -65,7 +65,7 @@ export async function getWhy(req, res) {
         }
         // 先查微博上面相似行为的
         const postUserAction = deleteSameAction(
-            await Action.find({user: user._id}).sort({post: 1, action: 1, _id: -1})
+            await PostAction.find({user: user._id}).sort({post: 1, action: 1, _id: -1})
                 .populate({
                     path: 'user',
                     select: 'name'
@@ -89,7 +89,7 @@ export async function getWhy(req, res) {
                     }
                 }), 'post');
         const postRecommendUserAction = deleteSameAction(
-            await Action.find({user: recommendUser._id}).sort({post: 1, action: 1, _id: -1})
+            await PostAction.find({user: recommendUser._id}).sort({post: 1, action: 1, _id: -1})
                 .populate({
                     path: 'user',
                     select: 'name'

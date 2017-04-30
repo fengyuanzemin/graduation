@@ -1,16 +1,16 @@
 /**
  * Created by fengyuanzemin on 2017/3/14.
  */
-import Weight from '../models/weight';
+import Weight from '../models/postWeight';
 import MovieWeight from '../models/movieWeight';
-import Action from '../models/action';
+import Action from '../models/postAction';
 import MovieAction from '../models/movieAction';
 import User from '../models/user';
 import Post from '../models/post';
 import Movie from '../models/movie';
 import Similar from '../models/similar';
 import RelationShip from '../models/relationship';
-import HotWeibo from '../models/hotWeibo';
+import HotWeibo from '../models/postHot';
 import { pointComputed, moviePointComputed, operation } from '../utils';
 
 // 只返回推荐人id

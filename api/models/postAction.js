@@ -30,4 +30,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('Action', Schema);
+export default mongoose.model('PostAction', Schema);

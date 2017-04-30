@@ -24,4 +24,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('Weight', Schema);
+export default mongoose.model('PostWeight', Schema);

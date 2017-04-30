@@ -68,4 +68,4 @@ const Schema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('WeiboSpider', Schema);
+export default mongoose.model('PostSpider', Schema);

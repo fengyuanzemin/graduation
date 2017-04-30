@@ -2,7 +2,7 @@
  * Created by fengyuanzemin on 2017/4/6.
  */
 import Movie from '../models/movie';
-import MovieComment from '../models/movieAction';
+import MovieAction from '../models/movieAction';
 import User from '../models/user';
 import errCode from '../utils/codeTransfer';
 import { PAGE_OPTION } from '../utils/const';
@@ -80,7 +80,7 @@ export async function movieComment(req, res) {
         if (Number(req.query.page) === 0) {
             movieInfo = await Movie.findOne({_id: req.query.mId});
         }
-        const commentList = await MovieComment.find({movie: req.query.mId, action: 'comment'})
+        const commentList = await MovieAction.find({movie: req.query.mId, action: 'comment'})
             .sort({_id: -1})
             .populate({
                 path: 'user',
@@ -135,7 +135,7 @@ export async function moviePostComment(req, res) {
             });
             return;
         }
-        await new MovieComment({
+        await new MovieAction({
             user: user._id,
             movie: req.body.mId,
             content: req.body.content,
@@ -144,7 +144,7 @@ export async function moviePostComment(req, res) {
         }).save();
 
         // 查询所有的，该电影的评分，更新movie
-        const commentArr = await MovieComment.find({movie: req.body.mId, action: 'comment'});
+        const commentArr = await MovieAction.find({movie: req.body.mId, action: 'comment'});
         let ratingSum = 0;
         let count = 0;
         commentArr.forEach(item => {

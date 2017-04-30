@@ -1,7 +1,7 @@
 import superAgent from 'superagent';
 import mongoose from 'mongoose';
 
-import Spider from '../../models/weiboSpider';
+import Spider from '../../models/postSpider';
 import { UA } from './../utils';
 // 数据库连接
 mongoose.connect('mongodb://localhost/weibo');

@@ -8,7 +8,7 @@ import saltRounds from '../config/salt';
 import { randomKey } from '../utils';
 
 import User from '../models/user';
-import Action from '../models/action';
+import PostAction from '../models/postAction';
 
 // 登录
 export async function login(req, res) {
@@ -219,7 +219,7 @@ export async function checkAttitude(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
         if (user) {
-            const action = await Action.find({post: req.query.pId, user: user._id, action: 'attitude'});
+            const action = await PostAction.find({post: req.query.pId, user: user._id, action: 'attitude'});
             res.json({
                 code: 200,
                 check: action.length > 0

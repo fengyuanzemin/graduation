@@ -233,11 +233,9 @@ export async function similar() {
          */
         // 文章
         weightArr = await Weight.find({type: 'post'}).sort('user');
-        let combinationUser = '';
         let combination = [];
         for (let i = 0; i < weightArr.length - 1; i += 1) {
             if (!i) {
-                combinationUser = weightArr[i].user;
                 if (String(weightArr[i].user) !== String(weightArr[i + 1].user)) {
                     combination.push(weightArr.splice(0, i + 1));
                     i = -1;
@@ -291,11 +289,9 @@ export async function similar() {
 
         // 电影
         weightArr = await Weight.find({type: 'movie'}).sort('user');
-        combinationUser = '';
         combination = [];
         for (let i = 0; i < weightArr.length - 1; i += 1) {
             if (!i) {
-                combinationUser = weightArr[i].user;
                 if (String(weightArr[i].user) !== String(weightArr[i + 1].user)) {
                     combination.push(weightArr.splice(0, i + 1));
                     i = -1;

@@ -13,7 +13,7 @@ import errCode from "../utils/codeTransfer";
 import { PAGE_OPTION } from "../utils/const";
 import { recommend } from "../algorithm/calculate";
 
-// 发送原创微博
+// 发送原创文章
 export async function post(req, res) {
     if (!req.body.text) {
         res.json({
@@ -35,7 +35,7 @@ export async function post(req, res) {
             });
             return;
         }
-        // 添加新微博
+        // 添加新文章
         await new Post({
             user: user._id,
             content: req.body.text
@@ -53,7 +53,7 @@ export async function post(req, res) {
     }
 }
 
-// 热门微博
+// 热门文章
 export async function getHotList(req, res) {
     try {
         // 分页，一页多少条数据
@@ -133,8 +133,8 @@ export async function getList(req, res) {
                 }
             });
         /**
-         * 推荐列表里的用户的微博
-         * 很多微博才推荐
+         * 推荐列表里的用户的文章
+         * 很多文章才推荐
          */
         let cardsRecommend = [];
         if (cards.length === 10) {
@@ -163,11 +163,11 @@ export async function getList(req, res) {
         /**
          * 用户首页为空的情况下
          */
-            // 这是热门微博的标志位
+            // 这是热门文章的标志位
         let hot = false;
         if (cards.length === 0 && +req.query.page === 0) {
             hot = true;
-            // 直接展示热门微博
+            // 直接展示热门文章
             cards = await Hot.find({type: 'post'})
                 .sort({point: -1})
                 .populate({
@@ -213,7 +213,7 @@ export async function getList(req, res) {
     }
 }
 
-// 用户的个人微博列表
+// 用户的个人文章列表
 export async function getUserPostList(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
@@ -232,7 +232,7 @@ export async function getUserPostList(req, res) {
         let userInfo = await User.findOne({_id: req.query.uId})
             .select('followers_count following_count name posts_count brief');
         if (String(user._id) === String(req.query.uId)) {
-            // 看自己的个人微博
+            // 看自己的个人文章
             const postItems = await Post.find({user: req.query.uId})
                 .sort({_id: -1})
                 .limit(size)
@@ -264,7 +264,7 @@ export async function getUserPostList(req, res) {
                 userInfo
             });
         } else {
-            // 看别人微博
+            // 看别人文章
             let follow;
             // 是否是已经关注ta
             const following = await RelationShip.findOne({following: req.query.uId, follower: user._id});
@@ -282,8 +282,8 @@ export async function getUserPostList(req, res) {
             }
             userInfo = JSON.parse(JSON.stringify(userInfo));
             userInfo.follow = follow;
-            // 查找别人点赞的，不属于别人，也不属于自己的微博
-            // 先找到别人点赞的所有微博
+            // 查找别人点赞的，不属于别人，也不属于自己的文章
+            // 先找到别人点赞的所有文章
             const action = await Action.find({action: 'attitude', user: req.query.uId, type: 'post'})
                 .sort({_id: -1})
                 .populate({
@@ -315,7 +315,7 @@ export async function getUserPostList(req, res) {
                     attitude.push(item);
                 }
             });
-            // 再找到他的所有微博
+            // 再找到他的所有文章
             const postArr = await Post.find({user: req.query.uId})
                 .sort({_id: -1})
                 .populate('user', ['name'])
@@ -432,7 +432,7 @@ export async function getUserPostList(req, res) {
     }
 }
 
-// 只拿一个微博数据
+// 只拿一个文章数据
 export async function getPostItem(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
@@ -572,7 +572,7 @@ export async function getFollowList(req, res) {
         const size = req.query.size ? Number(req.query.size) : PAGE_OPTION.size;
         // 跳过前面多少条
         const skip = req.query.page ? Number(req.query.page) * size : PAGE_OPTION.page * size;
-        // 观看的用户的微博，可能是自己
+        // 观看的用户的文章，可能是自己
         const user = await User.findOne({_id: req.query.uId});
         if (Number(req.query.follow)) {
             let relationShip = await RelationShip.find({follower: user._id})

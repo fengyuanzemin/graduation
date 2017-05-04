@@ -24,7 +24,7 @@ export function login(name, password) {
   })
 }
 
-// 发送微博
+// 发送文章
 export function post(text, token) {
   return axios.post('/post', {
     text
@@ -35,7 +35,7 @@ export function post(text, token) {
   })
 }
 
-// 拉取热门微博
+// 拉取热门文章
 export function getHotList(page = 0, size = 10) {
   return axios.get('/getHotList', {
     params: {
@@ -44,7 +44,7 @@ export function getHotList(page = 0, size = 10) {
   })
 }
 
-// 拉取用户微博
+// 拉取用户文章
 export function getList(token, page = 0, size = 10) {
   return axios.get('/getList', {
     params: {
@@ -56,7 +56,7 @@ export function getList(token, page = 0, size = 10) {
   });
 }
 
-// 拉取某一用户微博
+// 拉取某一用户文章
 export function getUserPostList(uId, token, page = 0, size = 10) {
   return axios.get('/getUserPostList', {
     params: {
@@ -86,7 +86,7 @@ export function getUserInfo(token) {
   })
 }
 
-// 拉取微博正文
+// 拉取文章正文
 export function getPostItem(pId, token) {
   return axios.get('/getPostItem', {
     params: {
@@ -202,7 +202,7 @@ export function judgeUser(uId, token) {
   })
 }
 
-// 记录查看微博/电影的点击事件
+// 记录查看文章/电影的点击事件
 export function clickIn(id, token, type = 'post') {
   return axios.post('/clickIn', {
     id, type

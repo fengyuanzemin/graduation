@@ -180,7 +180,7 @@ export async function similar() {
          * 计算InterAction
          *
          */
-        // 微博
+        // 文章
         weightArr = await Weight.find({type: 'post'}).sort('user').populate('post');
         for (let i = 0; i < weightArr.length; i += 1) {
             // A -> B
@@ -231,7 +231,7 @@ export async function similar() {
          * 计算Coupling
          *
          */
-        // 微博
+        // 文章
         weightArr = await Weight.find({type: 'post'}).sort('user');
         let combinationUser = '';
         let combination = [];
@@ -334,7 +334,7 @@ export async function similar() {
                         }]
                     });
                     if (s) {
-                        // 如果之前在微博上已经有间接交互度了
+                        // 如果之前在文章上已经有间接交互度了
                         const newCoupling = interactionSum / interactionMax;
                         s.coupling = (newCoupling + s.coupling) /
                             (s.coupling > newCoupling ? 2 * s.coupling : 2 * newCoupling);

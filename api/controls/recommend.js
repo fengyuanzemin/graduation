@@ -62,7 +62,7 @@ export async function getWhy(req, res) {
             });
             return;
         }
-        // 先查微博上面相似行为的
+        // 先查文章上面相似行为的
         const postUserAction = deleteSameAction(
             await Action.find({user: user._id, type: 'post'}).sort({post: 1, action: 1, _id: -1})
                 .populate({

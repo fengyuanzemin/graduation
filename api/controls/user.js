@@ -214,7 +214,7 @@ export async function getUserInfo(req, res) {
     }
 }
 
-// 在微博正文检查用户是否点过赞
+// 在文章正文检查用户是否点过赞
 export async function checkAttitude(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});

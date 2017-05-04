@@ -3,7 +3,7 @@
     <header>
       <span class="header-left iconfont icon-houtui"></span>
       <span class="clickBoard clickBoard-left" @click="back"></span>
-      <div class="header-title">发微博</div>
+      <div class="header-title">发表文章</div>
       <span class="iconfont icon-fasong1" :class="{active: text}"></span>
       <span class="clickBoard clickBoard-right" @click="post"></span>
     </header>

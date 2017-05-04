@@ -44,9 +44,9 @@ export async function repost(req, res) {
         }
         // 文章的被转发数加一
         await Post.update({_id: req.body.pId}, {$inc: {reposts_count: 1}});
-        // 用户的微博数加一
+        // 用户的文章数加一
         await User.update({token: req.headers['f-token']}, {$inc: {posts_count: 1}});
-        // 新添一条微博
+        // 新添一条文章
         await new Post({
             user: user._id,
             content,
@@ -92,7 +92,7 @@ export async function comment(req, res) {
             });
             return;
         }
-        // 微博评论数加一
+        // 文章评论数加一
         await Post.update({_id: req.body.pId}, {$inc: {comments_count: 1}});
         res.json({
             code: 200,
@@ -241,14 +241,14 @@ export async function follow(req, res) {
     }
 }
 
-// 记录用户查看微博的行为
+// 记录用户查看文章／电影的行为
 export async function clickIn(req, res) {
     try {
         const user = await User.findOne({token: req.headers['f-token']});
         if (req.body.type === 'post') {
             const post = await Post.findOne({_id: req.body.id});
             if (user && post) {
-                // 如果是自己的微博，就不记录行为
+                // 如果是自己的文章，就不记录行为
                 if (String(user._id) === String(post.user)) {
                     res.json({
                         code: 5011,

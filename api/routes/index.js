@@ -34,7 +34,7 @@ router.get('/getUserInfo', user.getUserInfo);
 // 更改用户简介
 router.post('/updateUserInfo', user.updateUserInfo);
 
-// 在微博正文检查用户是否点过赞
+// 在文章正文检查用户是否点过赞
 router.get('/checkAttitude', user.checkAttitude);
 
 // 判断用户是否在看自己的个人中心
@@ -44,19 +44,19 @@ router.get('/judgeUser', user.judgeUser);
  * post route
  */
 
-// 发送微博
+// 发送文章
 router.post('/post', post.post);
 
-// 热门微博
+// 热门文章
 router.get('/getHotList', post.getHotList);
 
 // 已登录首页数据
 router.get('/getList', post.getList);
 
-// 用户的个人微博列表
+// 用户的个人文章列表
 router.get('/getUserPostList', post.getUserPostList);
 
-// 只拿一个微博数据
+// 只拿一个文章数据
 router.get('/getPostItem', post.getPostItem);
 
 // 搜索
@@ -84,7 +84,7 @@ router.get('/getActionInfo', action.getActionInfo);
 // 关注或者取关
 router.post('/follow', action.follow);
 
-// 记录用户查看微博的行为
+// 记录用户查看文章／电影的行为
 router.post('/clickIn', action.clickIn);
 
 /**

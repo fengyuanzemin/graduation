@@ -24,7 +24,7 @@ forever start ./bin/www
 # 运行推荐算法
 forever start ./algorithm/index.js
     
-# 运行热门微博计算
+# 运行热门文章计算
 forever start ./algorithm/hot.js
 ```
    

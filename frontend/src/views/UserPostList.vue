@@ -23,7 +23,7 @@
       <div class="info">
         <div class="info-container">
           <div class="info-number">{{userInfo.posts_count}}</div>
-          <div class="info-text">微博</div>
+          <div class="info-text">文章</div>
         </div>
         <div class="info-container" @click="toFollowing">
           <div class="info-number">{{userInfo.following_count}}</div>

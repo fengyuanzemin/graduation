@@ -7,9 +7,7 @@
 </template>
 <script>
   const fix = (num) => {
-    const half = Number(num) / 2;
-    const halfNum = (Math.floor(half) + Math.ceil(half)) / 2;
-    return half >= halfNum ? Math.ceil(half) : Math.floor(half);
+    return Math.round(Number(num) / 2);
   };
   export default {
     props: {

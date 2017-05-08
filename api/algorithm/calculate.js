@@ -163,14 +163,14 @@ export async function similar() {
         let weightMax = await Weight.findOne({type: 'post'}).sort('-maxSum');
         let weightArr = await Weight.find({type: 'post'});
         for (let i of weightArr) {
-            i.point = i.maxSum / weightMax.maxSum;
+            i.point = weightMax ? weightMax.maxSum !== 0 ? i.maxSum / weightMax.maxSum : 0 : 0;
             await i.save();
         }
         // 找到电影最大值
         let movieWeightMax = await Weight.findOne({type: 'movie'}).sort('-maxSum');
         let movieWeightArr = await Weight.find({type: 'movie'});
         for (let i of movieWeightArr) {
-            i.point = i.maxSum / movieWeightMax.maxSum;
+            i.point = movieWeightMax ? movieWeightMax.maxSum !== 0 ? i.maxSum / movieWeightMax.maxSum : 0 : 0;
             await i.save();
         }
 
@@ -274,13 +274,21 @@ export async function similar() {
                         }]
                     });
                     if (s) {
-                        s.coupling = interactionSum / interactionMax;
+                        if (interactionMax === 0) {
+                            s.coupling = 0;
+                        } else {
+                            s.coupling = interactionSum / interactionMax;
+                        }
                         await s.save();
                     } else {
+                        let coupling = 0;
+                        if (interactionMax !== 0) {
+                            coupling = interactionSum / interactionMax;
+                        }
                         await new Similar({
                             userA: intersectionA[0].user,
                             userB: intersectionB[0].user,
-                            coupling: interactionSum / interactionMax
+                            coupling
                         }).save();
                     }
                 }
@@ -331,15 +339,21 @@ export async function similar() {
                     });
                     if (s) {
                         // 如果之前在文章上已经有间接交互度了
-                        const newCoupling = interactionSum / interactionMax;
-                        s.coupling = (newCoupling + s.coupling) /
-                            (s.coupling > newCoupling ? 2 * s.coupling : 2 * newCoupling);
+                        const newCoupling = interactionMax !== 0 ? interactionSum / interactionMax : 0;
+                        if (newCoupling !== 0) {
+                            s.coupling = (newCoupling + s.coupling) /
+                                (s.coupling > newCoupling ? 2 * s.coupling : 2 * newCoupling);
+                        }
                         await s.save();
                     } else {
+                        let coupling = 0;
+                        if (interactionMax !== 0) {
+                            coupling = interactionSum / interactionMax;
+                        }
                         await new Similar({
                             userA: intersectionA[0].user,
                             userB: intersectionB[0].user,
-                            coupling: interactionSum / interactionMax
+                            coupling
                         }).save();
                     }
                 }

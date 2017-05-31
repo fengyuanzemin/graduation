@@ -13,6 +13,6 @@ db.on('error', console.error.bind(console, '连接错误:'));
 
 mongoose.Promise = global.Promise;
 
-weibo.timer().then(()=>{
+weibo.timer().then(() => {
 
-})
+});

@@ -13,9 +13,9 @@ db.on('error', console.error.bind(console, '连接错误:'));
 
 mongoose.Promise = global.Promise;
 setInterval(() => {
-    calculate.hot().then(() => {
+  calculate.hot().then(() => {
 
-    }).catch(err => {
-        console.log(err);
-    });
+  }).catch(err => {
+    console.log(err);
+  });
 }, 1000 * 1000);

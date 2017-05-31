@@ -7,10 +7,13 @@
     "curl": "node ./spiders/weibo",
     "similar": "node ./algorithm/index.js",
     "hot": "node ./algorithm/hot.js",
-    "douban": "node ./spiders/douban"
+    "douban": "node ./spiders/douban",
+    "lint": "eslint ../api"
   },
   "dependencies": {
     "async": "^2.1.5",
+    "babel-polyfill": "^6.23.0",
+    "babel-register": "^6.24.1",
     "bcrypt": "^1.0.2",
     "body-parser": "~1.15.2",
     "cheerio": "^0.22.0",
@@ -29,8 +32,11 @@
     "babel-core": "^6.24.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-regenerator": "^6.22.0",
-    "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.2.1",
-    "babel-register": "^6.24.0"
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-jnosx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.0.1"
   }
 }

@@ -1,18 +1,18 @@
 import express from 'express';
-const router = express.Router();
-
 import * as user from '../controls/user';
 import * as action from '../controls/action';
 import * as recommend from '../controls/recommend';
 import * as post from '../controls/post';
 import * as movie from '../controls/movie';
 
+const router = express.Router();
+
 // 空请求
 router.get('/', (req, res) => {
-    res.json({
-        message: '首页',
-        code: 200
-    });
+  res.json({
+    message: '首页',
+    code: 200
+  });
 });
 
 /**

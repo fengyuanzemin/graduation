@@ -15,6 +15,6 @@ mongoose.Promise = global.Promise;
 
 douban.douban().then(() => {
 
-}).catch(err => {
-    console.log(err);
+}).catch((err) => {
+  console.log(err);
 });

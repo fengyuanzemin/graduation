@@ -4,30 +4,30 @@
 import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        require: true
-    },
-    post: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
-    },
-    movie: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Movie'
-    },
-    type: {
-        type: String
-    },
-    maxSum: {
-        type: Number,
-        default: 0
-    },
-    point: {
-        type: Number,
-        default: 0
-    }
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    require: true
+  },
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+  },
+  movie: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Movie'
+  },
+  type: {
+    type: String
+  },
+  maxSum: {
+    type: Number,
+    default: 0
+  },
+  point: {
+    type: Number,
+    default: 0
+  }
 });
 
 export default mongoose.model('Weight', Schema);

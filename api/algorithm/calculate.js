@@ -15,12 +15,12 @@ import { pointComputed, moviePointComputed, operation } from '../utils';
 // 只返回推荐人id
 export async function recommend(user) {
   try {
-    let recommend = [];
+    const recommend = [];
     // 查找是谁的推荐人
-    let recommendFollow = [];
+    const recommendFollow = [];
     const sim = await Similar.find({ $or: [{ userA: user._id }, { userB: user._id }] })
       .sort('-similar');
-    for (let s of sim) {
+    for (const s of sim) {
       const re = await RelationShip.findOne({
         $or: [{
           follower: user._id,
@@ -35,7 +35,7 @@ export async function recommend(user) {
         recommendFollow.push(s);
       }
     }
-    for (let i of recommendFollow) {
+    for (const i of recommendFollow) {
       const id = String(i.userA) === String(user._id) ? i.userB : i.userA;
       recommend.push(id);
     }
@@ -55,7 +55,7 @@ export async function hot() {
      * 评论 0.7
      * 此处暂时先算文章的热度
      */
-    await Hot.remove({});
+    await Hot.remove();
     const action = await Action.find({ type: 'post' }).sort('post');
     // 把post相同的加起来
     for (let i = 0; i < action.length; i += 1) {
@@ -84,9 +84,9 @@ export async function hot() {
 export async function similar() {
   try {
     // 将Weight清空
-    await Weight.remove({});
+    await Weight.remove();
     // 将Similar清空
-    await Similar.remove({});
+    await Similar.remove();
 
     /*
      * 第一步：
@@ -99,14 +99,14 @@ export async function similar() {
      * 评论 0.7
      */
     // 找到所有的用户
-    let user = await User.find({});
+    const user = await User.find();
     // 将用户id放入数组里
-    let userId = user.map(item => item._id);
+    const userId = user.map(item => item._id);
     // 每次循环代表不同的用户
-    for (let item of userId) {
+    for (const item of userId) {
       // 找到用户所有的行为
       // 将相同postID的生成一个weight
-      let action = await Action.find({ user: item, type: 'post' }).sort('post');
+      const action = await Action.find({ user: item, type: 'post' }).sort('post');
       // 每次循环代表不同的用户行为
       for (let j = 0; j < action.length; j += 1) {
         let flag = 0;
@@ -162,15 +162,16 @@ export async function similar() {
     // 找到最大值
     let weightMax = await Weight.findOne({ type: 'post' }).sort('-maxSum');
     let weightArr = await Weight.find({ type: 'post' });
-    for (let i of weightArr) {
+    for (const i of weightArr) {
       i.point = weightMax ? weightMax.maxSum !== 0 ? i.maxSum / weightMax.maxSum : 0 : 0;
       await i.save();
     }
     // 找到电影最大值
-    let movieWeightMax = await Weight.findOne({ type: 'movie' }).sort('-maxSum');
-    let movieWeightArr = await Weight.find({ type: 'movie' });
-    for (let i of movieWeightArr) {
-      i.point = movieWeightMax ? movieWeightMax.maxSum !== 0 ? i.maxSum / movieWeightMax.maxSum : 0 : 0;
+    const movieWeightMax = await Weight.findOne({ type: 'movie' }).sort('-maxSum');
+    const movieWeightArr = await Weight.find({ type: 'movie' });
+    for (const i of movieWeightArr) {
+      i.point = movieWeightMax ? movieWeightMax.maxSum !== 0 ?
+        i.maxSum / movieWeightMax.maxSum : 0 : 0;
       await i.save();
     }
 
@@ -184,9 +185,13 @@ export async function similar() {
     weightArr = await Weight.find({ type: 'post' }).sort('user').populate('post');
     for (let i = 0; i < weightArr.length; i += 1) {
       // A -> B
-      let tempA = '', tempB = '', tempSumA = 0, countA = 0;
+      let tempA = '';
+      let tempB = '';
+      let tempSumA = 0;
+      let countA = 0;
       // B -> A
-      let tempSumB = 0, countB = 0;
+      let tempSumB = 0;
+      let countB = 0;
       for (let j = i; j < weightArr.length; j += 1) {
         // 计算A对B的直接交互度，A、B不能相等
         if (String(weightArr[j].user) !== String(weightArr[j].post.user)) {
@@ -212,7 +217,7 @@ export async function similar() {
           String(weightArr[k].post.user) === String(tempA)) {
           tempSumB += weightArr[k].point;
           countB += 1;
-          weightArr.splice(k--, 1)
+          weightArr.splice(k--, 1);
         }
       }
       if (countA || countB) {
@@ -250,15 +255,16 @@ export async function similar() {
     // 求交集
     for (let i = 0; i < combination.length; i += 1) {
       for (let j = i + 1; j < combination.length; j += 1) {
-        let intersectionA = operation(combination[i], combination[j], 'post');
-        let intersectionB = operation(combination[j], combination[i], 'post');
+        const intersectionA = operation(combination[i], combination[j], 'post');
+        const intersectionB = operation(combination[j], combination[i], 'post');
         if (intersectionA.length > 0) {
           let interactionSum = 0;
           let interactionSumA = 0;
           let interactionSumB = 0;
           let interactionMax = 0;
           for (let m = 0; m < intersectionA.length; m += 1) {
-            interactionSum += intersectionA[m].point > intersectionB[m].point ? intersectionB[m].point : intersectionA[m].point;
+            interactionSum += intersectionA[m].point > intersectionB[m].point ?
+              intersectionB[m].point : intersectionA[m].point;
             interactionSumA += intersectionA[m].point;
             interactionSumB += intersectionB[m].point;
           }
@@ -314,15 +320,16 @@ export async function similar() {
     // 求交集
     for (let i = 0; i < combination.length; i += 1) {
       for (let j = i + 1; j < combination.length; j += 1) {
-        let intersectionA = operation(combination[i], combination[j], 'movie');
-        let intersectionB = operation(combination[j], combination[i], 'movie');
+        const intersectionA = operation(combination[i], combination[j], 'movie');
+        const intersectionB = operation(combination[j], combination[i], 'movie');
         if (intersectionA.length > 0) {
           let interactionSum = 0;
           let interactionSumA = 0;
           let interactionSumB = 0;
           let interactionMax = 0;
           for (let m = 0; m < intersectionA.length; m += 1) {
-            interactionSum += intersectionA[m].point > intersectionB[m].point ? intersectionB[m].point : intersectionA[m].point;
+            interactionSum += intersectionA[m].point > intersectionB[m].point ?
+              intersectionB[m].point : intersectionA[m].point;
             interactionSumA += intersectionA[m].point;
             interactionSumB += intersectionB[m].point;
           }
@@ -366,12 +373,12 @@ export async function similar() {
      * 计算Similar
      *
      */
-    let sim = await Similar.find({});
-    for (let si of sim) {
-      si.similar = 0.7 * si.interAction + 0.3 * si.coupling;
+    const sim = await Similar.find({});
+    for (const si of sim) {
+      si.similar = (0.7 * si.interAction) + (0.3 * si.coupling);
       await si.save();
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }

@@ -15,7 +15,7 @@ mongoose.Promise = global.Promise;
 setInterval(() => {
   calculate.similar().then(() => {
 
-  }).catch(err => {
-    console.log(err)
+  }).catch((err) => {
+    console.log(err);
   });
 }, 30 * 1000);

@@ -7,7 +7,6 @@ import User from '../models/user';
 import Post from '../models/post';
 import Movie from '../models/movie';
 import Similar from '../models/similar';
-import RelationShip from '../models/relationship';
 import Hot from '../models/hot';
 
 import { pointComputed, moviePointComputed, operation } from '../utils';
@@ -15,31 +14,33 @@ import { pointComputed, moviePointComputed, operation } from '../utils';
 // 只返回推荐人id
 export async function recommend(user) {
   try {
-    const recommend = [];
+    const recommendArr = [];
     // 查找是谁的推荐人
-    const recommendFollow = [];
     const sim = await Similar.find({ $or: [{ userA: user._id }, { userB: user._id }] })
       .sort('-similar');
     for (const s of sim) {
-      const re = await RelationShip.findOne({
-        $or: [{
-          follower: user._id,
-          following: s.userA
-        }, {
-          follower: user._id,
-          following: s.userB
-        }]
+      // 判断是否有关注或者取关记录
+      const re = await Action.find({
+        $or: [
+          {
+            type: 'user',
+            user: user._id,
+            role: s.userA
+          },
+          {
+            type: 'user',
+            user: user._id,
+            role: s.userB
+          }
+        ]
       });
-      // 没有关注过
-      if (!re) {
-        recommendFollow.push(s);
+      // 没有记录
+      if (re.length === 0) {
+        const id = String(s.userA) === String(user._id) ? s.userB : s.userA;
+        recommendArr.push(id);
       }
     }
-    for (const i of recommendFollow) {
-      const id = String(i.userA) === String(user._id) ? i.userB : i.userA;
-      recommend.push(id);
-    }
-    return recommend;
+    return recommendArr;
   } catch (err) {
     console.log(err);
   }
@@ -373,7 +374,7 @@ export async function similar() {
      * 计算Similar
      *
      */
-    const sim = await Similar.find({});
+    const sim = await Similar.find();
     for (const si of sim) {
       si.similar = (0.7 * si.interAction) + (0.3 * si.coupling);
       await si.save();

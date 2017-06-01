@@ -61,7 +61,7 @@ export function deleteSameAction(action, model) {
 
 export function operationCategory(list1, list2, model) {
   return addRecommendFeature(list1.filter(a =>
-      list2.some(b => String(a[model]._id) === String(b[model]._id))) === true);
+      list2.some(b => String(a[model]._id) === String(b[model]._id)) === true));
 }
 
 export function findIntersection(list, id) {

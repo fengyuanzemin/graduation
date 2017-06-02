@@ -294,6 +294,23 @@ export async function clickIn(req, res) {
         });
         return;
       }
+
+      // 如果之前有评论，且评论为低分，就不记录查看行为
+      const isRating = await Action.findOne({
+        user: user._id,
+        movie: req.body.id,
+        type: 'movie',
+        action: 'comment'
+      });
+      if (isRating && isRating.rating <= 4) {
+        res.json({
+          code: 5018,
+          message: errCode[5018]
+        });
+        return;
+      }
+
+      // 记录
       await new Action({
         user: user._id,
         movie: req.body.id,

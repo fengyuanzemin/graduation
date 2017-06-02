@@ -41,7 +41,7 @@ export function moviePointComputed(action, rating) {
       return 0.1;
     case 'comment':
       if (rating <= 4) {
-        return -rating / 10;
+        return 0;
       }
       return rating / 10;
     default:

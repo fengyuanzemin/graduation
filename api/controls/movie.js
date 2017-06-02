@@ -137,6 +137,20 @@ export async function moviePostComment(req, res) {
       });
       return;
     }
+    // 查看是否评价过
+    const isRating = await Action.findOne({
+      user: user._id,
+      type: 'movie',
+      action: 'comment',
+      movie: req.body.mId
+    });
+    if (isRating) {
+      res.json({
+        code: 5017,
+        message: errCode[5017]
+      });
+      return;
+    }
     await new Action({
       user: user._id,
       movie: req.body.mId,
@@ -145,6 +159,16 @@ export async function moviePostComment(req, res) {
       type: 'movie',
       action: 'comment'
     }).save();
+
+    if(req.body.rating <= 4) {
+      // 如果打的是低分，就把所有的查看行为删除
+      await Action.remove({
+        user: user._id,
+        movie: req.body.mId,
+        type: 'movie',
+        action: 'click'
+      });
+    }
 
     // 查询所有的，该电影的评分，更新movie
     const commentArr = await Action.find({ movie: req.body.mId, action: 'comment', type: 'movie' });

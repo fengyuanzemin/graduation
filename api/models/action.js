@@ -17,6 +17,12 @@ const Schema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Movie'
   },
+  // 被作用人
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  // 三种类型，post文章层面，movie电影层面，user用户层面
   type: {
     type: String
   },
@@ -25,7 +31,7 @@ const Schema = mongoose.Schema({
     default: '',
     trim: true
   },
-  // 点赞attitude 转发repost 评论comment 查看click
+  // 点赞attitude 转发repost 评论/评价comment 查看click，follow关注、unfollow取关
   action: {
     type: String,
     require: true

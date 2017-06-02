@@ -121,14 +121,32 @@ export async function getWhy(req, res) {
 
     // 再查电影上面有相似行为的
     const movieUserAction = deleteSameAction(
-      await Action.find({ user: user._id, type: 'movie' }).sort({ movie: 1, action: 1, _id: -1 })
+      await Action.find({
+        user: user._id, type: 'movie',
+        $or: [{
+          action: 'comment',
+          rating: { $gt: 4 }
+        }, {
+          action: 'click'
+        }]
+      })
+        .sort({ movie: 1, action: 1, _id: -1 })
         .populate({
           path: 'user',
           select: 'name'
         })
         .populate('movie'), 'movie');
     const movieRecommendUserAction = deleteSameAction(
-      await Action.find({ user: recommendUser._id, type: 'movie' }).sort({ movie: 1, action: 1, _id: -1 })
+      await Action.find({
+        user: recommendUser._id, type: 'movie',
+        $or: [{
+          action: 'comment',
+          rating: { $gt: 4 }
+        }, {
+          action: 'click'
+        }]
+      })
+        .sort({ movie: 1, action: 1, _id: -1 })
         .populate({
           path: 'user',
           select: 'name'
@@ -144,7 +162,7 @@ export async function getWhy(req, res) {
       code: 200,
       intersection,
       movieIntersection
-    })
+    });
 
   } catch (err) {
     console.log(err);

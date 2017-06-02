@@ -15,7 +15,7 @@ mongoose.Promise = global.Promise;
 setInterval(() => {
   calculate.hot().then(() => {
 
-  }).catch(err => {
+  }).catch((err) => {
     console.log(err);
   });
 }, 1000 * 1000);

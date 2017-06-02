@@ -170,6 +170,7 @@ export async function follow(req, res) {
       });
       return;
     }
+    // 不能对自己进行取关／关注操作
     if (String(user._id) === String(req.body.uId)) {
       res.json({
         code: 5008,
@@ -184,7 +185,7 @@ export async function follow(req, res) {
     });
     // 关注操作
     if (req.body.follow) {
-      // 关注过
+      // 不能重复关注
       if (relationShip) {
         res.json({
           code: 5010,
@@ -198,13 +199,19 @@ export async function follow(req, res) {
           follower: user._id
         }).save();
       }
+      await new Action({
+        role: req.body.uId,
+        user: user._id,
+        type: 'user',
+        action: 'follow'
+      }).save();
       // 查询是否互相关注
       const eachOtherFollow = !!await RelationShip.findOne({
         follower: req.body.uId,
         following: user._id
       });
       // 关注加一
-      await User.update({ token: req.headers['f-token'] }, { $inc: { following_count: 1 } });
+      await User.update({ _id: user._id }, { $inc: { following_count: 1 } });
       // 粉丝加一
       await User.update({ _id: req.body.uId }, { $inc: { followers_count: 1 } });
       res.json({
@@ -223,10 +230,16 @@ export async function follow(req, res) {
         });
         return;
       }
+      await new Action({
+        role: req.body.uId,
+        user: user._id,
+        type: 'user',
+        action: 'unfollow'
+      }).save();
       // 粉丝减一
       await User.update({ _id: req.body.uId }, { $inc: { followers_count: -1 } });
       // 关注减一
-      await User.update({ token: req.headers['f-token'] }, { $inc: { following_count: -1 } });
+      await User.update({ _id: user._id }, { $inc: { following_count: -1 } });
       res.json({
         code: 200,
         message: '取关成功'
@@ -281,6 +294,23 @@ export async function clickIn(req, res) {
         });
         return;
       }
+
+      // 如果之前有评论，且评论为低分，就不记录查看行为
+      const isRating = await Action.findOne({
+        user: user._id,
+        movie: req.body.id,
+        type: 'movie',
+        action: 'comment'
+      });
+      if (isRating && isRating.rating <= 4) {
+        res.json({
+          code: 5018,
+          message: errCode[5018]
+        });
+        return;
+      }
+
+      // 记录
       await new Action({
         user: user._id,
         movie: req.body.id,

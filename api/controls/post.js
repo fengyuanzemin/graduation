@@ -645,3 +645,34 @@ export async function getFollowList(req, res) {
     });
   }
 }
+
+// 用户地理位置记录
+export async function logGeo(req, res) {
+  try {
+    const user = await User.findOne({ token: req.headers['f-token'] });
+    if (!user) {
+      res.json({
+        code: 5002,
+        message: errCode[5002]
+      });
+      return;
+    }
+    await User.update({ _id: user._id }, {
+      geo: {
+        latitude:req.body.latitude,
+        longitude: req.body.longitude,
+        accuracy: req.body.accuracy
+      }
+    });
+    res.json({
+      code: 200,
+      message: '成功记录'
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      code: 5001,
+      message: errCode[5001]
+    });
+  }
+}

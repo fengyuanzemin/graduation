@@ -65,6 +65,9 @@ router.get('/search', post.search);
 // 关注列表和粉丝列表
 router.get('/getFollowList', post.getFollowList);
 
+// 用户地理位置记录
+router.post('/logGeo', post.logGeo);
+
 /**
  * action route
  */

@@ -35,6 +35,14 @@ const Schema = mongoose.Schema({
   password: {
     type: String,
     require: true
+  },
+  ip: {
+    type: String,
+    default: ''
+  },
+  geo: {
+    type: Object,
+    default: null
   }
 });
 export default mongoose.model('User', Schema);

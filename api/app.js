@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
+app.enable('trust proxy');
 
 mongoose.connect('mongodb://localhost/graduation');
 const db = mongoose.connection;

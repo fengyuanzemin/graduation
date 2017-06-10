@@ -1,6 +1,6 @@
 {
   "name": "graduation_admin",
-  "version": "0.1.0",
+  "version": "0.8.4",
   "private": true,
   "dependencies": {
     "react": "^15.5.4",

@@ -44,8 +44,12 @@
           this.$router.push('/404');
         }
       }
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(this.geoSuccess, this.geoError, geoOptions);
+      if (!this.$store.state.init) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(this.geoSuccess, this.geoError, geoOptions);
+        } else {
+          this.$store.dispatch('init');
+        }
       }
     },
     data() {
@@ -107,9 +111,10 @@
         this.$router.push('/post');
       },
       async geoSuccess(pos) {
-        const crd = pos.coords;
         try {
+          const crd = pos.coords;
           await logGeo(crd.latitude, crd.longitude, crd.accuracy, this.$store.state.token);
+          this.$store.dispatch('init');
         } catch (err) {
           console.log(err);
         }

@@ -657,12 +657,14 @@ export async function logGeo(req, res) {
       });
       return;
     }
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     await User.update({ _id: user._id }, {
       geo: {
         latitude:req.body.latitude,
         longitude: req.body.longitude,
         accuracy: req.body.accuracy
-      }
+      },
+      ip
     });
     res.json({
       code: 200,

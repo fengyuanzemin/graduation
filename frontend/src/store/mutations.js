@@ -17,3 +17,5 @@ export const login = (state, data) => {
 };
 
 export const logout = state => state.token = '';
+
+export const init = state => state.init = true;

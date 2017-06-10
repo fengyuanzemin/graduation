@@ -20,6 +20,13 @@
   import Home from './Home';
   import Movie from './Movie';
   import Search from './Search';
+  import { logGeo } from 'src/api';
+
+  const geoOptions = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+  };
 
   export default {
     created() {
@@ -37,11 +44,19 @@
           this.$router.push('/404');
         }
       }
+      if (!this.$store.state.init) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(this.geoSuccess, this.geoError, geoOptions);
+        } else {
+          this.$store.dispatch('init');
+        }
+      }
     },
     data() {
       return {
         currentView: 'f-index',
         title: '首页',
+        itemArr: ['f-index', 'f-movie', 'f-search', 'f-home'],
         footerItem: [
           {
             icon: 'icon-homepage-red',
@@ -90,10 +105,22 @@
           this.toPost();
           return;
         }
-        this.$router.push({path: '/', query: {component: item.showItem}});
+        this.$router.push({ path: '/', query: { component: item.showItem } });
       },
       toPost() {
         this.$router.push('/post');
+      },
+      async geoSuccess(pos) {
+        try {
+          const crd = pos.coords;
+          await logGeo(crd.latitude, crd.longitude, crd.accuracy, this.$store.state.token);
+          this.$store.dispatch('init');
+        } catch (err) {
+          console.log(err);
+        }
+      },
+      geoError(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
       }
     },
     components: {

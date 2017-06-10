@@ -243,7 +243,7 @@ export function movieList(token, page = 0, size = 10) {
     headers: {
       'f-token': token
     }
-  })
+  });
 }
 
 // 电影详情关联的评价
@@ -255,7 +255,7 @@ export function movieComment(mId, token, page = 0, size = 10) {
     headers: {
       'f-token': token
     }
-  })
+  });
 }
 
 // 发布电影评价
@@ -266,7 +266,7 @@ export function moviePostComment(mId, content, rating = 0, token) {
     headers: {
       'f-token': token
     }
-  })
+  });
 }
 
 // 拉取为什么推荐
@@ -278,5 +278,16 @@ export function why(uId, token) {
     headers: {
       'f-token': token
     }
-  })
+  });
+}
+
+//
+export function logGeo(latitude, longitude, accuracy, token) {
+  return axios.post('/logGeo', {
+    latitude, longitude, accuracy
+  }, {
+    headers: {
+      'f-token': token
+    }
+  });
 }

@@ -12,7 +12,8 @@ const state = {
   isShow: false,
   msg: '出错了',
   isBig: true,
-  token: localStorage.getItem('f-token')
+  token: localStorage.getItem('f-token'),
+  init: false
 };
 
 export default new Vuex.Store({

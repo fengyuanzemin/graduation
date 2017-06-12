@@ -16,7 +16,7 @@ export async function recommend(user) {
   try {
     const recommendArr = [];
     // 查找是谁的推荐人
-    const sim = await Similar.find({ $or: [{ userA: user._id }, { userB: user._id }] })
+    const sim = await Similar.find({ $or: [{ userA: user._id }, { userB: user._id }], similar: { $ne: 0 } })
       .sort('-similar');
     for (const s of sim) {
       // 判断是否有关注或者取关记录

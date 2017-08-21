@@ -1,23 +1,20 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
     <router-view></router-view>
+    <f-msg-with-loading></f-msg-with-loading>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'app',
-};
-</script>
+  import 'assets/css/reset.css';
+  import 'assets/css/global.scss';
+  import 'assets/fonts/iconfont.css';
+  import MsgWithLoading from 'components/MsgWithLoading';
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  export default {
+    name: 'app',
+    components: {
+      'f-msg-with-loading': MsgWithLoading
+    }
+  };
+</script>

@@ -1,0 +1,97 @@
+<template>
+  <div class="container">
+    <header>
+      <span class="header-left iconfont icon-houtui"></span>
+      <span class="clickBoard clickBoard-left" @click="back"></span>
+      <div class="header-title">评价</div>
+      <f-star size="rating" :isRate="isRate" @change="change"></f-star>
+      <span class="iconfont icon-fasong1" :class="{active: rating}"></span>
+      <span class="clickBoard clickBoard-right" @click="post"></span>
+    </header>
+    <textarea placeholder="请输入您的内容" class="post-textarea" v-model.trim="text" autofocus="on"></textarea>
+  </div>
+</template>
+<script>
+  import Star from 'src/components/Star';
+  import { moviePostComment } from 'src/api/';
+
+  export default {
+    data() {
+      return {
+        text: '',
+        rating: 0,
+        isRate: true
+      };
+    },
+    methods: {
+      back() {
+        this.$router.back();
+      },
+      change(rating) {
+        this.rating = rating;
+      },
+      async post() {
+        if (!this.rating) {
+          return;
+        }
+        try {
+          const res = await moviePostComment(this.$route.params.movieId, this.text, this.rating, this.$store.state.token);
+          if (res.data.code === 200) {
+            this.$router.push({name: 'movie', params: {movieId: this.$route.params.movieId}});
+          } else {
+            this.$store.dispatch('show', {
+              msg: res.data.message
+            });
+            setTimeout(() => {
+              this.$store.dispatch('close');
+              if (res.data.code === 5002) {
+                this.$router.push('/login');
+              }
+            }, 2000);
+          }
+        } catch (err) {
+          console.log(err);
+          this.$store.dispatch('show', {
+            msg: '服务器错误啦，请稍后再试'
+          });
+          setTimeout(() => {
+            this.$store.dispatch('close');
+          }, 2000);
+        }
+      }
+    },
+    components: {
+      'f-star': Star
+    }
+  };
+</script>
+<style lang="scss" scoped>
+  .container {
+    .star {
+      margin: 20px 0;
+    }
+    .icon-fasong1 {
+      position: absolute;
+      top: 13px;
+      right: 15px;;
+      font-size: 23px;
+      color: #666;
+      &.active {
+        color: #1478f0;
+      }
+    }
+    .post-textarea {
+      margin-top: 85px;
+      width: 100%;
+      outline: none;
+      border: none;
+      resize: none;
+      padding: 15px;
+      box-sizing: border-box;
+      font-size: 20px;
+      color: #333;
+      height: 40vh;
+    }
+  }
+</style>
+

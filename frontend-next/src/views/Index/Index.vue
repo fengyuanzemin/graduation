@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <f-post-item v-for="item in cardList" :item="item"></f-post-item>
+    <f-post-item v-for="(item, index) in cardList" :key="index" :item="item"></f-post-item>
     <div class="loading" v-show="loading">
       <span class="loading-text">{{loadingText}}</span>
       <f-fade-spinner size="middle"></f-fade-spinner>

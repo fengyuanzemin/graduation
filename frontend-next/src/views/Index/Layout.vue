@@ -7,7 +7,7 @@
       <component :is="currentView"></component>
     </keep-alive>
     <footer>
-      <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
+      <div class="footer-item" v-for="(item, index) in footerItem" :key="index" @click="checkout(item)">
         <span class="iconfont" :class="item.icon" v-if="item.hasText"></span>
         <span class="iconfont footer-plus" :class="item.icon" v-else></span>
         <span class="footer-text">{{item.text}}</span>

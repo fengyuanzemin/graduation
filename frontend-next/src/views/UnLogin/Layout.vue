@@ -9,7 +9,7 @@
       <component :is="currentView"></component>
     </keep-alive>
     <footer>
-      <div class="footer-item" v-for="item in footerItem" @click="checkout(item)">
+      <div class="footer-item" v-for="(item, index) in footerItem" :key="index" @click="checkout(item)">
         <span class="iconfont" :class="item.icon"></span>
         <span class="footer-text">{{item.text}}</span>
       </div>

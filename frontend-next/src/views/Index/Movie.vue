@@ -1,6 +1,6 @@
 <template>
   <div class="movie">
-    <f-movie-item v-for="item in items" :item="item"></f-movie-item>
+    <f-movie-item v-for="(item, index) in items" :key="index" :item="item"></f-movie-item>
     <div class="loading" v-show="loading">
       <span class="loading-text">{{loadingText}}</span>
       <f-fade-spinner size="middle"></f-fade-spinner>

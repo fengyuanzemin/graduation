@@ -37,7 +37,7 @@
     </div>
     <div class="user-recommend" v-if="userRecommend && userRecommend.length > 0">
       <div class="user-recommend-title">可能感兴趣的人</div>
-      <div class="user-recommend-container" v-for="item in userRecommend" @click.prevent.stop="toUser(item)">
+      <div class="user-recommend-container" v-for="(item, index) in userRecommend" :key="index" @click.prevent.stop="toUser(item)">
         <span class="user-recommend-name">{{item.name}}</span><!--
       --><span class="user-recommend-brief" v-if="item.brief">{{item.brief}}</span><!--
       --><span class="user-recommend-brief" v-else>暂无简介</span><!--
@@ -49,7 +49,7 @@
                @click.prevent.stop="followIt(item)"></span>
       </div>
     </div>
-    <f-post-item v-for="item in items" :item="item"></f-post-item>
+    <f-post-item v-for="(item, index) in items" :key="index" :item="item"></f-post-item>
     <p v-if="items.length === 0" class="follow-empty">暂无数据</p>
     <div class="loading" v-show="loading">
       <span class="loading-text">{{loadingText}}</span>

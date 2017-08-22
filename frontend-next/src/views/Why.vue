@@ -7,8 +7,8 @@
       <span class="header-right">回首页</span>
       <span class="clickBoard clickBoard-right clickBoard-right-big" @click="toIndex"></span>
     </header>
-    <f-post-item v-for="item in postItems" :item="item"></f-post-item>
-    <f-movie-item v-for="item in movieItems" :item="item"></f-movie-item>
+    <f-post-item v-for="(item, index) in postItems" :key="index" :item="item"></f-post-item>
+    <f-movie-item v-for="(item, index) in movieItems" :key="index" :item="item"></f-movie-item>
   </div>
 </template>
 <script>

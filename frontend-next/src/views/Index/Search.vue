@@ -7,7 +7,7 @@
     </div>
     <div class="search-user" v-if="users.length > 0">
       <div class="search-title">相关用户</div>
-      <div class="search-user-container" v-for="user in users" @click.prevent.stop="toUser(user)">
+      <div class="search-user-container" v-for="(user, index) in users" :key="index" @click.prevent.stop="toUser(user)">
         <span class="search-user-name">{{user.name}}</span><!--
       --><span class="search-user-brief" v-if="user.brief">{{user.brief}}</span><!--
       --><span class="search-user-brief" v-else>暂无简介</span><!--
@@ -20,8 +20,8 @@
       </div>
     </div>
     <div class="search-title" v-if="items.length > 0">相关搜索</div>
-    <f-post-item v-for="item in items" :item="item"></f-post-item>
-    <f-movie-item v-for="movie in movies" :item="movie"></f-movie-item>
+    <f-post-item v-for="(item, index) in items" :key="index" :item="item"></f-post-item>
+    <f-movie-item v-for="(movie, index) in movies" :key="index" :item="movie"></f-movie-item>
   </div>
 </template>
 <script>

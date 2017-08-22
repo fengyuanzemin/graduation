@@ -1,42 +1,42 @@
 {
-  "name": "graduation-api",
-  "version": "0.8.4",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www",
-    "curl": "node ./spiders/weibo",
-    "similar": "node ./algorithm/index.js",
-    "hot": "node ./algorithm/hot.js",
-    "douban": "node ./spiders/douban",
-    "lint": "eslint ../api"
-  },
-  "dependencies": {
-    "async": "^2.1.5",
-    "babel-polyfill": "^6.23.0",
-    "babel-register": "^6.24.1",
-    "bcrypt": "^1.0.2",
-    "body-parser": "~1.15.2",
-    "cheerio": "^0.22.0",
-    "cookie-parser": "~1.4.3",
-    "cors": "^2.8.1",
-    "debug": "~2.2.0",
-    "express": "^4.14.1",
-    "mongoose": "^4.9.4",
-    "morgan": "~1.7.0",
-    "request": "^2.81.0",
-    "serve-favicon": "~2.3.0",
-    "superagent": "^3.4.1",
-    "superagent-charset": "^1.1.1"
-  },
-  "devDependencies": {
-    "babel-core": "^6.24.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-regenerator": "^6.22.0",
-    "babel-preset-env": "^1.2.1",
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "^15.0.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-jnosx-a11y": "^5.0.3",
-    "eslint-plugin-react": "^7.0.1"
-  }
+    "name": "graduation-api",
+    "version": "0.8.4",
+    "private": true,
+    "scripts": {
+        "start": "node ./bin/www",
+        "curl": "node ./spiders/weibo",
+        "similar": "node ./algorithm/index.js",
+        "hot": "node ./algorithm/hot.js",
+        "douban": "node ./spiders/douban",
+        "lint": "eslint ../api"
+    },
+    "dependencies": {
+        "async": "^2.1.5",
+        "babel-polyfill": "^6.23.0",
+        "babel-register": "^6.24.1",
+        "bcrypt": "^1.0.2",
+        "body-parser": "~1.15.2",
+        "cheerio": "^0.22.0",
+        "cookie-parser": "~1.4.3",
+        "cors": "^2.8.1",
+        "debug": "~2.2.0",
+        "express": "^4.14.1",
+        "mongoose": "^4.9.4",
+        "morgan": "~1.7.0",
+        "request": "^2.81.0",
+        "serve-favicon": "~2.3.0",
+        "superagent": "^3.4.1",
+        "superagent-charset": "^1.1.1"
+    },
+    "devDependencies": {
+        "babel-core": "^6.24.0",
+        "babel-plugin-transform-object-rest-spread": "^6.23.0",
+        "babel-plugin-transform-regenerator": "^6.22.0",
+        "babel-preset-env": "^1.2.1",
+        "eslint": "^3.19.0",
+        "eslint-config-airbnb": "^15.0.1",
+        "eslint-plugin-import": "^2.3.0",
+        "eslint-plugin-jsx-a11y": "^5.0.3",
+        "eslint-plugin-react": "^7.0.1"
+    }
 }
